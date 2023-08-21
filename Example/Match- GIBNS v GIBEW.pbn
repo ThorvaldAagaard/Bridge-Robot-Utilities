@@ -1,0 +1,406 @@
+% PBN 2.1
+% EXPORT
+%Content-type: text/x-pbn; charset=ISO-8859-1
+%Creator: BridgeComposer Version 5.103
+%Created: Mon Aug 21 14:15:57 2023 +0200
+%BCOptions Center STBorder STShade
+%BidAndCardSpacing Thin
+%BoardsPerPage 1
+%CardTableColors #008000,#ffffff,#aaaaaa
+%DDAFormat 0
+%DefaultPagination 0
+%Font:CardTable "Arial",11,400,0
+%Font:Commentary "Times New Roman",12,400,0
+%Font:Diagram "Times New Roman",12,400,0
+%Font:Event "Times New Roman",12,400,0
+%Font:FixedPitch "Courier New",10,400,0
+%Font:HandRecord "Arial",11,400,0
+%GutterSize 500,500
+%HRTitleDate 2023.08.21
+%HRTitleEvent "Round 1"
+%HRTitleSetID "BC-2023-1233-0002"
+%HRTitleSetIDPrefix "BC"
+%HRTitleSite "UCBC2024"
+%HtmlClubs entity,"https://bridgecomposer.com/suitimg/c.gif"
+%HtmlDiamonds entity,"https://bridgecomposer.com/suitimg/d.gif"
+%HtmlHearts entity,"https://bridgecomposer.com/suitimg/h.gif"
+%HtmlNavBar 0.75,#cfe2f3
+%HtmlSpades entity,"https://bridgecomposer.com/suitimg/s.gif"
+%Margins 1000,1000,1000,1000
+%PaperSize 1,0,0,2
+%ParaIndent 0
+%PipColors #000000,#ff0000,#ff0000,#000000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%ScoreTableColors #e6e6e6,#000000
+%SectionSpacing 0,0,0
+%SelectedBoard 3
+%ShowBoardLabels 2
+%ShowCardTable 2
+%TSTCustomSortOrder Default
+%TSTReport List
+%TSTReportOrder ByNumber
+%TSTReportShade Yes
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "1"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AKT5.62.873.T873 J6.QT854.QJ62.J2 Q974.AKJ.T54.A95 832.973.AK9.KQ64"]
+[Scoring ""]
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.103"]
+[South "GIBNS"]
+[West "GIBEW"]
+[North "GIBNS"]
+[East "GIBEW"]
+[Declarer "N"]
+[Contract "2S"]
+[Result "8"]
+{PAR of the deal: 2NT = played by North: 120 points}
+{PAR computation time: 00'00"}
+{Feasability: 7 6 6 8 8 5 6 7 4 5 7 6 6 8 8 5 6 7 4 5 }
+[Auction "N"]
+Pass Pass 1C Pass
+1S Pass 2S Pass
+Pass Pass 
+[Play "E"]
+H5 HA H3 H2
+S6 S4 S2 SK
+SJ S7 S3 SA
+D6 S9 S8 S5
+D2 D5 DK D3
+DJ D4 D9 D8
+DQ DT DA D7
+H8 HJ H7 H6
+C2 CA C6 C3
+HQ HK H9 C8
+CJ C5 CQ C7
+HT C9 CK CT
+H4 SQ C4 ST
+
+% PBN 2.1
+% EXPORT
+%Content-type: text/x-pbn; charset=ISO-8859-1
+%Creator: BridgeComposer Version 5.103
+%Created: Mon Aug 21 14:15:57 2023 +0200
+%BCOptions Center STBorder STShade
+%BidAndCardSpacing Thin
+%BoardsPerPage 1
+%CardTableColors #008000,#ffffff,#aaaaaa
+%DDAFormat 0
+%DefaultPagination 0
+%Font:CardTable "Arial",11,400,0
+%Font:Commentary "Times New Roman",12,400,0
+%Font:Diagram "Times New Roman",12,400,0
+%Font:Event "Times New Roman",12,400,0
+%Font:FixedPitch "Courier New",10,400,0
+%Font:HandRecord "Arial",11,400,0
+%GutterSize 500,500
+%HRTitleDate 2023.08.21
+%HRTitleEvent "Round 1"
+%HRTitleSetID "BC-2023-1233-0002"
+%HRTitleSetIDPrefix "BC"
+%HRTitleSite "UCBC2024"
+%HtmlClubs entity,"https://bridgecomposer.com/suitimg/c.gif"
+%HtmlDiamonds entity,"https://bridgecomposer.com/suitimg/d.gif"
+%HtmlHearts entity,"https://bridgecomposer.com/suitimg/h.gif"
+%HtmlNavBar 0.75,#cfe2f3
+%HtmlSpades entity,"https://bridgecomposer.com/suitimg/s.gif"
+%Margins 1000,1000,1000,1000
+%PaperSize 1,0,0,2
+%ParaIndent 0
+%PipColors #000000,#ff0000,#ff0000,#000000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%ScoreTableColors #e6e6e6,#000000
+%SectionSpacing 0,0,0
+%SelectedBoard 3
+%ShowBoardLabels 2
+%ShowCardTable 2
+%TSTCustomSortOrder Default
+%TSTReport List
+%TSTReportOrder ByNumber
+%TSTReportShade Yes
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "1"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:AKT5.62.873.T873 J6.QT854.QJ62.J2 Q974.AKJ.T54.A95 832.973.AK9.KQ64"]
+[Scoring ""]
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.103"]
+{PAR of the deal: 2NT = played by east: 120 points}
+{Feasability: 5 6 7 4 5 7 6 6 8 8 5 6 7 4 5 7 6 6 8 8
+[South "GIBNS"]
+[West "GIBEW"]
+[North "GIBNS"]
+[East "GIBEW"]
+[Declarer "E"]
+[Contract "2S"]
+[Result "8"]
+{PAR of the deal: 2NT = played by east: 120 points}
+{Feasability: 5 6 7 4 5 7 6 6 8 8 5 6 7 4 5 7 6 6 8 8}
+[Auction "E"]
+Pass Pass 1C Pass
+1S Pass 2S Pass
+Pass Pass 
+[Play "S"]
+H5 HA H3 H6
+SJ S4 S3 SA
+S6 S7 S2 ST
+HT SQ S8 S5
+D6 D5 DK D3
+DJ D4 D9 D8
+D2 DT DA D7
+H8 HJ H7 H2
+C2 CA C6 C3
+HQ HK H9 C7
+CJ C5 CQ C8
+H4 C9 CK CT
+DQ S9 C4 SK
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "2"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:A9543.J97.Q54.QT KJ2.A8.AJ2.J9643 T7.432.T986.AK72 Q86.KQT65.K73.85"]
+[Scoring ""]
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.103"]
+[South "GIBNS"]
+[West "GIBEW"]
+[North "GIBNS"]
+[East "GIBEW"]
+[Declarer "S"]
+[Contract "1NT"]
+[Result "10"]
+{PAR of the deal: 3NT = played by North: 600 points}
+{PAR computation time: 00'01"}
+{Feasability: 8 8 9 8 9 5 5 3 5 4 8 8 9 8 9 5 5 3 5 4 }
+[Auction "E"]
+Pass 1C Pass 1H
+Pass 1NT Pass Pass
+Pass 
+[Play "W"]
+D6 D3 DQ DA
+S7 SQ SA S2
+D8 D7 D5 DJ
+DT DK D4 D2
+H2 H6 H9 HA
+H3 HK H7 H8
+H4 HQ HJ C4
+C7 HT S5 C3
+C2 H5 S4 C6
+ST S8 S3 SK
+D9 S6 S9 SJ
+CA C8 CT C9
+CK C5 CQ CJ
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "2"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:A9543.J97.Q54.QT KJ2.A8.AJ2.J9643 T7.432.T986.AK72 Q86.KQT65.K73.85"]
+[Scoring ""]
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.103"]
+{PAR of the deal: 3NT = played by east: 600 points}
+{Feasability: 5 5 3 5 4 8 8 9 8 9 5 5 3 5 4 8 8 9 8 9
+[South "GIBNS"]
+[West "GIBEW"]
+[North "GIBNS"]
+[East "GIBEW"]
+[Declarer "W"]
+[Contract "1NT"]
+[Result "9"]
+{PAR of the deal: 3NT = played by east: 600 points}
+{Feasability: 5 5 3 5 4 8 8 9 8 9 5 5 3 5 4 8 8 9 8 9}
+[Auction "S"]
+Pass 1C Pass 1H
+Pass 1NT Pass Pass
+Pass 
+[Play "N"]
+DT D7 DQ DA
+D9 DK D4 D2
+H2 H6 H9 HA
+ST SQ SA S2
+C2 C5 CQ C4
+CK C8 CT CJ
+CA H5 S5 C6
+D8 D3 D5 DJ
+C7 HT H7 C9
+H4 HK HJ H8
+S7 S6 S3 SK
+H3 S8 S9 C3
+D6 HQ S4 SJ
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "3"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:7.J64.A65432.AK6 K9432.KQ93..J952 AT65.AT72.T98.84 QJ8.85.KQJ7.QT73"]
+[Scoring ""]
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.103"]
+[South "GIBNS"]
+[West "GIBEW"]
+[North "GIBNS"]
+[East "GIBEW"]
+[Declarer "S"]
+[Contract "3D"]
+[Result "9"]
+{PAR of the deal: 3D  = played by North: 110 points}
+{PAR computation time: 00'05"}
+{Feasability: 5 9 8 5 6 8 4 5 8 7 5 9 8 5 6 8 4 5 8 7 }
+[Auction "S"]
+1D 1S X 2D
+Pass 2S 3D Pass
+Pass Pass 
+[Play "W"]
+S3 SA S8 S7
+S4 ST SJ D3
+H9 D8 D7 DA
+C9 C4 C7 CA
+C2 C8 CT CK
+CJ DT C3 C6
+S2 S6 SQ D4
+HQ HA H8 H4
+SK S5 CQ D5
+HK H2 H5 H6
+H3 HT DJ HJ
+C5 D9 DK D6
+S9 H7 DQ D2
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "3"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:7.J64.A65432.AK6 K9432.KQ93..J952 AT65.AT72.T98.84 QJ8.85.KQJ7.QT73"]
+[Scoring ""]
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.103"]
+{PAR of the deal: 3D  = played by east: 110 points}
+{Feasability: 8 4 5 8 7 5 9 8 5 6 8 4 5 8 7 5 9 8 5 6
+[South "GIBNS"]
+[West "GIBEW"]
+[North "GIBNS"]
+[East "GIBEW"]
+[Declarer "W"]
+[Contract "3D"]
+[Result "9"]
+{PAR of the deal: 3D  = played by east: 110 points}
+{Feasability: 8 4 5 8 7 5 9 8 5 6 8 4 5 8 7 5 9 8 5 6}
+[Auction "W"]
+1D 1S X 2D
+Pass 2S 3D Pass
+Pass Pass 
+[Play "N"]
+S3 SA S8 S7
+S4 ST SQ D4
+H9 DT DJ D5
+S9 D8 DK DA
+C5 C4 C7 CA
+C2 C8 CT CK
+CJ D9 C3 C6
+S2 S6 SJ D6
+HQ HA H5 H4
+SK S5 H8 D2
+H3 H2 DQ D3
+C9 HT D7 H6
+HK H7 CQ HJ
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "4"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:T84.9875.KJ8.875 K76.T642.A7.AKJ2 32.Q.QT965.QT963 AQJ95.AKJ3.432.4"]
+[Scoring ""]
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.103"]
+[South "GIBNS"]
+[West "GIBEW"]
+[North "GIBNS"]
+[East "GIBEW"]
+[Declarer "N"]
+[Contract "6H"]
+[Result "13"]
+{PAR of the deal: 7H  = played by North: 2210 points}
+{PAR computation time: 00'03"}
+{Feasability: 8 7 13 12 12 5 5 0 1 1 8 7 13 12 12 5 5 0 1 1 }
+[Auction "W"]
+Pass 1NT Pass 2C
+Pass 2H Pass 4C =1=
+Pass 4D Pass 4NT
+Pass 5H Pass 6H
+Pass Pass Pass 
+[Note "1: Alert. 0 to 1 cards in clubs, 4 to 13 cards in hearts, 15 to 35 total points."]
+[Play "E"]
+CT C4 C5 CJ
+HQ HA H8 H6
+D5 H3 H9 HT
+C6 HK H7 H4
+S3 HJ H5 H2
+D6 D4 DJ DA
+C3 D2 C8 CA
+S2 SQ S4 S7
+DQ S5 ST SK
+CQ D3 C7 CK
+DT SA S8 S6
+D9 SJ D8 C2
+C9 S9 DK D7
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "4"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:T84.9875.KJ8.875 K76.T642.A7.AKJ2 32.Q.QT965.QT963 AQJ95.AKJ3.432.4"]
+[Scoring ""]
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.103"]
+{PAR of the deal: 7H  = played by east: 2210 points}
+{Feasability: 5 5 0 1 1 8 7 13 12 12 5 5 0 1 1 8 7 13 12 12
+[South "GIBNS"]
+[West "GIBEW"]
+[North "GIBNS"]
+[East "GIBEW"]
+[Declarer "E"]
+[Contract "6H"]
+[Result "12"]
+{PAR of the deal: 7H  = played by east: 2210 points}
+{Feasability: 5 5 0 1 1 8 7 13 12 12 5 5 0 1 1 8 7 13 12 12}
+[Auction "N"]
+Pass 1NT Pass 2C
+Pass 2H Pass 4C =1=
+Pass 4D Pass 4S
+Pass 5C Pass 6H
+Pass Pass Pass 
+[Note "1: Alert. 0 to 1 cards in clubs, 4 to 13 cards in hearts, 15 to 35 total points."]
+[Play "S"]
+DT D2 DK DA
+HQ HA H7 H4
+C3 HK H5 H2
+D6 H3 H9 HT
+C6 HJ H8 H6
+S3 S5 ST SK
+S2 SA S4 S6
+CT C4 C7 CA
+C9 D3 C8 CK
+D9 SQ S8 S7
+D5 SJ C5 C2
+CQ S9 DJ D7
+DQ D4 D8 CJ
+

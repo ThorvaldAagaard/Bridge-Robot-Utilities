@@ -1,0 +1,8 @@
+node_modules
+GIB/bridge.exe
+GIB/Comments.txt
+GIB/EVAL.DAT
+GIB/gib.ini
+GIB/MB.TXT
+package-lock.json
+build

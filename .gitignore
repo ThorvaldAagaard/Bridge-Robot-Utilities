@@ -1,8 +1,8 @@
 node_modules
-GIB/bridge.exe
-GIB/Comments.txt
-GIB/EVAL.DAT
-GIB/gib.ini
-GIB/MB.TXT
 package-lock.json
 build
+dist/GIB/bridge.exe
+dist/GIB/Comments.txt
+dist/GIB/EVAL.DAT
+dist/GIB/gib.ini
+dist/GIB/MB.TXT

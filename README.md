@@ -61,6 +61,14 @@ When done playing you can see the result in TM, but there is also a PBN saved.
 
 The PBN can be translated to Lin by downloading TMPbn2LinVG.exe from this repository.
 
+TMGib supports the following command line parameters:
+
+- -b that if true will read systems for ns and ew from the files sys.ns and sys.ew
+- -t where thinking time for GIB can be set
+- -v that if true will save the GIB commands for error search
+
+
+
 
 
 

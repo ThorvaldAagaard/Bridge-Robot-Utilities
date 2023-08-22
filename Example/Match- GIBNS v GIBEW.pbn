@@ -56,7 +56,7 @@
 [East "GIBEW"]
 [Declarer "N"]
 [Contract "2S"]
-[Result "8"]
+[Result "9"]
 {PAR of the deal: 2NT = played by North: 120 points}
 {PAR computation time: 00'00"}
 {Feasability: 7 6 6 8 8 5 6 7 4 5 7 6 6 8 8 5 6 7 4 5 }
@@ -65,19 +65,19 @@ Pass Pass 1C Pass
 1S Pass 2S Pass
 Pass Pass 
 [Play "E"]
-H5 HA H3 H2
-S6 S4 S2 SK
-SJ S7 S3 SA
-D6 S9 S8 S5
-D2 D5 DK D3
-DJ D4 D9 D8
-DQ DT DA D7
-H8 HJ H7 H6
+DQ DT D9 D3
+D2 D5 DK D8
+HQ HA H3 H6
+S6 S7 S2 SA
+SJ SQ S8 S5
+HT HK H7 H2
+H8 S9 S3 SK
 C2 CA C6 C3
-HQ HK H9 C8
+H5 HJ H9 D7
 CJ C5 CQ C7
-HT C9 CK CT
-H4 SQ C4 ST
+H4 C9 CK C8
+DJ D4 C4 CT
+D6 S4 DA ST
 
 % PBN 2.1
 % EXPORT
@@ -147,19 +147,19 @@ Pass Pass 1C Pass
 1S Pass 2S Pass
 Pass Pass 
 [Play "S"]
-H5 HA H3 H6
-SJ S4 S3 SA
-S6 S7 S2 ST
-HT SQ S8 S5
-D6 D5 DK D3
-DJ D4 D9 D8
-D2 DT DA D7
-H8 HJ H7 H2
-C2 CA C6 C3
-HQ HK H9 C7
-CJ C5 CQ C8
-H4 C9 CK CT
-DQ S9 C4 SK
+DQ D4 D9 D8
+D2 D5 DK D3
+D6 DT DA D7
+HQ HA H9 H2
+SJ S9 S3 SA
+S6 S4 S2 ST
+H5 SQ S8 S5
+C2 C5 CQ C8
+H4 HK H7 H6
+CJ C9 CK CT
+HT CA C6 C3
+H8 S7 H3 SK
+DJ HJ C4 C7
 
 [Event ""]
 [Site ""]
@@ -186,19 +186,19 @@ Pass 1C Pass 1H
 Pass 1NT Pass Pass
 Pass 
 [Play "W"]
-D6 D3 DQ DA
+DT D3 DQ DA
 S7 SQ SA S2
+H2 HK HJ H8
+C7 C8 CQ C6
+C2 C5 CT C3
+ST S8 S5 SK
+H3 H5 H9 HA
+D9 DK D4 D2
+H4 HQ H7 CJ
+CK HT S3 C9
+CA H6 S9 C4
 D8 D7 D5 DJ
-DT DK D4 D2
-H2 H6 H9 HA
-H3 HK H7 H8
-H4 HQ HJ C4
-C7 HT S5 C3
-C2 H5 S4 C6
-ST S8 S3 SK
-D9 S6 S9 SJ
-CA C8 CT C9
-CK C5 CQ CJ
+D6 S6 S4 SJ
 
 [Event ""]
 [Site ""]
@@ -218,7 +218,7 @@ CK C5 CQ CJ
 [East "GIBEW"]
 [Declarer "W"]
 [Contract "1NT"]
-[Result "9"]
+[Result "10"]
 {PAR of the deal: 3NT = played by east: 600 points}
 {Feasability: 5 5 3 5 4 8 8 9 8 9 5 5 3 5 4 8 8 9 8 9}
 [Auction "S"]
@@ -226,19 +226,19 @@ Pass 1C Pass 1H
 Pass 1NT Pass Pass
 Pass 
 [Play "N"]
-DT D7 DQ DA
-D9 DK D4 D2
-H2 H6 H9 HA
+D6 D3 DQ DA
+D8 DK D4 D2
+S7 S8 S3 SK
 ST SQ SA S2
-C2 C5 CQ C4
 CK C8 CT CJ
-CA H5 S5 C6
-D8 D3 D5 DJ
-C7 HT H7 C9
-H4 HK HJ H8
-S7 S6 S3 SK
-H3 S8 S9 C3
-D6 HQ S4 SJ
+D9 D7 D5 DJ
+H2 H5 H7 HA
+C2 S6 S9 SJ
+H3 HK H9 H8
+H4 HQ HJ C6
+C7 HT S4 C9
+DT H6 S5 C3
+CA C5 CQ C4
 
 [Event ""]
 [Site ""]
@@ -254,30 +254,31 @@ D6 HQ S4 SJ
 [West "GIBEW"]
 [North "GIBNS"]
 [East "GIBEW"]
-[Declarer "S"]
-[Contract "3D"]
+[Declarer "N"]
+[Contract "2NT"]
 [Result "9"]
 {PAR of the deal: 3D  = played by North: 110 points}
-{PAR computation time: 00'05"}
+{PAR computation time: 00'03"}
 {Feasability: 5 9 8 5 6 8 4 5 8 7 5 9 8 5 6 8 4 5 8 7 }
 [Auction "S"]
 1D 1S X 2D
-Pass 2S 3D Pass
+Pass 2S Pass Pass
+X Pass 2NT Pass
 Pass Pass 
-[Play "W"]
-S3 SA S8 S7
-S4 ST SJ D3
-H9 D8 D7 DA
-C9 C4 C7 CA
-C2 C8 CT CK
-CJ DT C3 C6
-S2 S6 SQ D4
-HQ HA H8 H4
-SK S5 CQ D5
-HK H2 H5 H6
-H3 HT DJ HJ
-C5 D9 DK D6
-S9 H7 DQ D2
+[Play "E"]
+DK D2 S2 DT
+SQ S7 S3 SA
+DJ D3 S9 D9
+H5 H6 H9 HT
+DQ D4 C5 D8
+SJ C6 SK S6
+S8 D5 S4 ST
+C7 H4 H3 S5
+C3 CA C2 C8
+H8 HJ HK HA
+CT CK CJ C4
+D7 DA C9 H7
+CQ D6 HQ H2
 
 [Event ""]
 [Site ""]
@@ -295,29 +296,30 @@ S9 H7 DQ D2
 [West "GIBEW"]
 [North "GIBNS"]
 [East "GIBEW"]
-[Declarer "W"]
-[Contract "3D"]
-[Result "9"]
+[Declarer "E"]
+[Contract "2NT"]
+[Result "8"]
 {PAR of the deal: 3D  = played by east: 110 points}
 {Feasability: 8 4 5 8 7 5 9 8 5 6 8 4 5 8 7 5 9 8 5 6}
 [Auction "W"]
 1D 1S X 2D
-Pass 2S 3D Pass
+Pass 2S Pass Pass
+X Pass 2NT Pass
 Pass Pass 
-[Play "N"]
-S3 SA S8 S7
-S4 ST SQ D4
-H9 DT DJ D5
-S9 D8 DK DA
-C5 C4 C7 CA
-C2 C8 CT CK
-CJ D9 C3 C6
-S2 S6 SJ D6
-HQ HA H5 H4
-SK S5 H8 D2
-H3 H2 DQ D3
-C9 HT D7 H6
-HK H7 CQ HJ
+[Play "S"]
+SQ S7 S2 SA
+DJ D2 C5 D9
+DK D3 H9 DT
+DQ D4 H3 D8
+SJ C6 S9 S6
+S8 H4 SK ST
+H8 HJ HK HA
+C7 H6 S4 S5
+C3 CA C2 C8
+CT CK C9 C4
+D7 DA S3 H2
+H5 D6 CJ HT
+CQ D5 HQ H7
 
 [Event ""]
 [Site ""]
@@ -337,29 +339,28 @@ HK H7 CQ HJ
 [Contract "6H"]
 [Result "13"]
 {PAR of the deal: 7H  = played by North: 2210 points}
-{PAR computation time: 00'03"}
+{PAR computation time: 00'01"}
 {Feasability: 8 7 13 12 12 5 5 0 1 1 8 7 13 12 12 5 5 0 1 1 }
 [Auction "W"]
 Pass 1NT Pass 2C
 Pass 2H Pass 4C =1=
-Pass 4D Pass 4NT
-Pass 5H Pass 6H
+Pass 5C Pass 6H
 Pass Pass Pass 
 [Note "1: Alert. 0 to 1 cards in clubs, 4 to 13 cards in hearts, 15 to 35 total points."]
 [Play "E"]
-CT C4 C5 CJ
-HQ HA H8 H6
-D5 H3 H9 HT
-C6 HK H7 H4
-S3 HJ H5 H2
-D6 D4 DJ DA
-C3 D2 C8 CA
-S2 SQ S4 S7
-DQ S5 ST SK
-CQ D3 C7 CK
-DT SA S8 S6
-D9 SJ D8 C2
-C9 S9 DK D7
+HQ HA H8 H2
+D5 D4 DK DA
+S3 SQ S4 S7
+C3 C4 C8 CA
+C6 D2 C7 CK
+C9 H3 C5 C2
+DT HK H5 H6
+D9 HJ H9 H4
+S2 S9 ST SK
+D6 D3 H7 HT
+CT SA S8 S6
+CQ SJ DJ D7
+DQ S5 D8 CJ
 
 [Event ""]
 [Site ""]
@@ -379,28 +380,27 @@ C9 S9 DK D7
 [East "GIBEW"]
 [Declarer "E"]
 [Contract "6H"]
-[Result "12"]
+[Result "11"]
 {PAR of the deal: 7H  = played by east: 2210 points}
 {Feasability: 5 5 0 1 1 8 7 13 12 12 5 5 0 1 1 8 7 13 12 12}
 [Auction "N"]
 Pass 1NT Pass 2C
 Pass 2H Pass 4C =1=
-Pass 4D Pass 4S
 Pass 5C Pass 6H
 Pass Pass Pass 
 [Note "1: Alert. 0 to 1 cards in clubs, 4 to 13 cards in hearts, 15 to 35 total points."]
 [Play "S"]
-DT D2 DK DA
-HQ HA H7 H4
-C3 HK H5 H2
-D6 H3 H9 HT
-C6 HJ H8 H6
-S3 S5 ST SK
-S2 SA S4 S6
-CT C4 C7 CA
-C9 D3 C8 CK
-D9 SQ S8 S7
-D5 SJ C5 C2
-CQ S9 DJ D7
-DQ D4 D8 CJ
+HQ HA H5 H6
+C3 C4 C7 CK
+S3 SA S4 S7
+D5 D4 DK DA
+C6 D2 C8 CA
+CT HK C5 C2
+C9 HJ H8 H4
+S2 S9 ST SK
+CQ H3 H9 CJ
+D6 D3 D8 D7
+D9 S5 H7 HT
+DT SQ S8 S6
+DQ SJ DJ H2
 

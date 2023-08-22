@@ -134,24 +134,37 @@ def main():
     config.use_unicode = False 
     room = ["Open", "Closed"]
 
-    # Loop through the array and set the alternating text attribute
-    for i, board in enumerate(boards):
-        if board.info.room == None:
-            board.info.room = room[i % len(room)]
+    # If two first boards have the same number we assume it is from Bridge Moniteur
+    BM = boards[0].board_num == boards[1].board_num
+    if (BM):
+        # Loop through the array and set the alternating text attribute
+        for i, board in enumerate(boards):
+            if board.info.room == None:
+                board.info.room = room[i % len(room)]
+    else:
+        # From Blue CHip, or Bridge Monituer without instant replay
+        # Loop through the array and set the alternating text attribute
+        for i, board in enumerate(boards):
+            if board.info.room is None:
+                if i < len(boards) / 2:
+                    board.info.room = room[0]
+                else:
+                    board.info.room = room[1]
 
-
-    # Now all the boards in the closed room is rotated 90 degress, so we need to rotate it back.
-    for index, board in enumerate(boards[1::2]):
-        original_index = 2 * index + 1
-        boards[original_index].deal = boards[original_index -  1].deal
-        boards[original_index].vul = boards[original_index -  1].vul
-        boards[original_index].dealer = boards[original_index -  1].dealer
-        board.contract.declarer = ((board.contract.declarer - 1) + 4) % 4
-        temp = board.info.north
-        board.info.north = board.info.east
-        board.info.east = board.info.south
-        board.info.south = board.info.west
-        board.info.west = temp
+    if (BM):
+        # From Bridge Moniteur
+        # Now all the boards in the closed room is rotated 90 degress, so we need to rotate it back.
+        for index, board in enumerate(boards[1::2]):
+            original_index = 2 * index + 1
+            boards[original_index].deal = boards[original_index -  1].deal
+            boards[original_index].vul = boards[original_index -  1].vul
+            boards[original_index].dealer = boards[original_index -  1].dealer
+            board.contract.declarer = ((board.contract.declarer - 1) + 4) % 4
+            temp = board.info.north
+            board.info.north = board.info.east
+            board.info.east = board.info.south
+            board.info.south = board.info.west
+            board.info.west = temp
 
     # Sort the array of Board objects based on board.number and board.info.room
     sorted_boards = sorted(

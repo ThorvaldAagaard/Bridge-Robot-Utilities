@@ -5,10 +5,10 @@ const net = require('net');
 const util = require('util');
 const fs = require('fs');
 const minimist = require('minimist');
-const path = require('path');
 
 // This is the protocol definition but Bridge Moniteur expects only \n and will fail when  GIB is dummy
 let messageTerminator = "\r\n"
+let GIBCommand = "";
 let receivedDataFromTM = '';
 let receivedDataFromGib = '';
 let isProcessingLine = false;
@@ -144,7 +144,7 @@ const waitForResponse = async (command, initialWait, maxWaitTime) => {
                 for (let bid of bidding) {
                     console.log(bid)
                 }
-                await saveCommandHistory();
+                await saveCommandHistory(true);
                 console.log('Timeout waiting ' + maxWaitTime + ' seconds for response to ' + command);
                 process.exit();
                 //resolve("")
@@ -297,9 +297,9 @@ function recordCommand(command, receivedDataFromGib) {
     });
 }
 
-async function saveCommandHistory() {
+async function saveCommandHistory(error) {
     // Write command history to a file based on the board number
-    if (commandHistory.length > 4 && parameters.verbose) {
+    if (commandHistory.length > 4 && (parameters.verbose || error)) {
         const regex = /^(.*?)\s+seated/;
         let match = commandHistory[1].command.match(regex);
         let player = "";
@@ -325,7 +325,7 @@ async function saveCommandHistory() {
         }).join('\n');
 
         // Directory where the file should be saved
-        const directory = '.Logs';
+        const directory = './Logs';
 
         // Create the directory if it doesn't exist
         if (!fs.existsSync(directory)) {
@@ -350,6 +350,7 @@ async function saveCommandHistory() {
 
 
 async function startGibProcess(command, args) {
+
     // Spawn the command-line program
     processHolder.gibBackgroundProcess = spawn(command, args, {
         stdio: ['pipe', 'pipe', 'pipe'], // Create pipes for stdin, stdout, and stderr
@@ -374,12 +375,13 @@ async function startGibProcess(command, args) {
             recordCommand(command, receivedDataFromGib)
         }
         console.log(`[${timeString()}] Gib closed`);
-        // Check if the exit code indicates an error
+
     });
 
 
     // Handle process exit
     processHolder.gibBackgroundProcess.on('exit', async (code) => {
+        playstarted = false;
         console.log(`[${timeString()}] GIB exited`);
         teamsSent = false;
         processHolder.GibHandler = null;
@@ -441,7 +443,8 @@ async function startGibProcess(command, args) {
             }
         }
 
-        console.log(`[${timeString()}] Sending to gib: ${command} ${noResp}`);
+        console.log(`[${timeString()}] Sending to gib: ${command}${noResp ? ' Ignoring response'  : ''}`);
+
         if (receivedDataFromGib && parameters.verbose) {
             console.log("Unprocessed data: ", receivedDataFromGib)
         }
@@ -524,19 +527,23 @@ Options:
   --name, -n       Name in Table Manager
   --ip, -i         IP for Table Manager
   --port, -p       Port for Table Manager
-  --verbose, -v    Display commands issued`);
+  --timing, t      time (secs) for one GIB to play one hand, on average
+  --bidding, -b    Tell GIB to use sys.ns sys.ew as input
+  --verbose, -v    Display commands issued to GIB`);
 }
 (async () => {
 
     const argv = minimist(process.argv.slice(2), {
-        string: ['seat', 'name', 'ip', 'port'],
+        string: ['seat', 'name', 'ip', 'port','timing', 'bidding','verbose'],
         default: parameters, // Set the default values object directly
         alias: {
             s: 'seat',
             n: 'name',
             i: 'ip',
             p: 'port',
-            v: 'false'
+            t: 'timing',
+            b: 'bidding',
+            v: 'verbose'
         },
         demandOption: ['seat'], // Specify the mandatory parameters
         unknown: (param) => {
@@ -561,16 +568,29 @@ Options:
     parameters.name = argv.name;
     parameters.ip = argv.ip;
     parameters.port = argv.port;
+    parameters.bidding = argv.bidding;
+    parameters.timing = argv.timing;
     parameters.verbose = argv.verbose;
 
-    processHolder.GibHandler = await startGibProcess('bridge.exe', ['a']);
+    processHolder.GibHandler = await startGibProcess('bridge.exe', [parameters.seat]);
     await waitOneSecond();
     console.log(`[${timeString()}] Started GIB. ${receivedDataFromGib.split('\n')[0]}`)
     receivedDataFromGib = "";
-    await processHolder.GibHandler.sendCommand(`-${parameters.seat.charAt(0)}k 1`, true, false);
+    GIBCommand = `-${parameters.seat.charAt(0)}Ik`;
+    if (parameters.bidding) {
+        GIBCommand += 'F'
+    }
+    if (parameters.timing > 0) {
+        GIBCommand += 'T 1 ' + parameters.timing
+    } else {
+        // Just add the mark for TM communication
+        GIBCommand += ' 1'
+    }
+
+    await processHolder.GibHandler.sendCommand(GIBCommand, true, false);
     await waitOneSecond();
 
-    console.log(`[${timeString()}] Connecting to Table Manager at ${parameters.ip}:${parameters.port} as ${parameters.name} sitting ${parameters.seat}`);
+    console.log(`[${timeString()}] Connecting to Table Manager at ${parameters.ip}:${parameters.port} (as ${parameters.name} sitting ${parameters.seat})`);
     // Create a TCP client socket
     const client = new net.Socket();
 
@@ -626,21 +646,17 @@ Options:
             recordBidding(line);
             console.log(`[${timeString()}] Received from Table Manager: ${line}`);
             if (playstarted && line.toLowerCase() === "start of board") {
-                // TM is starting a new board
-                //processHolder.gibBackgroundProcess.kill();
-                if (processHolder.GibHandler) {
-                    processHolder.GibHandler.close();
-                    processHolder.GibHandler = null;
-                }
+                consolee.log("TM is starting a new board");
+                await processHolder.GibHandler.sendCommand(`-x`, true, false);
             }
             recordPlay(line);
             if (processHolder.GibHandler == null && line != "End of session") {
                 console.log(`[${timeString()}] Restarting the process...`);
-                processHolder.GibHandler = await startGibProcess('bridge.exe', ['a']);
+                processHolder.GibHandler = await startGibProcess('bridge.exe', [parameters.seat]);
                 await waitOneSecond();
                 receivedDataFromGib = "";
                 console.log(`[${timeString()}] Started GIB. ${receivedDataFromGib.split('\n')[0]}`)
-                await processHolder.GibHandler.sendCommand(`-${parameters.seat.charAt(0)}k 1`, true, false);
+                await processHolder.GibHandler.sendCommand(GIBCommand, true, false);
                 await waitOneSecond();
                 // Send seating and match details using the new gibProcess instance
                 // Send GIB the paramters
@@ -696,7 +712,7 @@ Options:
                             //console.log("line:"+line)
                             if (line != "") {
                                 if (line.startsWith("Hand over")) {
-                                    await saveCommandHistory()
+                                    await saveCommandHistory(false)
                                     console.log(receivedDataFromTM)
                                 } else {
                                     // It seems like GIB is terminating when having played a board, so we need to start the probgram again
@@ -724,7 +740,7 @@ Options:
                         //console.log("line:"+line)
                         if (line != "") {
                             if (line.startsWith("Hand over")) {
-                                await saveCommandHistory()
+                                await saveCommandHistory(false)
                                 console.log(receivedDataFromTM)
                             } else {
                                 // It seems like GIB is terminating when having played a board, so we need to start the program again
@@ -753,17 +769,17 @@ Options:
     // Close the client socket when done
     client.on('close', async () => {
         console.log(`[${timeString()}] Connection closed by client`);
-        await saveCommandHistory();
+        await saveCommandHistory(false);
         processHolder.gibBackgroundProcess.kill();
         process.exit()
     });
 
     client.on('error', (e) => {
         console.log(`[${timeString()}] Connection error`, e);
-        processHolder.gibBackgroundProcess.kill();
         if (processHolder.GibHandler) {
             processHolder.GibHandler.close();
         }
+        processHolder.gibBackgroundProcess.kill();
         process.exit()
     });
 })();

@@ -2,22 +2,22 @@ Board 1
 
 
                 North (GIBNS)
-                S T 7 5 
-                H 6 5 4 2 
-                D J 9 
-                C K 9 8 3 
+                S A K T 5 
+                H 6 2 
+                D 8 7 3 
+                C T 8 7 3 
 
 West (GIBEW)                    East (GIBEW)
-S K Q                           S A 9 8 3 
-H A K Q T 8                     H 7 3 
-D A 7 5 3                       D K 4 
-C 7 6                           C A J T 5 2 
+S 8 3 2                         S J 6 
+H 9 7 3                         H Q T 8 5 4 
+D A K 9                         D Q J 6 2 
+C K Q 6 4                       C J 2 
 
                 South (GIBNS)
-                S J 6 4 2 
-                H J 9 
-                D Q T 8 6 2 
-                C Q 4 
+                S Q 9 7 4 
+                H A K J 
+                D T 5 4 
+                C A 9 5 
 
 Dealer : North
 
@@ -25,1137 +25,29 @@ N-S : not vulnerable    E-W : not vulnerable
 
 
 West   North  East   South
-       Pass   1C     Pass   
-1H     Pass   1S     Pass   
-2D  !  Pass   2NT    Pass   
-3D     Pass   3NT    Pass   
-4NT    Pass   6NT    Pass   
-Pass   Pass   
+       Pass   Pass   1C     
+Pass   1S     Pass   2S     
+Pass   Pass   Pass   
 
-Contract : 6NT by East
+Contract : 2S by North
 
 
 West   North  East   South
- D A    D 9    D 4   >D 6   
->S K    S 5    S 3    S 6   
->S Q    S 7    S 8    S 4   
->C 7    C 3    C J    C Q   
- D 7    D J    D K   >D 2   
- D 5    S T   >S A    S 2   
- H A    H 6   >H 3    H 9   
->H K    H 5    H 7    H J   
->H Q    H 4    C 2    C 4   
->H T    H 2    C 5    D Q   
->H 8    C 9    S 9    D T   
->C 6    C 8    C A    D 8   
- D 3    C K   >C T    S J   
-
-Result : Contract down by 1 trick
---------------------------------------------------
-
-Board 1
-
-
-                North (GIBNS)
-                S T 7 5 
-                H 6 5 4 2 
-                D J 9 
-                C K 9 8 3 
-
-West (GIBEW)                    East (GIBEW)
-S K Q                           S A 9 8 3 
-H A K Q T 8                     H 7 3 
-D A 7 5 3                       D K 4 
-C 7 6                           C A J T 5 2 
-
-                South (GIBNS)
-                S J 6 4 2 
-                H J 9 
-                D Q T 8 6 2 
-                C Q 4 
-
-Dealer : North
-
-N-S : not vulnerable    E-W : not vulnerable
-
-
-West   North  East   South
-       Pass   1C     Pass   
-1H     Pass   1S     Pass   
-2D  !  Pass   2NT    Pass   
-3D     Pass   3NT    Pass   
-4NT    Pass   6NT    Pass   
-Pass   Pass   
-
-Contract : 6NT by East
-
-
-West   North  East   South
- D A    D 9    D 4   >D 6   
->S K    S 5    S 3    S 6   
->S Q    S 7    S 8    S 4   
->C 7    C 8    C J    C Q   
- D 7    D J    D K   >D T   
- D 5    S T   >S A    S 2   
- H A    H 6   >H 3    H 9   
->H K    H 5    H 7    H J   
->H Q    H 4    C 2    D 2   
->H T    H 2    C 5    C 4   
->H 8    C 3    S 9    S J   
->C 6    C 9    C A    D Q   
- D 3    C K   >C T    D 8   
-
-Result : Contract down by 1 trick
---------------------------------------------------
-
-Board 2
-
-
-                North (GIBNS)
-                S K J 8 7 6 4 2 
-                H -
-                D Q J 7 
-                C K 9 5 
-
-West (GIBEW)                    East (GIBEW)
-S A 9                           S Q T 3 
-H Q 9 5                         H K 8 7 4 2 
-D T 4 3                         D A K 8 5 
-C A T 8 6 3                     C 2 
-
-                South (GIBNS)
-                S 5 
-                H A J T 6 3 
-                D 9 6 2 
-                C Q J 7 4 
-
-Dealer : East
-
-N-S : vulnerable    E-W : not vulnerable
-
-
-West   North  East   South
-              1H     Pass   
-2H     2S     Pass   Pass   
-3S     Pass   4H     Pass   
-Pass   Pass   
-
-Contract : 4H by East
-
-
-West   North  East   South
- H 5    S 2    H 7   >H 3   
- D 3    D 7   >D A    D 2   
- S A    S 6   >S 3    S 5   
->S 9    S K    S T    D 9   
- D 4   >D Q    D K    D 6   
- C A    C 5   >C 2    C J   
->C 3    C K    H 4    C 4   
- H Q    S J   >S Q    H T   
->C 6    C 9    H 2    C 7   
- D T    D J   >D 8    H 6   
- C T    S 8    H 8   >C Q   
- C 8    S 7   >D 5    H J   
- H 9    S 4    H K   >H A   
-
-Result : Contract down by 1 trick
---------------------------------------------------
-
-Board 3
-
-
-                North (GIBNS)
-                S Q J 9 8 5 
-                H A J 4 
-                D K 9 8 4 
-                C 3 
-
-West (GIBEW)                    East (GIBEW)
-S A 6 3                         S K T 4 
-H 8 6 3                         H T 7 5 2 
-D T 7 6 5                       D A Q 
-C Q J 6                         C K 8 5 2 
-
-                South (GIBNS)
-                S 7 2 
-                H K Q 9 
-                D J 3 2 
-                C A T 9 7 4 
-
-Dealer : South
-
-N-S : not vulnerable    E-W : vulnerable
-
-
-West   North  East   South
-                     Pass   
-Pass   1S     Pass   2C     
-Pass   2D     Pass   2NT    
-Pass   3NT    Pass   Pass   
-Pass   
-
-Contract : 3NT by South
-
-
-West   North  East   South
->D 5    D 9    D Q    D 3   
- H 3    H 4   >H T    H K   
- D 6    D 4    D A   >D J   
- C Q    C 3   >C 5    C A   
- H 8    H A    H 2   >H 9   
- H 6   >H J    H 5    H Q   
- D 7    D 8    C 2   >D 2   
- D T   >D K    C 8    C 4   
- S A   >S Q    S 4    S 2   
->C 6    S 5    C K    C T   
- S 6    S J   >S T    S 7   
- S 3   >S 9    S K    C 9   
- C J    S 8   >H 7    C 7   
-
-Result : Contract down by 2 tricks
---------------------------------------------------
-
-Board 4
-
-
-                North (GIBNS)
-                S K 9 3 
-                H K 6 3 
-                D J 7 4 2 
-                C A T 5 
-
-West (GIBEW)                    East (GIBEW)
-S 8 7 2                         S A Q J 4 
-H J 8 4                         H A Q 9 2 
-D 5 3                           D Q T 6 
-C Q 9 8 6 3                     C J 7 
-
-                South (GIBNS)
-                S T 6 5 
-                H T 7 5 
-                D A K 9 8 
-                C K 4 2 
-
-Dealer : West
-
-N-S : vulnerable    E-W : vulnerable
-
-
-West   North  East   South
-Pass   Pass   1NT    Pass   
-Pass   Pass   
-
-Contract : 1NT by East
-
-
-West   North  East   South
- D 5    D J    D Q   >D 8   
- H 4    H 6   >H A    H 5   
- H J    H K   >H 9    H T   
- S 2   >S 9    S Q    S 5   
- H 8    H 3   >H 2    H 7   
->S 8    S 3    S J    S 6   
- C 3    S K   >H Q    C 2   
- S 7    D 2   >S A    S T   
- C 6    C 5   >S 4    D 9   
- C 8    C A   >C J    C 4   
- D 3   >D 7    D T    D K   
- C 9    C T    C 7   >C K   
- C Q    D 4    D 6   >D A   
-
-Result : Contract made with 1 overtrick for +120 points
---------------------------------------------------
-
-Board 5
-
-
-                North (GIBNS)
-                S 6 5 4 
-                H Q 9 8 2 
-                D 2 
-                C J 8 7 5 2 
-
-West (GIBEW)                    East (GIBEW)
-S A Q 9                         S K 3 
-H J 5                           H A K 3 
-D J 9 6                         D T 8 7 5 4 3 
-C A Q 9 6 3                     C K T 
-
-                South (GIBNS)
-                S J T 8 7 2 
-                H T 7 6 4 
-                D A K Q 
-                C 4 
-
-Dealer : North
-
-N-S : vulnerable    E-W : not vulnerable
-
-
-West   North  East   South
-       Pass   1D     1S     
-2C     Pass   2D     Pass   
-2S     Pass   3S     Pass   
-3NT    Pass   Pass   Pass   
-
-Contract : 3NT by West
-
-
-West   North  East   South
- C 6   >C 5    C T    C 4   
- D 9    D 2   >D 5    D Q   
- H J    H Q    H A   >H 4   
- C 3    C 8   >C K    S 2   
- D 6    H 2   >D 4    D A   
- H 5    H 8    H K   >H T   
- S 9    S 4   >S K    S 8   
- S A    S 5   >S 3    S T   
->C A    C 7    D T    H 7   
->C Q    C 2    D 7    H 6   
->C 9    C J    D 8    S J   
- D J   >H 9    H 3    S 7   
- S Q   >S 6    D 3    D K   
-
-Result : Contract made
---------------------------------------------------
-
-Board 6
-
-
-                North (GIBNS)
-                S K Q T 
-                H 6 
-                D A J 9 4 
-                C A T 9 6 5 
-
-West (GIBEW)                    East (GIBEW)
-S A 9 2                         S J 
-H T 3                           H K Q J 8 7 4 
-D 8 7 6                         D K Q T 3 2 
-C K Q J 8 4                     C 7 
-
-                South (GIBNS)
-                S 8 7 6 5 4 3 
-                H A 9 5 2 
-                D 5 
-                C 3 2 
-
-Dealer : East
-
-N-S : not vulnerable    E-W : vulnerable
-
-
-West   North  East   South
-              1H     Pass   
-1NT    Pass   2D     Pass   
-2NT    Pass   3D     Pass   
-Pass   Pass   
-
-Contract : 3D by East
-
-
-West   North  East   South
- S A    S K    S J   >S 5   
->D 8    D 9    D K    D 5   
- D 7    D J   >D 2    S 3   
- S 2   >S Q    D 3    S 6   
- H T    H 6   >H 8    H 5   
->H 3    C 5    H J    H A   
- S 9    D 4    H 7   >H 2   
- D 6   >D A    D Q    S 7   
- C 4   >S T    D T    S 8   
- C 8    C 9   >H K    H 9   
- C J    C 6   >H Q    C 2   
- C Q    C T   >H 4    C 3   
- C K    C A   >C 7    S 4   
-
-Result : Contract down by 1 trick
---------------------------------------------------
-
-Board 7
-
-
-                North (GIBNS)
-                S K J 6 
-                H Q J 7 5 3 2 
-                D 8 
-                C T 6 3 
-
-West (GIBEW)                    East (GIBEW)
-S 8 5 2                         S Q 4 3 
-H K 4                           H A 8 
-D K 9 4 3 2                     D A J T 7 
-C K 9 2                         C J 7 5 4 
-
-                South (GIBNS)
-                S A T 9 7 
-                H T 9 6 
-                D Q 6 5 
-                C A Q 8 
-
-Dealer : South
-
-N-S : vulnerable    E-W : vulnerable
-
-
-West   North  East   South
-                     1C     
-Pass   1H     Pass   1S     
-Pass   2H     Pass   Pass   
-Pass   
-
-Contract : 2H by North
-
-
-West   North  East   South
- C K    C T   >C 4    C 8   
->D 9    D 8    D A    D 5   
- D K    H 2   >D J    D Q   
- H K   >H 3    H 8    H T   
->H 4    H 5    H A    H 6   
- D 2    H 7   >D T    D 6   
- C 2   >C 3    C 5    C A   
- S 2    S K    S 3   >S 7   
- S 8   >S 6    S 4    S T   
- D 3    H Q    C 7   >H 9   
- C 9   >C 6    C J    C Q   
- S 5    S J    S Q   >S A   
- D 4    H J    D 7   >S 9   
+ D 9    D 3   >D Q    D T   
+ D K    D 8   >D 2    D 5   
+>H 3    H 6    H Q    H A   
+ S 2    S A    S 6   >S 7   
+ S 8   >S 5    S J    S Q   
+ H 7    H 2    H T   >H K   
+ S 3    S K    H 8   >S 9   
+ C 6   >C 3    C 2    C A   
+ H 9    D 7    H 5   >H J   
+ C Q    C 7    C J   >C 5   
+>C K    C 8    H 4    C 9   
+>C 4    C T    D J    D 4   
+ D A   >S T    D 6    S 4   
 
 Result : Contract made with 1 overtrick for +140 points
---------------------------------------------------
-
-Board 8
-
-
-                North (GIBNS)
-                S Q J 6 
-                H J 8 6 
-                D Q J T 
-                C A J 7 4 
-
-West (GIBEW)                    East (GIBEW)
-S T 9 8 3                       S A 4 
-H 2                             H K Q T 7 5 4 3 
-D 9 7 6 5 2                     D 8 
-C T 9 6                         C K 8 5 
-
-                South (GIBNS)
-                S K 7 5 2 
-                H A 9 
-                D A K 4 3 
-                C Q 3 2 
-
-Dealer : West
-
-N-S : not vulnerable    E-W : not vulnerable
-
-
-West   North  East   South
-Pass   1C     1H     Dbl    
-Pass   1NT    2H     3NT    
-Pass   Pass   Pass   
-
-Contract : 3NT by North
-
-
-West   North  East   South
- H 2    H 8   >H 7    H 9   
- D 2    D T    D 8   >D 4   
- D 9   >D Q    H T    D 3   
- S T   >S 6    S A    S 2   
- C 6    H J   >H 5    H A   
- C T    C A    C 5   >C 3   
- S 9   >S Q    S 4    S 7   
- S 8   >S J    H 3    S 5   
- D 7   >D J    H 4    D A   
- S 3    C 7    C 8   >S K   
- D 5    C 4    H Q   >D K   
- C 9    C J    C K   >C 2   
- D 6    H 6   >H K    C Q   
-
-Result : Contract made with 1 overtrick for +430 points
---------------------------------------------------
-
-Board 9
-
-
-                North (GIBNS)
-                S K Q T 2 
-                H A 3 
-                D K J 7 4 2 
-                C T 9 
-
-West (GIBEW)                    East (GIBEW)
-S J 9 8 6 5                     S A 4 
-H K J 8 2                       H T 7 6 
-D 9 6 5                         D A T 3 
-C 3                             C Q J 7 4 2 
-
-                South (GIBNS)
-                S 7 3 
-                H Q 9 5 4 
-                D Q 8 
-                C A K 8 6 5 
-
-Dealer : North
-
-N-S : not vulnerable    E-W : vulnerable
-
-
-West   North  East   South
-       1D     Pass   1H     
-Pass   1S     Pass   2NT    
-Pass   3D     Pass   3NT    
-Pass   Pass   Pass   
-
-Contract : 3NT by South
-
-
-West   North  East   South
->S 6    S K    S A    S 7   
- C 3    C 9   >C Q    C A   
- D 5    D 2    D A   >D Q   
- S 9    C T   >C 4    C K   
- S 8    S T    S 4   >S 3   
- D 6   >D K    D 3    D 8   
- D 9   >D J    D T    H 4   
- H 8   >H A    H 6    H 5   
- H 2   >D 7    C 2    C 5   
- H J   >D 4    H T    C 6   
- S J   >S Q    C 7    H Q   
- S 5   >S 2    H 7    C 8   
->H K    H 3    C J    H 9   
-
-Result : Contract made
---------------------------------------------------
-
-Board 10
-
-
-                North (GIBNS)
-                S A 6 3 
-                H 8 5 4 
-                D T 7 4 3 
-                C K T 6 
-
-West (GIBEW)                    East (GIBEW)
-S J T 5                         S 4 2 
-H Q 3                           H A K T 7 
-D Q 9 8 6 2                     D A 5 
-C 9 5 2                         C A Q J 8 3 
-
-                South (GIBNS)
-                S K Q 9 8 7 
-                H J 9 6 2 
-                D K J 
-                C 7 4 
-
-Dealer : East
-
-N-S : vulnerable    E-W : vulnerable
-
-
-West   North  East   South
-              1C     1S     
-Pass   2S     3H     Pass   
-4H     Pass   Pass   Pass   
-
-Contract : 4H by East
-
-
-West   North  East   South
- H 3    H 8    H T   >H 2   
- H Q    H 5   >H 7    H 6   
->C 2    C 6    C A    C 7   
- D 2    H 4   >H A    H J   
- D 6    S 3   >H K    H 9   
- C 5    C K   >C Q    C 4   
- S 5   >S A    S 4    S 7   
- S T   >S 6    S 2    S Q   
- S J    D 4    C 8   >S K   
- D 8    D 7    C 3   >S 9   
- D 9    D 3    D 5   >S 8   
- D Q    D T    D A   >D J   
- C 9    C T   >C J    D K   
-
-Result : Contract down by 3 tricks
---------------------------------------------------
-
-Board 11
-
-
-                North (GIBNS)
-                S J 5 4 
-                H J T 8 3 
-                D K 
-                C A Q 9 7 3 
-
-West (GIBEW)                    East (GIBEW)
-S K 9 3 2                       S 6 
-H 5                             H A K 9 2 
-D 9 4 3 2                       D Q J T 7 6 5 
-C K J 8 4                       C 5 2 
-
-                South (GIBNS)
-                S A Q T 8 7 
-                H Q 7 6 4 
-                D A 8 
-                C T 6 
-
-Dealer : South
-
-N-S : not vulnerable    E-W : not vulnerable
-
-
-West   North  East   South
-                     1S     
-Pass   1NT    2D     Pass   
-3D     3S     4D     4S     
-Pass   Pass   Pass   
-
-Contract : 4S by South
-
-
-West   North  East   South
->C 4    C A    C 5    C 6   
- D 4   >D K    D 7    D 8   
- S K   >S 5    S 6    S T   
->H 5    H 3    H K    H 4   
- D 9    H 8   >H A    H 7   
- S 2    H T   >H 2    H 6   
->S 3    S J    H 9    S 7   
- S 9   >S 4    C 2    S A   
- D 2    C 7    D Q   >D A   
- C 8    H J    D J   >H Q   
- D 3    C 9    D T   >S Q   
- C J    C 3    D 5   >S 8   
- C K    C Q    D 6   >C T   
-
-Result : Contract down by 2 tricks
---------------------------------------------------
-
-Board 12
-
-
-                North (GIBNS)
-                S K Q 8 6 4 
-                H K T 7 
-                D J 5 
-                C Q 6 3 
-
-West (GIBEW)                    East (GIBEW)
-S A 3                           S J T 5 
-H A J 8 6                       H 9 2 
-D A T                           D Q 4 3 2 
-C K 9 7 4 2                     C A T 8 5 
-
-                South (GIBNS)
-                S 9 7 2 
-                H Q 5 4 3 
-                D K 9 8 7 6 
-                C J 
-
-Dealer : West
-
-N-S : vulnerable    E-W : not vulnerable
-
-
-West   North  East   South
-1NT    Pass   Pass   Pass   
-
-Contract : 1NT by West
-
-
-West   North  East   South
- S 3   >S 6    S J    S 2   
- H 6    H T   >H 9    H 5   
- S A   >S K    S 5    S 9   
->C 2    C 3    C 8    C J   
- H A    H 7    H 2   >H 3   
->C 4    C Q    C A    D 6   
- C 9    C 6   >C 5    D 9   
->C 7    D 5    C T    D 8   
- D A    D J   >D 4    D 7   
->C K    S 4    D 2    S 7   
->H J    H K    D 3    H 4   
- H 8   >S Q    S T    H Q   
- D T   >S 8    D Q    D K   
-
-Result : Contract made with 1 overtrick
---------------------------------------------------
-
-Board 13
-
-
-                North (GIBNS)
-                S K 7 2 
-                H Q 9 5 2 
-                D 4 2 
-                C K 9 7 4 
-
-West (GIBEW)                    East (GIBEW)
-S 8 6 4                         S A Q T 9 5 
-H K J T 3                       H -
-D Q J                           D A K T 9 8 5 
-C A Q 8 2                       C T 6 
-
-                South (GIBNS)
-                S J 3 
-                H A 8 7 6 4 
-                D 7 6 3 
-                C J 5 3 
-
-Dealer : North
-
-N-S : vulnerable    E-W : vulnerable
-
-
-West   North  East   South
-       Pass   1D     Pass   
-1H     Pass   1S     Pass   
-2C  !  Pass   2D     Pass   
-3C     Pass   3S     Pass   
-4S     Pass   Pass   Pass   
-
-Contract : 4S by East
-
-
-West   North  East   South
- H J    H Q    S 5   >H 6   
- D Q    D 4   >D T    D 3   
->S 6    S 2    S A    S 3   
- D J    D 2   >D A    D 6   
- C 2    S 7   >D K    D 7   
- H 3   >H 2    S 9    H 8   
- C 8    C 9   >D 9    S J   
- C A    C 4    C 6   >C 3   
->H K    H 9    S Q    H 4   
- C Q    S K   >D 8    C 5   
- H T   >H 5    S T    H 7   
- S 8    C 7   >D 5    C J   
->S 4    C K    C T    H A   
-
-Result : Contract made for +620 points
---------------------------------------------------
-
-Board 14
-
-
-                North (GIBNS)
-                S J 3 
-                H K Q 8 6 5 2 
-                D A 9 7 2 
-                C 6 
-
-West (GIBEW)                    East (GIBEW)
-S Q T 8 7 6 4 2                 S A 5 
-H 3                             H 4 
-D K T 6                         D J 5 4 3 
-C 4 3                           C A K 9 8 5 2 
-
-                South (GIBNS)
-                S K 9 
-                H A J T 9 7 
-                D Q 8 
-                C Q J T 7 
-
-Dealer : East
-
-N-S : not vulnerable    E-W : not vulnerable
-
-
-West   North  East   South
-              1C     1H     
-1S     2C     Pass   3C     
-Pass   4H     Pass   Pass   
-Pass   
-
-Contract : 4H by South
-
-
-West   North  East   South
->S 7    S 3    S A    S 9   
- S T    S J   >S 5    S K   
- H 3    H 2    H 4   >H 7   
- D 6    D 9    D J   >D 8   
- C 4    C 6   >C K    C 7   
- D K    D A   >D 4    D Q   
- D T   >D 2    D 5    H 9   
- C 3    H 8    C 8   >H J   
- S Q    H 5    C 9   >H T   
- S 8    H Q    C 5   >H A   
- S 6    H K    C 2   >C Q   
- S 4   >H 6    D 3    C T   
- S 2   >D 7    C A    C J   
-
-Result : Contract made
---------------------------------------------------
-
-Board 15
-
-
-                North (GIBNS)
-                S J T 9 5 3 
-                H 5 
-                D K T 5 4 
-                C Q 9 4 
-
-West (GIBEW)                    East (GIBEW)
-S K Q 6 2                       S A 8 4 
-H 8 7 6                         H A J T 9 2 
-D A 9 7 6                       D 8 3 2 
-C 7 6                           C 8 3 
-
-                South (GIBNS)
-                S 7 
-                H K Q 4 3 
-                D Q J 
-                C A K J T 5 2 
-
-Dealer : South
-
-N-S : vulnerable    E-W : not vulnerable
-
-
-West   North  East   South
-                     1C     
-Pass   1S     Pass   2H     
-Pass   2NT    Pass   3C     
-Pass   3NT    Pass   Pass   
-Pass   
-
-Contract : 3NT by North
-
-
-West   North  East   South
- S Q    S 5   >S 4    S 7   
->D A    D 4    D 2    D J   
->S 2    S J    S A    C 2   
- H 6    H 5   >H A    H 3   
- D 9    D 5   >D 8    D Q   
- C 7    C 9    C 3   >C 5   
- D 7   >D K    D 3    C T   
- D 6   >D T    H 2    H 4   
- C 6   >C 4    C 8    C J   
- H 7    S 3    H J   >H K   
- S 6    C Q    H T   >C A   
- H 8    S T    H 9   >C K   
- S K    S 9    S 8   >H Q   
-
-Result : Contract made for +600 points
---------------------------------------------------
-
-Board 16
-
-
-                North (GIBNS)
-                S K 3 2 
-                H K 8 
-                D A J 7 
-                C A K J T 6 
-
-West (GIBEW)                    East (GIBEW)
-S J 6 4                         S A Q 9 8 5 
-H A 9 4 3                       H J T 7 
-D Q 6 4                         D 8 2 
-C Q 9 5                         C 7 4 3 
-
-                South (GIBNS)
-                S T 7 
-                H Q 6 5 2 
-                D K T 9 5 3 
-                C 8 2 
-
-Dealer : West
-
-N-S : not vulnerable    E-W : vulnerable
-
-
-West   North  East   South
-Pass   1C     Pass   1D     
-Pass   2NT    Pass   Pass   
-Pass   
-
-Contract : 2NT by North
-
-
-West   North  East   South
- S J    S K   >S 8    S T   
- D 4   >D J    D 2    D K   
- D 6    D 7    D 8   >D T   
- C 9    C J    C 3   >C 2   
- D Q   >D A    C 7    D 9   
- C 5   >C A    C 4    C 8   
- C Q   >C K    H 7    H 2   
- H 4   >C T    H T    H 5   
- H 9   >C 6    S 5    H 6   
- H A   >H 8    H J    H Q   
->S 6    S 3    S A    S 7   
- S 4    S 2   >S Q    D 5   
- H 3    H K   >S 9    D 3   
-
-Result : Contract made with 1 overtrick for +150 points
---------------------------------------------------
-
-Board 1
-
-
-                North (GIBNS)
-                S A K T 5 
-                H 6 2 
-                D 8 7 3 
-                C T 8 7 3 
-
-West (GIBEW)                    East (GIBEW)
-S 8 3 2                         S J 6 
-H 9 7 3                         H Q T 8 5 4 
-D A K 9                         D Q J 6 2 
-C K Q 6 4                       C J 2 
-
-                South (GIBNS)
-                S Q 9 7 4 
-                H A K J 
-                D T 5 4 
-                C A 9 5 
-
-Dealer : North
-
-N-S : not vulnerable    E-W : not vulnerable
-
-
-West   North  East   South
-       Pass   Pass   1C     
-Pass   1S     Pass   2S     
-Pass   Pass   Pass   
-
-Contract : 2S by North
-
-
-West   North  East   South
- H 3    H 2   >H 5    H A   
- S 2    S K    S 6   >S 4   
- S 3   >S A    S J    S 7   
- S 8   >S 5    D 6    S 9   
- D K    D 3    D 2   >D 5   
->D 9    D 8    D J    D 4   
- D A    D 7   >D Q    D T   
->H 9    H 6    H 8    H J   
- C 6    C 3    C 2   >C A   
- H 7    C 8    H Q   >H K   
- C Q    C 7    C J   >C 5   
->C K    C T    H T    C 9   
->C 4    S T    H 4    S Q   
-
-Result : Contract made for +110 points
---------------------------------------------------
-
-Board 1
-
-
-                North (GIBNS)
-                S A K T 5 
-                H 6 2 
-                D 8 7 3 
-                C T 8 7 3 
-
-West (GIBEW)                    East (GIBEW)
-S 8 3 2                         S J 6 
-H 9 7 3                         H Q T 8 5 4 
-D A K 9                         D Q J 6 2 
-C K Q 6 4                       C J 2 
-
-                South (GIBNS)
-                S Q 9 7 4 
-                H A K J 
-                D T 5 4 
-                C A 9 5 
-
-Dealer : North
-
-N-S : not vulnerable    E-W : not vulnerable
-
-
-West   North  East   South
-       Pass   Pass   1C     
-Pass   1S     Pass   2S     
-Pass   Pass   Pass   
-
-Contract : 2S by North
-
-
-West   North  East   South
- H 3    H 2   >H 5    H A   
- S 2    S K    S 6   >S 4   
- S 3   >S A    S J    S 7   
- S 8   >S 5    D 6    S 9   
- D K    D 3    D 2   >D 5   
->D 9    D 8    D J    D 4   
- D A    D 7   >D Q    D T   
->H 9    H 6    H 8    H J   
- C 6    C 3    C 2   >C A   
- H 7    C 8    H Q   >H K   
- C Q    C 7    C J   >C 5   
->C K    C T    H T    C 9   
->C 4    S T    H 4    S Q   
-
-Result : Contract made for +110 points
---------------------------------------------------
-
-Board 1
-
-
-                North (GIBNS)
-                S A K T 5 
-                H 6 2 
-                D 8 7 3 
-                C T 8 7 3 
-
-West (GIBEW)                    East (GIBEW)
-S 8 3 2                         S J 6 
-H 9 7 3                         H Q T 8 5 4 
-D A K 9                         D Q J 6 2 
-C K Q 6 4                       C J 2 
-
-                South (GIBNS)
-                S Q 9 7 4 
-                H A K J 
-                D T 5 4 
-                C A 9 5 
-
-Dealer : North
-
-N-S : not vulnerable    E-W : not vulnerable
-
-
-West   North  East   South
-       Pass   Pass   1C     
-Pass   1S     Pass   2S     
-Pass   Pass   Pass   
-
-Contract : 2S by North
-
-
-West   North  East   South
- H 3    H 2   >H 5    H A   
- S 2    S K    S 6   >S 4   
- S 3   >S A    S J    S 7   
- S 8   >S 5    D 6    S 9   
- D K    D 3    D 2   >D 5   
->D 9    D 8    D J    D 4   
- D A    D 7   >D Q    D T   
->H 9    H 6    H 8    H J   
- C 6    C 3    C 2   >C A   
- H 7    C 8    H Q   >H K   
- C Q    C 7    C J   >C 5   
->C K    C T    H T    C 9   
->C 4    S T    H 4    S Q   
-
-Result : Contract made for +110 points
---------------------------------------------------
-
-Board 1
-
-
-                North (GIBNS)
-                S A K T 5 
-                H 6 2 
-                D 8 7 3 
-                C T 8 7 3 
-
-West (GIBEW)                    East (GIBEW)
-S 8 3 2                         S J 6 
-H 9 7 3                         H Q T 8 5 4 
-D A K 9                         D Q J 6 2 
-C K Q 6 4                       C J 2 
-
-                South (GIBNS)
-                S Q 9 7 4 
-                H A K J 
-                D T 5 4 
-                C A 9 5 
-
-Dealer : North
-
-N-S : not vulnerable    E-W : not vulnerable
-
-
-West   North  East   South
-       Pass   Pass   1C     
-Pass   1S     Pass   2S     
-Pass   Pass   Pass   
-
-Contract : 2S by North
-
-
-West   North  East   South
- H 3    H 2   >H 5    H A   
- S 2    S K    S 6   >S 4   
- S 3   >S A    S J    S 7   
- S 8   >S 5    D 6    S 9   
- D K    D 3    D 2   >D 5   
->D 9    D 8    D J    D 4   
- D A    D 7   >D Q    D T   
->H 9    H 6    H 8    H J   
- C 6    C 3    C 2   >C A   
- H 7    C 8    H Q   >H K   
- C Q    C 7    C J   >C 5   
->C K    C T    H T    C 9   
->C 4    S T    H 4    S Q   
-
-Result : Contract made for +110 points
---------------------------------------------------
-
-Board 1
-
-
-                North (GIBNS)
-                S A K T 5 
-                H 6 2 
-                D 8 7 3 
-                C T 8 7 3 
-
-West (GIBEW)                    East (GIBEW)
-S 8 3 2                         S J 6 
-H 9 7 3                         H Q T 8 5 4 
-D A K 9                         D Q J 6 2 
-C K Q 6 4                       C J 2 
-
-                South (GIBNS)
-                S Q 9 7 4 
-                H A K J 
-                D T 5 4 
-                C A 9 5 
-
-Dealer : North
-
-N-S : not vulnerable    E-W : not vulnerable
-
-
-West   North  East   South
-       Pass   Pass   1C     
-Pass   1S     Pass   2S     
-Pass   Pass   Pass   
-
-Contract : 2S by North
-
-
-West   North  East   South
- H 3    H 2   >H 5    H A   
- S 2    S K    S 6   >S 4   
- S 3   >S A    S J    S 7   
- S 8   >S 5    D 6    S 9   
- D K    D 3    D 2   >D 5   
->D 9    D 8    D J    D 4   
- D A    D 7   >D Q    D T   
->H 7    H 6    H 8    H J   
- C 6    C 3    C 2   >C A   
- H 9    C 8    H Q   >H K   
- C Q    C 7    C J   >C 5   
->C K    C T    H T    C 9   
->C 4    S T    H 4    S Q   
-
-Result : Contract made for +110 points
 --------------------------------------------------
 
 Board 2
@@ -1193,19 +85,19 @@ Contract : 1NT by South
 
 
 West   North  East   South
->D 6    D 3    D Q    D A   
+>D T    D 3    D Q    D A   
  S 7    S Q    S A   >S 2   
- D 8    D 7   >D 5    D J   
- D T    D K    D 4   >D 2   
- H 2   >H 6    H 9    H A   
- H 3    H K    H 7   >H 8   
- H 4   >H Q    H J    C 4   
- C 7   >H T    S 9    C 3   
- C 2   >H 5    S 3    C 6   
- S T   >S 8    S 5    S K   
- D 9    S 6    S 4   >S J   
- C A    C 8    C T   >C 9   
->C K    C 5    C Q    C J   
+ H 2    H K   >H J    H 8   
+ C 7   >C 8    C Q    C 6   
+ C 2    C 5   >C T    C 3   
+ S T    S 8   >S 3    S K   
+ H 3    H 5    H 9   >H A   
+ D 9    D K    D 5   >D 2   
+ H 4   >H Q    H 7    C J   
+ C K   >H T    S 4    C 9   
+ C A   >H 6    S 5    C 4   
+ D 8   >D 7    D 4    D J   
+ D 6    S 6    S 9   >S J   
 
 Result : Contract made with 3 overtricks
 --------------------------------------------------
@@ -1239,28 +131,29 @@ N-S : not vulnerable    E-W : vulnerable
 West   North  East   South
                      1D     
 1S     Dbl    2D     Pass   
-2S     3D     Pass   Pass   
+2S     Pass   Pass   Dbl    
+Pass   2NT    Pass   Pass   
 Pass   
 
-Contract : 3D by South
+Contract : 2NT by North
 
 
 West   North  East   South
->S 3    S A    S 8    S 7   
- S 4   >S T    S J    D 3   
- S 2    D 8    D 7   >D A   
- C 5    C 4    C 7   >C A   
- C 2    C 8    C 3   >C K   
- C 9    D T    C T   >C 6   
- S K   >S 6    S Q    D 6   
- H Q    H A    H 8   >H 4   
- S 9   >S 5    C Q    D 4   
- H 3    D 9    D J   >D 5   
- H K    H 2   >H 5    H 6   
->H 9    H 7    D Q    H J   
- C J    H T   >D K    D 2   
+ S K    S A   >S Q    S 7   
+ H 9   >D 9    D J    D 2   
+ C 5    D T   >D K    D 3   
+ H 3    D 8   >D Q    D 4   
+ H Q    H A   >H 5    H 4   
+ H K   >H 7    H 8    H J   
+>S 4    S 5    S 8    D 5   
+ S 2    S T   >S J    C 6   
+ C 2    C 8   >C T    C A   
+ S 3    H T    C 3   >H 6   
+ C J   >C 4    C 7    C K   
+ C 9    S 6    D 7   >D A   
+ S 9    H 2    C Q   >D 6   
 
-Result : Contract made
+Result : Contract down by 1 trick for -50 points
 --------------------------------------------------
 
 Board 4
@@ -1292,27 +185,26 @@ N-S : vulnerable    E-W : vulnerable
 West   North  East   South
 Pass   1NT    Pass   2C     
 Pass   2H     Pass   4C     
-Pass   4D     Pass   4NT    
-Pass   5H     Pass   6H     
+Pass   5C     Pass   6H     
 Pass   Pass   Pass   
 
 Contract : 6H by North
 
 
 West   North  East   South
- C 5    C J   >C T    C 4   
- H 7   >H 6    H Q    H A   
- H 8    H T    D 5   >H 3   
- H 9   >H 4    C 6    H K   
- H 5    H 2    S 3   >H J   
- D J    D A    D 6   >D 4   
- C 7   >C A    C 3    D 2   
+ H 8    H 2   >H Q    H A   
+ D K    D A    D 5   >D 4   
  S 4   >S 7    S 2    S Q   
- S 8    S K    D Q   >S 5   
- C 8   >C K    C Q    D 3   
- S T   >S 6    D 9    S A   
- D 8    C 2    D T   >S J   
- D K    D 7    C 9   >S 9   
+ C 5    C A    C 6   >C 4   
+ C 7   >C K    C 3    D 2   
+ C 8   >C 2    C 9    H 3   
+ H 5    H 6    D 6   >H K   
+ H 9    H 4    D T   >H J   
+ S T    S K    S 3   >S 9   
+ H 7   >H T    C T    D 3   
+ S 8   >S 6    D 9    S A   
+ D J    D 7    C Q   >S J   
+ D 8    C J    D Q   >S 5   
 
 Result : Contract made with 1 overtrick for +1460 points
 --------------------------------------------------
@@ -1352,21 +244,21 @@ Contract : 2S by North
 
 
 West   North  East   South
- H 3    H 2   >H 5    H A   
- S 2    S K    S 6   >S 4   
- S 3   >S A    S J    S 7   
- S 8   >S 5    D 6    S 9   
- D K    D 3    D 2   >D 5   
->D 9    D 8    D J    D 4   
- D A    D 7   >D Q    D T   
->H 9    H 6    H 8    H J   
- C 6    C 3    C 2   >C A   
- H 7    C 8    H Q   >H K   
+ D 9    D 3   >D Q    D T   
+ D K    D 8   >D 2    D 5   
+>H 3    H 6    H Q    H A   
+ S 2    S A    S 6   >S 7   
+ S 8   >S 5    S J    S Q   
+ H 7    H 2    H T   >H K   
+ S 3    S K    H 8   >S 9   
+ C 6   >C 3    C 2    C A   
+ H 9    D 7    H 5   >H J   
  C Q    C 7    C J   >C 5   
->C K    C T    H T    C 9   
->C 4    S T    H 4    S Q   
+>C K    C 8    H 4    C 9   
+>C 4    C T    D J    D 4   
+ D A   >S T    D 6    S 4   
 
-Result : Contract made for +110 points
+Result : Contract made with 1 overtrick for +140 points
 --------------------------------------------------
 
 Board 2
@@ -1404,19 +296,19 @@ Contract : 1NT by South
 
 
 West   North  East   South
->D 6    D 3    D Q    D A   
+>D T    D 3    D Q    D A   
  S 7    S Q    S A   >S 2   
- D 8    D 7   >D 5    D J   
- D T    D K    D 4   >D 2   
- H 2   >H 6    H 9    H A   
- H 3    H K    H 7   >H 8   
- H 4   >H Q    H J    C 4   
- C 7   >H T    S 9    C 3   
- C 2   >H 5    S 3    C 6   
- S T   >S 8    S 5    S K   
- D 9    S 6    S 4   >S J   
- C A    C 8    C T   >C 9   
->C K    C 5    C Q    C J   
+ H 2    H K   >H J    H 8   
+ C 7   >C 8    C Q    C 6   
+ C 2    C 5   >C T    C 3   
+ S T    S 8   >S 3    S K   
+ H 3    H 5    H 9   >H A   
+ D 9    D K    D 5   >D 2   
+ H 4   >H Q    H 7    C J   
+ C K   >H T    S 4    C 9   
+ C A   >H 6    S 5    C 4   
+ D 8   >D 7    D 4    D J   
+ D 6    S 6    S 9   >S J   
 
 Result : Contract made with 3 overtricks
 --------------------------------------------------
@@ -1450,28 +342,29 @@ N-S : not vulnerable    E-W : vulnerable
 West   North  East   South
                      1D     
 1S     Dbl    2D     Pass   
-2S     3D     Pass   Pass   
+2S     Pass   Pass   Dbl    
+Pass   2NT    Pass   Pass   
 Pass   
 
-Contract : 3D by South
+Contract : 2NT by North
 
 
 West   North  East   South
->S 3    S A    S 8    S 7   
- S 4   >S T    S J    D 3   
- S 2    D 8    D 7   >D A   
- C 5    C 4    C 7   >C A   
- C 9    C 8    C 3   >C K   
- C 2    D T    C T   >C 6   
- S K   >S 6    S Q    D 6   
- H Q    H A    H 8   >H 4   
- S 9   >S 5    C Q    D 4   
- H 3    D 9    D J   >D 5   
- H K    H 2   >H 5    H 6   
->H 9    H 7    D Q    H J   
- C J    H T   >D K    D 2   
+ S 2    D T   >D K    D 2   
+ S 3    S A   >S Q    S 7   
+ S 9   >D 9    D J    D 3   
+ H Q    H A   >H 8    H J   
+ C J   >C 4    C T    C A   
+ H 3    D 8    D Q   >D 6   
+ S K    S 6   >S J    C 6   
+>C 2    C 8    C 3    C K   
+ C 5    H 2    D 7   >D A   
+ H 9    H T    C 7   >D 5   
+ H K    H 7    H 5   >H 4   
+>S 4    S T    S 8    D 4   
+ C 9   >S 5    C Q    H 6   
 
-Result : Contract made
+Result : Contract made for +120 points
 --------------------------------------------------
 
 Board 4
@@ -1503,27 +396,26 @@ N-S : vulnerable    E-W : vulnerable
 West   North  East   South
 Pass   1NT    Pass   2C     
 Pass   2H     Pass   4C     
-Pass   4D     Pass   4NT    
-Pass   5H     Pass   6H     
+Pass   5C     Pass   6H     
 Pass   Pass   Pass   
 
 Contract : 6H by North
 
 
 West   North  East   South
- C 5    C J   >C T    C 4   
- H 7   >H 6    H Q    H A   
- H 9    H T    D 5   >H 3   
- H 8   >H 4    C 6    H K   
- H 5    H 2    D 6   >H J   
- D 8    D A    D T   >D 4   
- C 8   >C A    C 3    D 2   
- S 4   >S 7    S 2    S Q   
- S T    S K    S 3   >S 5   
- C 7   >C K    C Q    D 3   
- S 8   >S 6    D 9    S A   
- D J    C 2    C 9   >S J   
- D K    D 7    D Q   >S 9   
+ H 8    H 2   >H Q    H A   
+ D K    D A    D 5   >D 4   
+ S 4   >S 7    S 3    S Q   
+ C 8    C A    C 3   >C 4   
+ C 7   >C K    C 6    D 2   
+ C 5   >C 2    C 9    H 3   
+ H 5    H 6    D 6   >H K   
+ H 9    H 4    D 9   >H J   
+ S T    S K    S 2   >S 9   
+ H 7   >H T    C T    D 3   
+ S 8   >S 6    D T    S A   
+ D J    D 7    C Q   >S J   
+ D 8    C J    D Q   >S 5   
 
 Result : Contract made with 1 overtrick for +1460 points
 --------------------------------------------------

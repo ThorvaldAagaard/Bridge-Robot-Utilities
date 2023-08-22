@@ -1,0 +1,530 @@
+% PBN 2.1
+% EXPORT
+%Content-type: text/x-pbn; charset=ISO-8859-1
+%Creator: BridgeComposer Version 5.103
+%Created: Tue Aug 22 23:47:52 2023 +0200
+%BCOptions Center STBorder STShade
+%BidAndCardSpacing Thin
+%BoardsPerPage 1
+%CardTableColors #008000,#ffffff,#aaaaaa
+%DDAFormat 0
+%DefaultPagination 0
+%Font:CardTable "Arial",11,400,0
+%Font:Commentary "Times New Roman",12,400,0
+%Font:Diagram "Times New Roman",12,400,0
+%Font:Event "Times New Roman",12,400,0
+%Font:FixedPitch "Courier New",10,400,0
+%Font:HandRecord "Arial",11,400,0
+%GutterSize 500,500
+%HRTitleDate 0
+%HRTitleEvent ""
+%HRTitleSetID ""
+%HRTitleSetIDPrefix ""
+%HRTitleSite ""
+%HtmlClubs entity,"https://bridgecomposer.com/suitimg/c.gif"
+%HtmlDiamonds entity,"https://bridgecomposer.com/suitimg/d.gif"
+%HtmlHearts entity,"https://bridgecomposer.com/suitimg/h.gif"
+%HtmlNavBar 0.75,#cfe2f3
+%HtmlSpades entity,"https://bridgecomposer.com/suitimg/s.gif"
+%Margins 1000,1000,1000,1000
+%PaperSize 1,0,0,2
+%ParaIndent 0
+%PipColors #000000,#ff0000,#ff0000,#000000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%ScoreTableColors #e6e6e6,#000000
+%SectionSpacing 0,0,0
+%SelectedBoard -1
+%ShowBoardLabels 2
+%ShowCardTable 2
+%TSTCustomSortOrder Default
+%TSTReport List
+%TSTReportOrder ByNumber
+%TSTReportShade Yes
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "1"]
+[West "GIBEW"]
+[North "GIBNS"]
+[East "GIBEW"]
+[South "GIBNS"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AKT5.62.873.T873 J6.QT854.QJ62.J2 Q974.AKJ.T54.A95 832.973.AK9.KQ64"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2S"]
+[Result "9"]
+[BCFlags "100001f"]
+[DealId ""]
+[DoubleDummyTricks "88667886675476554765"]
+[OptimumScore "NS 120"]
+[ParContract "NS 2N="]
+[Score "NS +140"]
+[Auction "N"]
+Pass Pass 1C Pass
+1S Pass 2S Pass
+Pass Pass
+[Play "E"]
+DQ DT D9 D3
+D2 D5 DK D8
+HQ HA H3 H6
+S6 S7 S2 SA
+SJ SQ S8 S5
+HT HK H7 H2
+H8 S9 S3 SK
+C2 CA C6 C3
+H5 HJ H9 D7
+CJ C5 CQ C7
+H4 C9 CK C8
+DJ D4 C4 CT
+D6 S4 DA ST
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 8
+N  S 8
+N  H 6
+N  D 6
+N  C 7
+S NT 8
+S  S 8
+S  H 6
+S  D 6
+S  C 7
+E NT 5
+E  S 4
+E  H 7
+E  D 6
+E  C 5
+W NT 5
+W  S 4
+W  H 7
+W  D 6
+W  C 5
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "2"]
+[West "GIBEW"]
+[North "GIBNS"]
+[East "GIBEW"]
+[South "GIBNS"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:A9543.J97.Q54.QT KJ2.A8.AJ2.J9643 T7.432.T986.AK72 Q86.KQT65.K73.85"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "1NT"]
+[Result "10"]
+[BCFlags "100001f"]
+[DealId ""]
+[DoubleDummyTricks "98988989884535545355"]
+[OptimumScore "NS 600"]
+[ParContract "NS 3N="]
+[Auction "E"]
+Pass 1C Pass 1H
+Pass 1NT Pass Pass
+Pass
+[Play "W"]
+DT D3 DQ DA
+S7 SQ SA S2
+H2 HK HJ H8
+C7 C8 CQ C6
+C2 C5 CT C3
+ST S8 S3 SK
+H3 H5 H9 HA
+D9 DK D5 D2
+H4 HQ H7 CJ
+CK HT S4 C9
+CA H6 S5 C4
+D8 D7 D4 DJ
+D6 S6 S9 SJ
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 9
+N  S 8
+N  H 9
+N  D 8
+N  C 8
+S NT 9
+S  S 8
+S  H 9
+S  D 8
+S  C 8
+E NT 4
+E  S 5
+E  H 3
+E  D 5
+E  C 5
+W NT 4
+W  S 5
+W  H 3
+W  D 5
+W  C 5
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "3"]
+[West "GIBEW"]
+[North "GIBNS"]
+[East "GIBEW"]
+[South "GIBNS"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:7.J64.A65432.AK6 K9432.KQ93..J952 AT65.AT72.T98.84 QJ8.85.KQJ7.QT73"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2NT"]
+[Result "7"]
+[BCFlags "100001f"]
+[DealId ""]
+[DoubleDummyTricks "65895658957854878548"]
+[OptimumScore "NS 110"]
+[ParContract "NS 3D="]
+[Auction "S"]
+1D 1S X 2D
+Pass 2S Pass Pass
+X Pass 2NT Pass
+Pass Pass
+[Play "E"]
+SQ S7 SK SA
+DJ D2 H9 D9
+DK D3 C5 DT
+DQ D4 H3 D8
+H5 H4 HQ HA
+H8 HJ HK H7
+S8 D5 S4 S5
+SJ C6 S2 ST
+CT CA C2 C8
+C3 H6 S3 HT
+C7 CK CJ C4
+D7 DA C9 S6
+CQ D6 S9 H2
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 6
+N  S 5
+N  H 8
+N  D 9
+N  C 5
+S NT 6
+S  S 5
+S  H 8
+S  D 9
+S  C 5
+E NT 7
+E  S 8
+E  H 5
+E  D 4
+E  C 8
+W NT 7
+W  S 8
+W  H 5
+W  D 4
+W  C 8
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "4"]
+[West "GIBEW"]
+[North "GIBNS"]
+[East "GIBEW"]
+[South "GIBNS"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:T84.9875.KJ8.875 K76.T642.A7.AKJ2 32.Q.QT965.QT963 AQJ95.AKJ3.432.4"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "6H"]
+[Result "13"]
+[BCFlags "100001f"]
+[DealId ""]
+[DoubleDummyTricks "ccd78ccd781105511055"]
+[OptimumScore "NS 2210"]
+[ParContract "NS 7H="]
+[Score "NS +1460"]
+[Auction "W"]
+Pass 1NT Pass 2C
+Pass 2H Pass 4C
+Pass 5C Pass 6H
+Pass Pass Pass
+[Play "E"]
+HQ HA H8 H2
+D5 D4 DK DA
+S2 SQ S4 S7
+C6 C4 C5 CA
+C3 D2 C7 CK
+C9 H3 C8 C2
+D6 HK H5 H6
+DT HJ H9 H4
+S3 S9 ST SK
+CT D3 H7 HT
+D9 SA S8 S6
+CQ SJ DJ D7
+DQ S5 D8 CJ
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT 12
+N  S 12
+N  H 13
+N  D  7
+N  C  8
+S NT 12
+S  S 12
+S  H 13
+S  D  7
+S  C  8
+E NT  1
+E  S  1
+E  H  0
+E  D  5
+E  C  5
+W NT  1
+W  S  1
+W  H  0
+W  D  5
+W  C  5
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "1"]
+[West "GIBNS"]
+[North "GIBEW"]
+[East "GIBNS"]
+[South "GIBEW"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AKT5.62.873.T873 J6.QT854.QJ62.J2 Q974.AKJ.T54.A95 832.973.AK9.KQ64"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2S"]
+[Result "9"]
+[BCFlags "100001f"]
+[DealId ""]
+[DoubleDummyTricks "88667886675476554765"]
+[OptimumScore "NS 120"]
+[ParContract "NS 2N="]
+[Score "NS +140"]
+[Auction "N"]
+Pass Pass 1C Pass
+1S Pass 2S Pass
+Pass Pass
+[Play "E"]
+DQ DT D9 D3
+D2 D5 DK D8
+HQ HA H3 H6
+S6 S7 S2 SA
+SJ SQ S8 S5
+HT HK H7 H2
+H8 S9 S3 SK
+C2 CA C6 C3
+H5 HJ H9 D7
+CJ C5 CQ C7
+H4 C9 CK C8
+DJ D4 C4 CT
+D6 S4 DA ST
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 8
+N  S 8
+N  H 6
+N  D 6
+N  C 7
+S NT 8
+S  S 8
+S  H 6
+S  D 6
+S  C 7
+E NT 5
+E  S 4
+E  H 7
+E  D 6
+E  C 5
+W NT 5
+W  S 4
+W  H 7
+W  D 6
+W  C 5
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "2"]
+[West "GIBNS"]
+[North "GIBEW"]
+[East "GIBNS"]
+[South "GIBEW"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:A9543.J97.Q54.QT KJ2.A8.AJ2.J9643 T7.432.T986.AK72 Q86.KQT65.K73.85"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "1NT"]
+[Result "10"]
+[BCFlags "100001f"]
+[DealId ""]
+[DoubleDummyTricks "98988989884535545355"]
+[OptimumScore "NS 600"]
+[ParContract "NS 3N="]
+[Auction "E"]
+Pass 1C Pass 1H
+Pass 1NT Pass Pass
+Pass
+[Play "W"]
+DT D3 DQ DA
+S7 SQ SA S2
+H2 HK HJ H8
+C7 C8 CQ C6
+C2 C5 CT C3
+ST S8 S3 SK
+H3 H5 H9 HA
+D9 DK D5 D2
+H4 HQ H7 CJ
+CK HT S4 C9
+CA H6 S5 C4
+D8 D7 D4 DJ
+D6 S6 S9 SJ
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 9
+N  S 8
+N  H 9
+N  D 8
+N  C 8
+S NT 9
+S  S 8
+S  H 9
+S  D 8
+S  C 8
+E NT 4
+E  S 5
+E  H 3
+E  D 5
+E  C 5
+W NT 4
+W  S 5
+W  H 3
+W  D 5
+W  C 5
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "3"]
+[West "GIBNS"]
+[North "GIBEW"]
+[East "GIBNS"]
+[South "GIBEW"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:7.J64.A65432.AK6 K9432.KQ93..J952 AT65.AT72.T98.84 QJ8.85.KQJ7.QT73"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2NT"]
+[Result "8"]
+[BCFlags "100001f"]
+[DealId ""]
+[DoubleDummyTricks "65895658957854878548"]
+[OptimumScore "NS 110"]
+[ParContract "NS 3D="]
+[Score "NS +120"]
+[Auction "S"]
+1D 1S X 2D
+Pass 2S Pass Pass
+X Pass 2NT Pass
+Pass Pass
+[Play "E"]
+DK D2 S2 DT
+SQ S7 S3 SA
+DJ D3 S9 D9
+H8 HJ HQ HA
+CT CA CJ C4
+DQ D6 H3 D8
+SJ C6 SK S6
+C3 CK C2 C8
+D7 DA C5 H2
+C7 D5 H9 HT
+H5 H4 HK H7
+S8 D4 S4 ST
+CQ H6 C9 S5
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 6
+N  S 5
+N  H 8
+N  D 9
+N  C 5
+S NT 6
+S  S 5
+S  H 8
+S  D 9
+S  C 5
+E NT 7
+E  S 8
+E  H 5
+E  D 4
+E  C 8
+W NT 7
+W  S 8
+W  H 5
+W  D 4
+W  C 8
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "4"]
+[West "GIBNS"]
+[North "GIBEW"]
+[East "GIBNS"]
+[South "GIBEW"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:T84.9875.KJ8.875 K76.T642.A7.AKJ2 32.Q.QT965.QT963 AQJ95.AKJ3.432.4"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "6H"]
+[Result "13"]
+[BCFlags "100001f"]
+[DealId ""]
+[DoubleDummyTricks "ccd78ccd781105511055"]
+[OptimumScore "NS 2210"]
+[ParContract "NS 7H="]
+[Score "NS +1460"]
+[Auction "W"]
+Pass 1NT Pass 2C
+Pass 2H Pass 4C
+Pass 5C Pass 6H
+Pass Pass Pass
+[Play "E"]
+HQ HA H8 H2
+D5 D4 DK DA
+S3 SQ S4 S7
+C3 C4 C8 CA
+C6 D2 C7 CK
+C9 H3 C5 C2
+D6 HK H5 H6
+D9 HJ H9 H4
+S2 S9 ST SK
+CT D3 H7 HT
+DT SA S8 S6
+CQ SJ DJ D7
+DQ S5 D8 CJ
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT 12
+N  S 12
+N  H 13
+N  D  7
+N  C  8
+S NT 12
+S  S 12
+S  H 13
+S  D  7
+S  C  8
+E NT  1
+E  S  1
+E  H  0
+E  D  5
+E  C  5
+W NT  1
+W  S  1
+W  H  0
+W  D  5
+W  C  5

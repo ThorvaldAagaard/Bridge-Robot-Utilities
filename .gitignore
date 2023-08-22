@@ -6,3 +6,6 @@ dist/GIB/Comments.txt
 dist/GIB/EVAL.DAT
 dist/GIB/gib.ini
 dist/GIB/MB.TXT
+dist/Logs
+dist/GIB/sys.ns
+dist/GIB/sys.ew

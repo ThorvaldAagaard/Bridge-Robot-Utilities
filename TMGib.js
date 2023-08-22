@@ -5,6 +5,7 @@ const net = require('net');
 const util = require('util');
 const fs = require('fs');
 const minimist = require('minimist');
+const processFinder = require('./processFinder')
 
 // This is the protocol definition but Bridge Moniteur expects only \n and will fail when  GIB is dummy
 let messageTerminator = "\r\n"
@@ -351,6 +352,9 @@ async function saveCommandHistory(error) {
 
 async function startGibProcess(command, args) {
 
+    playstarted = false;
+    teamsSent = false;
+
     // Spawn the command-line program
     processHolder.gibBackgroundProcess = spawn(command, args, {
         stdio: ['pipe', 'pipe', 'pipe'], // Create pipes for stdin, stdout, and stderr
@@ -381,10 +385,7 @@ async function startGibProcess(command, args) {
 
     // Handle process exit
     processHolder.gibBackgroundProcess.on('exit', async (code) => {
-        playstarted = false;
         console.log(`[${timeString()}] GIB exited`);
-        teamsSent = false;
-        processHolder.GibHandler = null;
     });
 
     const sendCommand = async (command, noResp, ignoreResp) => {
@@ -572,6 +573,7 @@ Options:
     parameters.timing = argv.timing;
     parameters.verbose = argv.verbose;
 
+    console.log("Table manager interface for GIB version 1.0 starting.")
     processHolder.GibHandler = await startGibProcess('bridge.exe', [parameters.seat]);
     await waitOneSecond();
     console.log(`[${timeString()}] Started GIB. ${receivedDataFromGib.split('\n')[0]}`)
@@ -646,8 +648,17 @@ Options:
             recordBidding(line);
             console.log(`[${timeString()}] Received from Table Manager: ${line}`);
             if (playstarted && line.toLowerCase() === "start of board") {
-                consolee.log("TM is starting a new board");
+                console.log("TM is starting a new board");
+                // This sgould work but isn't
                 await processHolder.GibHandler.sendCommand(`-x`, true, false);
+                const processes = await processFinder.getProcessesByName("bridge.exe");
+                for (let p of processes) {
+                    if (p.CommandLine == 'bridge.exe '+ parameters.seat) {
+                        processFinder.killProcessById(p.ProcessId)
+                        console.log("GIB terminated because of new deal received");
+                    }
+                }
+                processHolder.GibHandler = null;
             }
             recordPlay(line);
             if (processHolder.GibHandler == null && line != "End of session") {

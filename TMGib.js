@@ -352,7 +352,6 @@ async function saveCommandHistory(error) {
 
 async function startGibProcess(command, args) {
 
-    playstarted = false;
     teamsSent = false;
 
     // Spawn the command-line program
@@ -411,12 +410,22 @@ async function startGibProcess(command, args) {
             //console.log("Starts with board")
             // In the protocol this should be responded with "[Hand] ready for deal" 
             // But this is not implemented in GIB
+            // STarting a new board
+            bidding = [];
+            plays = [];
+            playstarted = false;
+            declarer = null;
+            contract = null;
+            weDeclare = false;
+            weMustLead = false;
+            weAreDummy = false;
+            biddingOver = false;
 
             noResp = true;
         }
 
         if (biddingOverAndWeMustLead(command)) {
-            //console.log("Bidding Over And We MustLead")
+            console.log(`Bidding Over And We MustLead ${command}`)
             noResp = true;
         }
 
@@ -573,7 +582,7 @@ Options:
     parameters.timing = argv.timing;
     parameters.verbose = argv.verbose;
 
-    console.log("Table manager interface for GIB version 1.0 starting.")
+    console.log("Table manager interface for GIB version 1.0.1 starting.")
     processHolder.GibHandler = await startGibProcess('bridge.exe', [parameters.seat]);
     await waitOneSecond();
     console.log(`[${timeString()}] Started GIB. ${receivedDataFromGib.split('\n')[0]}`)
@@ -645,11 +654,11 @@ Options:
                 receivedDataFromTM = receivedDataFromTM.slice(indexOfNewline + 2).trim();
             }
 
-            recordBidding(line);
             console.log(`[${timeString()}] Received from Table Manager: ${line}`);
             if (playstarted && line.toLowerCase() === "start of board") {
+                await saveCommandHistory(false);
                 console.log("TM is starting a new board");
-                // This sgould work but isn't
+                // This should work but isn't, so we have to kill the process to restart
                 await processHolder.GibHandler.sendCommand(`-x`, true, false);
                 const processes = await processFinder.getProcessesByName("bridge.exe");
                 for (let p of processes) {
@@ -660,7 +669,6 @@ Options:
                 }
                 processHolder.GibHandler = null;
             }
-            recordPlay(line);
             if (processHolder.GibHandler == null && line != "End of session") {
                 console.log(`[${timeString()}] Restarting the process...`);
                 processHolder.GibHandler = await startGibProcess('bridge.exe', [parameters.seat]);
@@ -709,6 +717,8 @@ Options:
                         teamsSent = true;
                     }
 
+                    recordBidding(line);
+                    recordPlay(line);
                     let output = await processHolder.GibHandler.sendCommand(line, false, false);
                     await waitOneSecond();
 
@@ -755,7 +765,7 @@ Options:
                                 console.log(receivedDataFromTM)
                             } else {
                                 // It seems like GIB is terminating when having played a board, so we need to start the program again
-                                console.log(`[${timeString()}] Sending to Table Manager: ${line}`);
+                                console.log(`[${timeString()}] Sending to Table Manager(2): ${line}`);
                                 recordBidding(line);
                                 recordPlay(line);
                                 client.write(line + messageTerminator);

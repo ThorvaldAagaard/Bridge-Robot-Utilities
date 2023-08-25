@@ -21,11 +21,11 @@ let contract = null;
 let playstarted = false;
 let trumpSuit = "N";
 let initialWaitTime = 200;
-const maxWaitTime = 30000;
 let weDeclare = false;
 let weMustLead = false;
 let weAreDummy = false;
 let trickWinner = "";
+let trick = 0;
 let teamsSent = false;
 let biddingOver = false;
 const now = new Date();
@@ -42,6 +42,13 @@ let seating;
 let match;
 const cardValues = '23456789TJQKA';
 const suitOrder = 'SHDC';
+
+function printTrick() {
+    if (trickWinner) {
+        console.log(`[${timeString()}] Winner of trick ${trick}: ${trickWinner}`);
+        trickWinner = "";
+    }
+}
 
 function determineTrickWinner(plays, trumpSuit = 'N') {
     const cardValues = '23456789TJQKA';
@@ -95,7 +102,11 @@ const findRHO = (direction) => {
 const parameters = {
     name: "GIB",
     ip: "127.0.0.1",
-    port: 2000
+    port: 2000,
+    timing: 0,
+    bidding: false,
+    delay: 100,
+    verbose: false
 };
 
 const timeString = () => {
@@ -234,7 +245,7 @@ function getContract() {
     return contract + xx + declarer.charAt(0);
 }
 
-const passOrBidRegex = /(North|East|South|West) (doubles|redoubles|Passes|passes|bids .+)$/;
+const passOrBidRegex = /(North|East|South|West) (doubles|redoubles|Passes|passes|bids .+?(?=\n|$))/;
 
 const playRegex = /(North|East|South|West) (plays) [2-9TJQKA][SHDC]$/i;
 
@@ -257,7 +268,7 @@ function recordBidding(line) {
                 if (declarer == findPartner(parameters.seat)) {
                     weAreDummy = true
                 }
-                console.log(`[${timeString()}] *** Playing ${contract} We Declare ${weDeclare} We Must Lead ${weMustLead} We Are Dummy ${weAreDummy} Trump ${trumpSuit} ***`)
+                console.log(`[${timeString()}] *** Playing ${contract}${weDeclare ? ` We Declare ${weDeclare}` : ""}${weMustLead ? ` We Must Lead ${weMustLead}` : ""}${weAreDummy ? ` We Are Dummy ${weAreDummy}` : ""} Trump ${trumpSuit} ***`);
             };
         }
     } else {
@@ -282,10 +293,10 @@ function recordPlay(line) {
     if (biddingOver && playRegex.test(line)) {
         plays.push(capitalizeLastTwo(line));
         if (plays.length % 4 == 0) {
-            console.log(`[${timeString()}] Trick ${plays.length / 4} done`)
             trickWinner = determineTrickWinner(plays.slice(-4), trumpSuit);
-            //console.log(plays.slice(-4), trumpSuit)
-            console.log(`Winner of the trick: ${trickWinner}`);
+            trick = plays.length / 4
+            if (parameters.verbose)
+                console.log(`Winner of trick ${trick}: ${trickWinner}`);
 
         }
     }
@@ -384,6 +395,7 @@ async function startGibProcess(command, args) {
 
     // Handle process exit
     processHolder.gibBackgroundProcess.on('exit', async (code) => {
+        printTrick();
         console.log(`[${timeString()}] GIB exited`);
     });
 
@@ -394,6 +406,7 @@ async function startGibProcess(command, args) {
             return null; // Return null or some indication that the command was not sent
         }
         if (command.startsWith("Timing")) {
+            console.log(`[${timeString()}] {command}`);
             return null;
         }
 
@@ -425,7 +438,8 @@ async function startGibProcess(command, args) {
         }
 
         if (biddingOverAndWeMustLead(command)) {
-            console.log(`Bidding Over And We MustLead ${command}`)
+            if (parameters.verbose)
+                console.log(`Bidding over and we must lead. Command was ${command}`)
             noResp = true;
         }
 
@@ -441,19 +455,20 @@ async function startGibProcess(command, args) {
             } else {
                 if (command.indexOf("plays") > -1) {
                     if (plays.length % 4 == 0) {
-                        //console.log(trickWinner, parameters.seat);
                         // If we won the trick we do not get a response from GIB, that is just waiting for message from TM
                         if (trickWinner == parameters.seat) {
                             console.log(`[${timeString()}] We are on lead`)
                             noResp = true;
                         }
-                        trickWinner = "";
                     }
                 }
             }
         }
 
-        console.log(`[${timeString()}] Sending to gib: ${command}${noResp ? ' Ignoring response'  : ''}`);
+        if (arguments.verbose)
+            console.log(`[${timeString()}] Sending to gib: ${command}${ignoreResp ? ' Ignoring response' : ''} ${noResp ? ' response not expected' : ''}`);
+        else
+            console.log(`[${timeString()}] Sending to gib: ${command}`);
 
         if (receivedDataFromGib && parameters.verbose) {
             console.log("Unprocessed data: ", receivedDataFromGib)
@@ -483,12 +498,12 @@ async function startGibProcess(command, args) {
             const maxWaitTime = weDeclare ? 60000 : weMustLead ? 60000 : 20000;
 
             // After command.startsWith("Dummy's cards") we should return 2 lines
-            // and GIB has some delay between the 2 lines. So we wait 3 secs before testing the response
+            // and GIB has some delay between the 2 lines. So we wait 5 secs before testing the response
             // This is just a workaround
             // Blue Chip is writing i lowercase
             if (command.toLowerCase().startsWith("dummy's cards")) {
                 if (weDeclare) {
-                    initialWaitTime = 15000;
+                    initialWaitTime = 5000;
                 } else {
                     initialWaitTime = 1000;
                 }
@@ -518,33 +533,33 @@ async function startGibProcess(command, args) {
     };
 }
 
-function waitOneSecond() {
+function waitDelay(delay) {
     return new Promise((resolve) => {
         setTimeout(() => {
             resolve();
-        }, 1000); // 1000 milliseconds = 1 second
+        }, delay);
     });
 }
 
-(async () => {
-    await waitOneSecond();
-})();
 
 function displayUsage() {
     console.log(`Usage: node TMGib.exe [options]
 Options:
   --seat, -s       Where to sit (North, East, South, West) [Mandatory]
-  --name, -n       Name in Table Manager
-  --ip, -i         IP for Table Manager
-  --port, -p       Port for Table Manager
-  --timing, t      time (secs) for one GIB to play one hand, on average
+  --name, -n       Name in Table Manager - default GIB
+  --ip, -i         IP for Table Manager - default 127.0.0.1
+  --port, -p       Port for Table Manager - default 2000
+  --timing, -t     time (secs) for one GIB to play one board, on average
   --bidding, -b    Tell GIB to use sys.ns sys.ew as input
-  --verbose, -v    Display commands issued to GIB`);
+  --delay, -d      Delay between commands, default 100 milliseconds
+  --verbose, -v    Display commands issued to GIB and other interesting logging`);
 }
 (async () => {
 
+    console.log("Table manager interface for GIB version 1.0.2 starting.")
+
     const argv = minimist(process.argv.slice(2), {
-        string: ['seat', 'name', 'ip', 'port','timing', 'bidding','verbose'],
+        string: ['seat', 'name', 'ip', 'port', 'timing', 'bidding', "delay", 'verbose'],
         default: parameters, // Set the default values object directly
         alias: {
             s: 'seat',
@@ -553,6 +568,7 @@ Options:
             p: 'port',
             t: 'timing',
             b: 'bidding',
+            d: 'delay',
             v: 'verbose'
         },
         demandOption: ['seat'], // Specify the mandatory parameters
@@ -578,13 +594,13 @@ Options:
     parameters.name = argv.name;
     parameters.ip = argv.ip;
     parameters.port = argv.port;
-    parameters.bidding = argv.bidding;
     parameters.timing = argv.timing;
+    parameters.bidding = argv.bidding;
+    parameters.delay = argv.delay;
     parameters.verbose = argv.verbose;
 
-    console.log("Table manager interface for GIB version 1.0.1 starting.")
-    processHolder.GibHandler = await startGibProcess('bridge.exe', [parameters.seat]);
-    await waitOneSecond();
+    processHolder.GibHandler = await startGibProcess('bridge.exe', [parameters.seat + parameters.port]);
+    await waitDelay(1000);
     console.log(`[${timeString()}] Started GIB. ${receivedDataFromGib.split('\n')[0]}`)
     receivedDataFromGib = "";
     GIBCommand = `-${parameters.seat.charAt(0)}Ik`;
@@ -599,7 +615,7 @@ Options:
     }
 
     await processHolder.GibHandler.sendCommand(GIBCommand, true, false);
-    await waitOneSecond();
+    await waitDelay(parameters.delay);
 
     console.log(`[${timeString()}] Connecting to Table Manager at ${parameters.ip}:${parameters.port} (as ${parameters.name} sitting ${parameters.seat})`);
     // Create a TCP client socket
@@ -625,7 +641,6 @@ Options:
         receivedDataFromTM += data.toString();
 
         if (!isProcessingLine) {
-            //console.log("X",receivedData)
             await processLines();
         }
     });
@@ -657,28 +672,27 @@ Options:
             console.log(`[${timeString()}] Received from Table Manager: ${line}`);
             if (playstarted && line.toLowerCase() === "start of board") {
                 await saveCommandHistory(false);
-                console.log("TM is starting a new board");
+                console.log(`[${timeString()}] TM is starting a new board`);
                 // This should work but isn't, so we have to kill the process to restart
                 await processHolder.GibHandler.sendCommand(`-x`, true, false);
                 const processes = await processFinder.getProcessesByName("bridge.exe");
                 for (let p of processes) {
-                    if (p.CommandLine == 'bridge.exe '+ parameters.seat) {
+                    if (p.CommandLine == 'bridge.exe ' + parameters.seat + "X") {
                         processFinder.killProcessById(p.ProcessId)
-                        console.log("GIB terminated because of new deal received");
+                        console.log(`[${timeString()}] GIB terminated because of new deal received`);
                     }
                 }
                 processHolder.GibHandler = null;
             }
             if (processHolder.GibHandler == null && line != "End of session") {
                 console.log(`[${timeString()}] Restarting the process...`);
-                processHolder.GibHandler = await startGibProcess('bridge.exe', [parameters.seat]);
-                await waitOneSecond();
+                processHolder.GibHandler = await startGibProcess('bridge.exe', [parameters.seat + parameters.port]);
+                await waitDelay(1000);
                 receivedDataFromGib = "";
                 console.log(`[${timeString()}] Started GIB. ${receivedDataFromGib.split('\n')[0]}`)
                 await processHolder.GibHandler.sendCommand(GIBCommand, true, false);
-                await waitOneSecond();
+                await waitDelay(parameters.delay);
                 // Send seating and match details using the new gibProcess instance
-                // Send GIB the paramters
                 await processHolder.GibHandler.sendCommand(seating, false, true);
                 await processHolder.GibHandler.sendCommand(match, false, true);
             }
@@ -686,29 +700,21 @@ Options:
             if (processHolder.GibHandler != null) {
                 // Send the received data from the Table Manager to GIB
 
-                // There is an issue, when restarting a match as TM will send the Teams infor twice
-                // [19:28:36.679] Sending to Table Manager: East ready for teams
-                // [19:29:07.679] Received from Table Manager: Teams: N / S : "GIB" E / W : "GIB"
-                // [19:29:07.680] Sending to gib: Teams: N / S : "GIB" E / W : "GIB"
-                // [19:29:07.897] Gib responded: East ready to start
 
-                // [19:29:08.912] Sending to Table Manager: East ready to start
-                // [19:29:09.925] Received from Table Manager: Teams: N / S : "GIB" E / W : "GIB"
-                // [19:29:09.925] Sending to gib: Teams: N / S : "GIB" E / W : "GIB"
-                // [19:29:09.928] GIB exited
-                // [19:29:09.928] Gib closed
-                // Should probably be handled
-
+                // TM did send the same Start twice, 
                 if (line == "Start of BoardStart of Board") {
+                    console.log("Start received twice");
                     line = "Start of Board"
                 }
+
+                // There is an issue, when restarting a match as TM will send the Teams infor twice
                 if (line.startsWith("Teams") && teamsSent) {
                     // We allready told GIB it is teams, so just responding TM
                     line = `${parameters.seat} ready to start`;
                     console.log(`[${timeString()}] Sending to Table Manager: ${line}`);
                     client.write(line + messageTerminator);
                     // Give TM time to process before sending next message
-                    await waitOneSecond();
+                    await waitDelay(parameters.delay);
 
                 } else {
                     if (line.startsWith("Teams")) {
@@ -720,9 +726,9 @@ Options:
                     recordBidding(line);
                     recordPlay(line);
                     let output = await processHolder.GibHandler.sendCommand(line, false, false);
-                    await waitOneSecond();
+                    printTrick();
+                    await waitDelay(parameters.delay);
 
-                    //console.log(output)
                     // Send the output back to the Table Manager
                     // In a previous version of the protocol, players confirmed receipt of dummy's hand by sending to the 
                     // Table Manager "[Player] received dummy".  That requirement has now been removed from the protocol. 
@@ -734,15 +740,16 @@ Options:
                             if (line != "") {
                                 if (line.startsWith("Hand over")) {
                                     await saveCommandHistory(false)
-                                    console.log(receivedDataFromTM)
+                                    if (parameters.verbose)
+                                        console.log("Unprocessed receivedDataFromTM");
                                 } else {
-                                    // It seems like GIB is terminating when having played a board, so we need to start the probgram again
                                     console.log(`[${timeString()}] Sending to Table Manager: ${line}`);
                                     recordBidding(line);
                                     recordPlay(line);
+                                    printTrick();
                                     client.write(line + messageTerminator);
                                     // Give TM time to process before sending next message
-                                    await waitOneSecond();
+                                    await waitDelay(parameters.delay);
                                 }
                             }
 
@@ -764,13 +771,13 @@ Options:
                                 await saveCommandHistory(false)
                                 console.log(receivedDataFromTM)
                             } else {
-                                // It seems like GIB is terminating when having played a board, so we need to start the program again
                                 console.log(`[${timeString()}] Sending to Table Manager(2): ${line}`);
                                 recordBidding(line);
                                 recordPlay(line);
+                                printTrick();
                                 client.write(line + messageTerminator);
                                 // Give TM time to process before sending next message
-                                await waitOneSecond();
+                                await waitDelay(parameters.delay);
                             }
                         }
                     }

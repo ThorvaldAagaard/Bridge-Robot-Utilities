@@ -5,7 +5,8 @@ const net = require('net');
 const util = require('util');
 const fs = require('fs');
 const minimist = require('minimist');
-const processFinder = require('./processFinder')
+const processFinder = require('./processFinder');
+const { delimiter } = require('path');
 
 // This is the protocol definition but Bridge Moniteur expects only \n and will fail when  GIB is dummy
 let messageTerminator = "\r\n"
@@ -268,7 +269,7 @@ function recordBidding(line) {
                 if (declarer == findPartner(parameters.seat)) {
                     weAreDummy = true
                 }
-                console.log(`[${timeString()}] *** Playing ${contract}${weDeclare ? ` We Declare ${weDeclare}` : ""}${weMustLead ? ` We Must Lead ${weMustLead}` : ""}${weAreDummy ? ` We Are Dummy ${weAreDummy}` : ""} Trump ${trumpSuit} ***`);
+                console.log(`[${timeString()}] *** Playing ${contract}${weDeclare ? ` We Declare` : ""}${weMustLead ? ` We Must Lead` : ""}${weAreDummy ? ` We Are Dummy` : ""}  ${trumpSuit ? "N" : `Trump ${trumpSuit}`} ***`);
             };
         }
     } else {
@@ -465,13 +466,13 @@ async function startGibProcess(command, args) {
             }
         }
 
-        if (arguments.verbose)
-            console.log(`[${timeString()}] Sending to gib: ${command}${ignoreResp ? ' Ignoring response' : ''} ${noResp ? ' response not expected' : ''}`);
+        if (parameters.verbose)
+            console.log(`[${timeString()}] Sending to gib: ${command}${ignoreResp ? ' Ignoring response' : ''} ${noResp ? 'no  response expected' : ''}`);
         else
             console.log(`[${timeString()}] Sending to gib: ${command}`);
 
         if (receivedDataFromGib && parameters.verbose) {
-            console.log("Unprocessed data: ", receivedDataFromGib)
+            console.log("Unprocessed  Data from GIB: ", receivedDataFromGib)
         }
 
         processHolder.gibBackgroundProcess.stdin.write(command + "\n");
@@ -503,25 +504,38 @@ async function startGibProcess(command, args) {
             // Blue Chip is writing i lowercase
             if (command.toLowerCase().startsWith("dummy's cards")) {
                 if (weDeclare) {
-                    initialWaitTime = 5000;
-                } else {
-                    initialWaitTime = 1000;
+                    // We will receive 2 lines in this situation, but the second could take very long or be instantly
+                    let response = await waitForResponse(command, initialWaitTime, maxWaitTime);
+                    if (response.indexOf(messageTerminator) > -1) {
+                        console.log(`[${timeString()}] Gib responded: ${response.replace(/\r\n|\n/g, '\n' + ' '.repeat(30))}`);
+                    } else {
+                        // We wait for next line
+                        if (parameters.verbose) {
+                            console.log("Waiting for last part of declarer response")
+                        }
+                        let response2 = await waitForResponse(command, initialWaitTime, maxWaitTime);
+                        response = response + response2;
+                        console.log(`[${timeString()}] Gib responded: ${response.replace(/\r\n|\n/g, '\n' + ' '.repeat(30))}`);
+                    }
+                    recordCommand(command, response);
+                    console.log(`[${timeString()}] Gib responded: ${response.replace(/\r\n|\n/g, '\n' + ' '.repeat(30))}`);
+                    resolve(response);
                 }
             }
             else {
                 initialWaitTime = 200;
+                const response = await waitForResponse(command, initialWaitTime, maxWaitTime);
+                if (ignoreResp) {
+                    resolve(null);
+                    recordCommand(command, response + "(Ignored)");
+                    console.log(`[${timeString()}] Gib responded: ${response.replace(/\r\n|\n/g, ' ignored\n' + ' '.repeat(30))}`);
+                } else {
+                    recordCommand(command, response);
+                    console.log(`[${timeString()}] Gib responded: ${response.replace(/\r\n|\n/g, '\n' + ' '.repeat(30))}`);
+                    resolve(response);
+                }
             };
 
-            const response = await waitForResponse(command, initialWaitTime, maxWaitTime);
-            if (ignoreResp) {
-                resolve(null);
-                recordCommand(command, response + "(Ignored)");
-                console.log(`[${timeString()}] Gib responded: ${response.replace(/\r\n|\n/g, ' ignored\n' + ' '.repeat(30))}`);
-            } else {
-                recordCommand(command, response);
-                console.log(`[${timeString()}] Gib responded: ${response.replace(/\r\n|\n/g, '\n' + ' '.repeat(30))}`);
-                resolve(response);
-            }
         });
     };
 
@@ -556,7 +570,7 @@ Options:
 }
 (async () => {
 
-    console.log("Table manager interface for GIB version 1.0.2 starting.")
+    console.log("Table manager interface for GIB version 1.0.3 starting.")
 
     const argv = minimist(process.argv.slice(2), {
         string: ['seat', 'name', 'ip', 'port', 'timing', 'bidding', "delay", 'verbose'],
@@ -598,6 +612,9 @@ Options:
     parameters.bidding = argv.bidding;
     parameters.delay = argv.delay;
     parameters.verbose = argv.verbose;
+    if (parameters.verbose) {
+        console.log(`[${timeString()}] Extended logging active`)
+    }
 
     processHolder.GibHandler = await startGibProcess('bridge.exe', [parameters.seat + parameters.port]);
     await waitDelay(1000);
@@ -741,7 +758,7 @@ Options:
                                 if (line.startsWith("Hand over")) {
                                     await saveCommandHistory(false)
                                     if (parameters.verbose)
-                                        console.log("Unprocessed receivedDataFromTM");
+                                        console.log("Unprocessed Data From TM: ", receivedDataFromTM);
                                 } else {
                                     console.log(`[${timeString()}] Sending to Table Manager: ${line}`);
                                     recordBidding(line);
@@ -760,7 +777,7 @@ Options:
 
                 if (receivedDataFromGib) {
                     if (parameters.verbose) {
-                        console.log("Unprocessed data: " + receivedDataFromGib);
+                        console.log("Unprocessed Data from GIB: " + receivedDataFromGib);
                     }
                     const lines = receivedDataFromGib.split('\r\n');
                     receivedDataFromGib = "";

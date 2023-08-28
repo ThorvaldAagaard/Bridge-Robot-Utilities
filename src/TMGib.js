@@ -6,9 +6,8 @@ const util = require('util');
 const fs = require('fs');
 const minimist = require('minimist');
 const processFinder = require('./processFinder');
-const { delimiter } = require('path');
 
-// This is the protocol definition but Bridge Moniteur expects only \n and will fail when  GIB is dummy
+// This is the protocol definition but Bridge Moniteur expects only \n and will fail when GIB is dummy
 let messageTerminator = "\r\n"
 let GIBCommand = "";
 let receivedDataFromTM = '';
@@ -29,7 +28,7 @@ let trickWinner = "";
 let trick = 0;
 let teamsSent = false;
 let biddingOver = false;
-const now = new Date();
+const client = new net.Socket();
 
 const directions = ["North", "East", "South", "West"];
 
@@ -107,7 +106,12 @@ const parameters = {
     timing: 0,
     bidding: false,
     delay: 100,
-    verbose: false
+    gibdir: "./GIB",
+    verbose: false,
+    simdecl: 50,
+    simdef: 50,
+    oppquality: 0.5,
+    auctcont: 0.55
 };
 
 const timeString = () => {
@@ -159,6 +163,7 @@ const waitForResponse = async (command, initialWait, maxWaitTime) => {
                 }
                 await saveCommandHistory(true);
                 console.log('Timeout waiting ' + maxWaitTime + ' seconds for response to ' + command);
+                input("Press Enter to exit...")
                 process.exit();
                 //resolve("")
             } else {
@@ -252,7 +257,7 @@ const playRegex = /(North|East|South|West) (plays) [2-9TJQKA][SHDC]$/i;
 
 function recordBidding(line) {
     if (!biddingOver && passOrBidRegex.test(line)) {
-        bidding.push(line.replace('NT', 'N'));
+        bidding.push(line.replace('NT', 'N').split(' ').slice(0, 3).join(' '));
         if (bidding.length > 3) {
             let lastThreePasses = bidding.slice(-3);
             biddingOver = lastThreePasses.every(item => item.toLowerCase().includes("passes"));
@@ -269,7 +274,7 @@ function recordBidding(line) {
                 if (declarer == findPartner(parameters.seat)) {
                     weAreDummy = true
                 }
-                console.log(`[${timeString()}] *** Playing ${contract}${weDeclare ? ` We Declare` : ""}${weMustLead ? ` We Must Lead` : ""}${weAreDummy ? ` We Are Dummy` : ""}  ${trumpSuit ? "N" : `Trump ${trumpSuit}`} ***`);
+                console.log(`[${timeString()}] *** Playing ${contract}${weDeclare ? ` We Declare` : ""}${weMustLead ? ` We Must Lead` : ""}${weAreDummy ? ` We Are Dummy` : ""}  ${trumpSuit == "N" ? "No Trump" : `Trump ${trumpSuit}`} ***`);
             };
         }
     } else {
@@ -312,44 +317,47 @@ function recordCommand(command, receivedDataFromGib) {
 
 async function saveCommandHistory(error) {
     // Write command history to a file based on the board number
-    if (commandHistory.length > 4 && (parameters.verbose || error)) {
-        const regex = /^(.*?)\s+seated/;
-        let match = commandHistory[1].command.match(regex);
-        let player = "";
-        if (match) {
-            player = match[1];
+    if (parameters.verbose || error) {
+        if (commandHistory.length > 4) {
+            const regex = /^(.*?)\s+seated/;
+            let match = commandHistory[1].command.match(regex);
+            let player = "";
+            if (match) {
+                player = match[1];
+            }
+            const boardNumberRegex = /Board number (\d+)\. Dealer (\w+)\./;
+            match = commandHistory[4].command.match(boardNumberRegex);
+            let boardNumber = 0;
+            let dealer = "None";
+            if (match) {
+                boardNumber = match[1]; // The captured board number
+                dealer = match[2];
+            }
+
+            let filename = `Command history ${player} - ${boardNumber} - ${dealer}.txt`;
+
+            // Replace invalid characters with underscores
+            filename = filename.replace(/[^a-zA-Z0-9 _.-]/g, "_");
+
+            const historyContent = commandHistory.map(entry => {
+                return `Command: ${entry.command} Response: ${entry.response}`;
+            }).join('\n');
+
+            // Directory where the file should be saved
+            const directory = './Logs';
+
+            // Create the directory if it doesn't exist
+            if (!fs.existsSync(directory)) {
+                fs.mkdirSync(directory);
+            }
+
+            await fs.writeFileSync(directory + "/" + filename, historyContent);
+
+            console.log(`[${timeString()}] Command history written to ${filename}`);
         }
-        const boardNumberRegex = /Board number (\d+)\. Dealer (\w+)\./;
-        match = commandHistory[4].command.match(boardNumberRegex);
-        let boardNumber = 0;
-        let dealer = "None";
-        if (match) {
-            boardNumber = match[1]; // The captured board number
-            dealer = match[2];
-        }
 
-        let filename = `Command history ${player} - ${boardNumber} - ${dealer}.txt`;
-
-        // Replace invalid characters with underscores
-        filename = filename.replace(/[^a-zA-Z0-9 _.-]/g, "_");
-
-        const historyContent = commandHistory.map(entry => {
-            return `Command: ${entry.command} Response: ${entry.response}`;
-        }).join('\n');
-
-        // Directory where the file should be saved
-        const directory = './Logs';
-
-        // Create the directory if it doesn't exist
-        if (!fs.existsSync(directory)) {
-            fs.mkdirSync(directory);
-        }
-
-        await fs.writeFileSync(directory + "/" + filename, historyContent);
-
-        console.log(`[${timeString()}] Command history written to ${filename}`);
+        console.log(bidding);
     }
-
     commandHistory = [];
     bidding = [];
     plays = [];
@@ -362,14 +370,21 @@ async function saveCommandHistory(error) {
 }
 
 
-async function startGibProcess(command, args) {
+async function startGibProcess(command, args, gibdir) {
 
     teamsSent = false;
 
     // Spawn the command-line program
     processHolder.gibBackgroundProcess = spawn(command, args, {
         stdio: ['pipe', 'pipe', 'pipe'], // Create pipes for stdin, stdout, and stderr
-        cwd: "./GIB"
+        cwd: gibdir
+    });
+
+    processHolder.gibBackgroundProcess.on('error', (error) => {
+        console.error(`[${timeString()}] Bridge.exe not found in ${gibdir}`);
+        input("Press Enter to exit...")
+        process.exit();
+
     });
 
     // Capture the output from stdout
@@ -407,7 +422,8 @@ async function startGibProcess(command, args) {
             return null; // Return null or some indication that the command was not sent
         }
         if (command.startsWith("Timing")) {
-            console.log(`[${timeString()}] {command}`);
+            // This is printed when comming from TM
+            // console.log(`[${timeString()}] ${command}`);
             return null;
         }
 
@@ -467,7 +483,7 @@ async function startGibProcess(command, args) {
         }
 
         if (parameters.verbose)
-            console.log(`[${timeString()}] Sending to gib: ${command}${ignoreResp ? ' Ignoring response' : ''} ${noResp ? 'no  response expected' : ''}`);
+            console.log(`[${timeString()}] Sending to gib: ${command}${ignoreResp ? ' Ignoring response' : ''} ${noResp ? '(no response expected)' : ''}`);
         else
             console.log(`[${timeString()}] Sending to gib: ${command}`);
 
@@ -488,6 +504,7 @@ async function startGibProcess(command, args) {
         if (command.endsWith("End of session")) {
             await saveCommandHistory();
             processHolder.gibBackgroundProcess.kill();
+            input("Press Enter to exit...") 
             process.exit();
         }
         if (noResp) {
@@ -496,14 +513,13 @@ async function startGibProcess(command, args) {
         }
         return new Promise(async (resolve) => {
 
-            const maxWaitTime = weDeclare ? 60000 : weMustLead ? 60000 : 20000;
+            const maxWaitTime = weDeclare ? 600000 : weMustLead ? 600000 : 300000;
 
             // After command.startsWith("Dummy's cards") we should return 3 lines
             // and GIB has some delay between the lines. 
             // Blue Chip is writing i lowercase
             if (command.toLowerCase().startsWith("dummy's cards")) {
                 let response = await waitForResponse(command, initialWaitTime, maxWaitTime);
-                console.log(`[${timeString()}] Gib responded: ${response.replace(/\r\n|\n/g, '\n' + ' '.repeat(30))}`);
 
                 if (weDeclare) {
                     let occurrences = (response.match(/\n/g) || []).length;
@@ -516,6 +532,7 @@ async function startGibProcess(command, args) {
                     }
                 }
 
+                console.log(`[${timeString()}] Gib responded: ${response.replace(/\r\n|\n/g, '\n' + ' '.repeat(30))}`);
                 recordCommand(command, response);
                 resolve(response);
             }
@@ -552,6 +569,223 @@ function waitDelay(delay) {
     });
 }
 
+// Dummy to lead is sent without crlf - seems also to be the same for declarer to lead
+
+async function processLines() {
+
+    while (!isProcessingLine && (receivedDataFromTM.includes('\r\n') || receivedDataFromTM.includes('\n') || receivedDataFromTM.endsWith('.') || receivedDataFromTM == "Dummy to lead" || receivedDataFromTM == `${parameters.seat} to lead`) || receivedDataFromTM == "Start of Board") {
+        isProcessingLine = true;
+        let line = receivedDataFromTM;
+        let indexOfNewline = receivedDataFromTM.indexOf('\r\n');
+        if (indexOfNewline < 0) {
+            indexOfNewline = receivedDataFromTM.indexOf('\n');
+            if (indexOfNewline > 0) {
+                line = receivedDataFromTM.substring(0, indexOfNewline).trim();
+                indexOfNewline += 1
+                receivedDataFromTM = receivedDataFromTM.slice(indexOfNewline + 1).trim();
+            } else {
+                receivedDataFromTM = "";
+
+            }
+        } else {
+            line = receivedDataFromTM.substring(0, indexOfNewline).trim();
+            // Remove the processed line from receivedData
+            receivedDataFromTM = receivedDataFromTM.slice(indexOfNewline + 2).trim();
+        }
+
+        console.log(`[${timeString()}] Received from Table Manager: ${line}`);
+        if (playstarted && line.toLowerCase() === "start of board") {
+            await saveCommandHistory(false);
+            console.log(`[${timeString()}] TM is starting a new board`);
+            // This should work but isn't, so we have to kill the process to restart
+            await processHolder.GibHandler.sendCommand(`-x`, true, false);
+            const processes = await processFinder.getProcessesByName("bridge.exe");
+            for (let p of processes) {
+                if (p.CommandLine == 'bridge.exe ' + parameters.seat + "X") {
+                    processFinder.killProcessById(p.ProcessId)
+                    console.log(`[${timeString()}] GIB terminated because of new deal received`);
+                }
+            }
+            processHolder.GibHandler = null;
+        }
+        if (processHolder.GibHandler == null && line != "End of session") {
+            console.log(`[${timeString()}] Restarting the process...`);
+            processHolder.GibHandler = await startGibProcess('bridge.exe', [parameters.seat + parameters.port], parameters.gibdir);
+            await waitDelay(1000);
+            receivedDataFromGib = "";
+            console.log(`[${timeString()}] Started GIB. ${receivedDataFromGib.split('\n')[0]}`)
+            await processHolder.GibHandler.sendCommand(GIBCommand, true, false);
+            await waitDelay(parameters.delay);
+            // Send seating and match details using the new gibProcess instance
+            await processHolder.GibHandler.sendCommand(seating, false, true);
+            await processHolder.GibHandler.sendCommand(match, false, true);
+        }
+
+        if (processHolder.GibHandler != null) {
+            // Send the received data from the Table Manager to GIB
+
+
+            // TM did send the same Start twice, 
+            if (line == "Start of BoardStart of Board") {
+                console.log("Start received twice");
+                line = "Start of Board"
+            }
+
+            // There is an issue, when restarting a match as TM will send the Teams infor twice
+            if (line.startsWith("Teams") && teamsSent) {
+                // We allready told GIB it is teams, so just responding TM
+                line = `${parameters.seat} ready to start`;
+                console.log(`[${timeString()}] Sending to Table Manager: ${line}`);
+                client.write(line + messageTerminator);
+                // Give TM time to process before sending next message
+                await waitDelay(parameters.delay);
+
+            } else {
+                if (line.startsWith("Teams")) {
+                    // Save the match name for restart of the gibProcess
+                    match = line;
+                    teamsSent = true;
+                }
+
+                recordBidding(line);
+                recordPlay(line);
+                let output = await processHolder.GibHandler.sendCommand(line, false, false);
+                printTrick();
+                await waitDelay(parameters.delay);
+
+                // Send the output back to the Table Manager
+                // In a previous version of the protocol, players confirmed receipt of dummy's hand by sending to the 
+                // Table Manager "[Player] received dummy".  That requirement has now been removed from the protocol. 
+                // So perhaps that should be filtered
+                if (output != null) {
+                    const lines = output.split('\r\n');
+                    for (const line of lines) {
+                        //console.log("line:"+line)
+                        if (line != "") {
+                            if (line.startsWith("Hand over")) {
+                                await saveCommandHistory(false)
+                                if (parameters.verbose)
+                                    console.log("Unprocessed Data From TM: ", receivedDataFromTM);
+                            } else {
+                                console.log(`[${timeString()}] Sending to Table Manager: ${line}`);
+                                recordBidding(line);
+                                recordPlay(line);
+                                printTrick();
+                                client.write(line + messageTerminator);
+                                // Give TM time to process before sending next message
+                                await waitDelay(parameters.delay);
+                            }
+                        }
+
+                    }
+                }
+            }
+
+
+            if (receivedDataFromGib) {
+                if (parameters.verbose) {
+                    console.log("Unprocessed Data from GIB: " + receivedDataFromGib);
+                }
+                const lines = receivedDataFromGib.split('\r\n');
+                receivedDataFromGib = "";
+                for (const line of lines) {
+                    //console.log("line:"+line)
+                    if (line != "") {
+                        if (line.startsWith("Hand over")) {
+                            await saveCommandHistory(false)
+                            console.log(receivedDataFromTM)
+                        } else {
+                            console.log(`[${timeString()}] Sending to Table Manager(2): ${line}`);
+                            recordBidding(line);
+                            recordPlay(line);
+                            printTrick();
+                            client.write(line + messageTerminator);
+                            // Give TM time to process before sending next message
+                            await waitDelay(parameters.delay);
+                        }
+                    }
+                }
+            }
+            isProcessingLine = false;
+
+            // Terminate the recursion when there's no more data to process
+            if (!(receivedDataFromTM.includes('\r\n') || receivedDataFromTM.includes('\n') || receivedDataFromTM.endsWith('.') || receivedDataFromTM == "Dummy to lead" || receivedDataFromTM == `${parameters.seat} to lead` || receivedDataFromTM == "Start of Board")) {
+                return;
+            }
+        }
+        // Process the next line, if available
+        await processLines();
+    }
+}
+
+function connectToTM() {
+
+    client.connect(parameters.port, parameters.ip, () => {
+        console.log(`[${timeString()}] Connected to Table Manager`);
+        console.log(`[${timeString()}] Sending to Table Manager: Connecting "${parameters.name}" as ${parameters.seat} using protocol version 18`);
+
+        seating = util.format("%s %s seated",
+            parameters.seat,
+            parameters.name);
+        // Create the formatted message
+        const message = util.format(
+            'Connecting "%s" as %s using protocol version 18\r\n',
+            parameters.name,
+            parameters.seat
+        );
+        client.write(message);
+    });
+
+    client.on('data', async (data) => {
+        receivedDataFromTM += data.toString();
+
+        if (!isProcessingLine) {
+            await processLines();
+        }
+    });
+
+    // Close the client socket when done
+    client.on('close', async () => {
+        console.log(`[${timeString()}] Connection closed by client`);
+        await saveCommandHistory(false);
+        processHolder.gibBackgroundProcess.kill();
+        input("Press Enter to exit...") 
+        process.exit();
+    });
+
+    client.on('error', async (e) => {
+        console.log(`[${timeString()}] Error from Table Manager: ${e.message}`);
+        await saveCommandHistory(false);
+        if (processHolder.GibHandler) {
+            processHolder.GibHandler.close();
+        }
+        processHolder.gibBackgroundProcess.kill();
+        input("Press Enter to exit...") 
+        process.exit();
+    });
+}
+
+
+function newFunction() {
+    let GIBCommandPart1 = `-${parameters.seat.charAt(0)}Ikr`;
+    let GIBCommandPart2 = '1 2023';
+    if (parameters.bidding) {
+        GIBCommandPart1 += 'F';
+    }
+    if (parameters.timing > 0) {
+        GIBCommandPart1 += 'T';
+        GIBCommandPart2 += ' ' + parameters.timing;
+    }
+    if (parameters.oppquality != 0.5) {
+        GIBCommandPart1 += 'o';
+        GIBCommandPart2 += ' ' + parameters.oppquality;
+    }
+    if (parameters.simdecl != 50 || parameters.simdef != 50) {
+        GIBCommandPart1 += 'm';
+        GIBCommandPart2 += ' ' + parameters.simdecl + ' ' + parameters.simdef;
+    }
+    GIBCommand = GIBCommandPart1 + ' ' + GIBCommandPart2;
+}
 
 function displayUsage() {
     console.log(`Usage: node TMGib.exe [options]
@@ -560,17 +794,22 @@ Options:
   --name, -n       Name in Table Manager - default GIB
   --ip, -i         IP for Table Manager - default 127.0.0.1
   --port, -p       Port for Table Manager - default 2000
-  --timing, -t     time (secs) for one GIB to play one board, on average
-  --bidding, -b    Tell GIB to use sys.ns sys.ew as input
-  --delay, -d      Delay between commands, default 100 milliseconds
-  --verbose, -v    Display commands issued to GIB and other interesting logging`);
+  --timing, -t     time (secs) for one GIB to play one board, on average - Default 60
+  --bidding, -b    Tell GIB to use sys.ns sys.ew as input - default False
+  --delay, -d      Delay between commands, default 100 ms
+  --gibdir, -g     Directory where to find GIB executables - default ./GIB
+  --simdecl, -m    number of deals to analyze to pick a play as declarer - default 50
+  --simdef, -e     number of deals to analyze to pick a play as defender - default 50
+  --oppquality, -o opponents' bidding quality - 0 = weak; 1 = omniscient  - default 0.5
+  --verbose, -v    Display commands issued to GIB and other interesting logging - default False`);
 }
-(async () => {
 
-    console.log(`[${timeString()}] Table manager interface for GIB version 1.0.3 starting.`)
+async function main() {
+
+    console.log(`[${timeString()}] Table manager interface for GIB version 1.0.4 starting.`)
 
     const argv = minimist(process.argv.slice(2), {
-        string: ['seat', 'name', 'ip', 'port', 'timing', 'bidding', "delay", 'verbose'],
+        string: ['seat', 'name', 'ip', 'port', 'timing', 'bidding', 'delay', 'gibdir', 'verbose', 'simdecl', 'simdef'],
         default: parameters, // Set the default values object directly
         alias: {
             s: 'seat',
@@ -580,7 +819,10 @@ Options:
             t: 'timing',
             b: 'bidding',
             d: 'delay',
-            v: 'verbose'
+            g: 'gibdir',
+            v: 'verbose',
+            m: 'simdecl',
+            e: 'simdef'
         },
         demandOption: ['seat'], // Specify the mandatory parameters
         unknown: (param) => {
@@ -609,220 +851,27 @@ Options:
     parameters.bidding = argv.bidding;
     parameters.delay = argv.delay;
     parameters.verbose = argv.verbose;
+    parameters.gibdir = argv.gibdir;
     if (parameters.verbose) {
         console.log(`[${timeString()}] Extended logging active`)
     }
+    parameters.simdecl = argv.simdecl;
+    parameters.simdef = argv.simdef;
+    parameters.oppquality = argv.oppquality;
 
-    processHolder.GibHandler = await startGibProcess('bridge.exe', [parameters.seat + parameters.port]);
+    processHolder.GibHandler = await startGibProcess('bridge.exe', [parameters.seat + parameters.port], parameters.gibdir);
     await waitDelay(1000);
     console.log(`[${timeString()}] Started GIB. ${receivedDataFromGib.split('\n')[0]}`)
     receivedDataFromGib = "";
-    GIBCommand = `-${parameters.seat.charAt(0)}Ik`;
-    if (parameters.bidding) {
-        GIBCommand += 'F'
-    }
-    if (parameters.timing > 0) {
-        GIBCommand += 'T 1 ' + parameters.timing
-    } else {
-        // Just add the mark for TM communication
-        GIBCommand += ' 1'
-    }
-
+    newFunction();
+    
     await processHolder.GibHandler.sendCommand(GIBCommand, true, false);
     await waitDelay(parameters.delay);
 
     console.log(`[${timeString()}] Connecting to Table Manager at ${parameters.ip}:${parameters.port} (as ${parameters.name} sitting ${parameters.seat})`);
-    // Create a TCP client socket
-    const client = new net.Socket();
-
-    client.connect(parameters.port, parameters.ip, () => {
-        console.log(`[${timeString()}] Connected to Table Manager`);
-        console.log(`[${timeString()}] Sending to Table Manager: Connecting "${parameters.name}" as ${parameters.seat} using protocol version 18`);
-
-        seating = util.format("%s %s seated",
-            parameters.seat,
-            parameters.name)
-        // Create the formatted message
-        const message = util.format(
-            'Connecting "%s" as %s using protocol version 18\r\n',
-            parameters.name,
-            parameters.seat
-        );
-        client.write(message);
-    });
-
-    client.on('data', async (data) => {
-        receivedDataFromTM += data.toString();
-
-        if (!isProcessingLine) {
-            await processLines();
-        }
-    });
-
-    // Dummy to lead is sent without crlf - seems also to be the same for declarer to lead
-
-    async function processLines() {
-
-        while (!isProcessingLine && (receivedDataFromTM.includes('\r\n') || receivedDataFromTM.includes('\n') || receivedDataFromTM.endsWith('.') || receivedDataFromTM == "Dummy to lead" || receivedDataFromTM == `${parameters.seat} to lead`) || receivedDataFromTM == "Start of Board") {
-            isProcessingLine = true;
-            let line = receivedDataFromTM;
-            let indexOfNewline = receivedDataFromTM.indexOf('\r\n');
-            if (indexOfNewline < 0) {
-                indexOfNewline = receivedDataFromTM.indexOf('\n');
-                if (indexOfNewline > 0) {
-                    line = receivedDataFromTM.substring(0, indexOfNewline).trim();
-                    indexOfNewline += 1
-                    receivedDataFromTM = receivedDataFromTM.slice(indexOfNewline + 1).trim();
-                } else {
-                    receivedDataFromTM = "";
-
-                }
-            } else {
-                line = receivedDataFromTM.substring(0, indexOfNewline).trim();
-                // Remove the processed line from receivedData
-                receivedDataFromTM = receivedDataFromTM.slice(indexOfNewline + 2).trim();
-            }
-
-            console.log(`[${timeString()}] Received from Table Manager: ${line}`);
-            if (playstarted && line.toLowerCase() === "start of board") {
-                await saveCommandHistory(false);
-                console.log(`[${timeString()}] TM is starting a new board`);
-                // This should work but isn't, so we have to kill the process to restart
-                await processHolder.GibHandler.sendCommand(`-x`, true, false);
-                const processes = await processFinder.getProcessesByName("bridge.exe");
-                for (let p of processes) {
-                    if (p.CommandLine == 'bridge.exe ' + parameters.seat + "X") {
-                        processFinder.killProcessById(p.ProcessId)
-                        console.log(`[${timeString()}] GIB terminated because of new deal received`);
-                    }
-                }
-                processHolder.GibHandler = null;
-            }
-            if (processHolder.GibHandler == null && line != "End of session") {
-                console.log(`[${timeString()}] Restarting the process...`);
-                processHolder.GibHandler = await startGibProcess('bridge.exe', [parameters.seat + parameters.port]);
-                await waitDelay(1000);
-                receivedDataFromGib = "";
-                console.log(`[${timeString()}] Started GIB. ${receivedDataFromGib.split('\n')[0]}`)
-                await processHolder.GibHandler.sendCommand(GIBCommand, true, false);
-                await waitDelay(parameters.delay);
-                // Send seating and match details using the new gibProcess instance
-                await processHolder.GibHandler.sendCommand(seating, false, true);
-                await processHolder.GibHandler.sendCommand(match, false, true);
-            }
-
-            if (processHolder.GibHandler != null) {
-                // Send the received data from the Table Manager to GIB
+    connectToTM();
+};
 
 
-                // TM did send the same Start twice, 
-                if (line == "Start of BoardStart of Board") {
-                    console.log("Start received twice");
-                    line = "Start of Board"
-                }
-
-                // There is an issue, when restarting a match as TM will send the Teams infor twice
-                if (line.startsWith("Teams") && teamsSent) {
-                    // We allready told GIB it is teams, so just responding TM
-                    line = `${parameters.seat} ready to start`;
-                    console.log(`[${timeString()}] Sending to Table Manager: ${line}`);
-                    client.write(line + messageTerminator);
-                    // Give TM time to process before sending next message
-                    await waitDelay(parameters.delay);
-
-                } else {
-                    if (line.startsWith("Teams")) {
-                        // Save the match name for restart of the gibProcess
-                        match = line;
-                        teamsSent = true;
-                    }
-
-                    recordBidding(line);
-                    recordPlay(line);
-                    let output = await processHolder.GibHandler.sendCommand(line, false, false);
-                    printTrick();
-                    await waitDelay(parameters.delay);
-
-                    // Send the output back to the Table Manager
-                    // In a previous version of the protocol, players confirmed receipt of dummy's hand by sending to the 
-                    // Table Manager "[Player] received dummy".  That requirement has now been removed from the protocol. 
-                    // So perhaps that should be filtered
-                    if (output != null) {
-                        const lines = output.split('\r\n');
-                        for (const line of lines) {
-                            //console.log("line:"+line)
-                            if (line != "") {
-                                if (line.startsWith("Hand over")) {
-                                    await saveCommandHistory(false)
-                                    if (parameters.verbose)
-                                        console.log("Unprocessed Data From TM: ", receivedDataFromTM);
-                                } else {
-                                    console.log(`[${timeString()}] Sending to Table Manager: ${line}`);
-                                    recordBidding(line);
-                                    recordPlay(line);
-                                    printTrick();
-                                    client.write(line + messageTerminator);
-                                    // Give TM time to process before sending next message
-                                    await waitDelay(parameters.delay);
-                                }
-                            }
-
-                        }
-                    }
-                }
-
-
-                if (receivedDataFromGib) {
-                    if (parameters.verbose) {
-                        console.log("Unprocessed Data from GIB: " + receivedDataFromGib);
-                    }
-                    const lines = receivedDataFromGib.split('\r\n');
-                    receivedDataFromGib = "";
-                    for (const line of lines) {
-                        //console.log("line:"+line)
-                        if (line != "") {
-                            if (line.startsWith("Hand over")) {
-                                await saveCommandHistory(false)
-                                console.log(receivedDataFromTM)
-                            } else {
-                                console.log(`[${timeString()}] Sending to Table Manager(2): ${line}`);
-                                recordBidding(line);
-                                recordPlay(line);
-                                printTrick();
-                                client.write(line + messageTerminator);
-                                // Give TM time to process before sending next message
-                                await waitDelay(parameters.delay);
-                            }
-                        }
-                    }
-                }
-                isProcessingLine = false;
-
-                // Terminate the recursion when there's no more data to process
-                if (!(receivedDataFromTM.includes('\r\n') || receivedDataFromTM.includes('\n') || receivedDataFromTM.endsWith('.') || receivedDataFromTM == "Dummy to lead" || receivedDataFromTM == `${parameters.seat} to lead` || receivedDataFromTM == "Start of Board")) {
-                    return;
-                }
-            }
-            // Process the next line, if available
-            await processLines();
-        }
-    }
-
-    // Close the client socket when done
-    client.on('close', async () => {
-        console.log(`[${timeString()}] Connection closed by client`);
-        await saveCommandHistory(false);
-        processHolder.gibBackgroundProcess.kill();
-        process.exit()
-    });
-
-    client.on('error', (e) => {
-        console.log(`[${timeString()}] Connection error`, e);
-        if (processHolder.GibHandler) {
-            processHolder.GibHandler.close();
-        }
-        processHolder.gibBackgroundProcess.kill();
-        process.exit()
-    });
-})();
+main()
 

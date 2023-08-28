@@ -63,10 +63,17 @@ The PBN can be translated to Lin by downloading TMPbn2LinVG.exe from this reposi
 
 TMGib supports the following command line parameters:
 
-- -b that if true will read systems for ns and ew from the files sys.ns and sys.ew
-- -t where thinking time for GIB can be set
-- -v that if true will save the GIB commands for error search
-
+-  --seat, -s       Where to sit (North, East, South, West) [Mandatory]
+-  --name, -n       Name in Table Manager - default GIB
+-  --ip, -i         IP for Table Manager - default 127.0.0.1
+-  --port, -p       Port for Table Manager - default 2000
+-  --timing, -t     time (secs) for one GIB to play one board, on average - Default 60
+-  --bidding, -b    Tell GIB to use sys.ns sys.ew as input - default False
+-  --delay, -d      Delay between commands, default 100 ms
+-  --gibdir, -g     Directory where to find GIB executables - default ./GIB
+-  --simdecl, -m    number of deals to analyze to pick a play as declarer - default 50
+-  --simdef, -e     number of deals to analyze to pick a play as defender - default 50
+-  --verbose, -v    Display commands issued to GIB and other interesting logging - default False
 
 
 

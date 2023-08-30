@@ -2,18 +2,18 @@
 Some utilities for arranging matches between robots playing bridge.
 
 # TMPbn2LinVG 
-used for translating PBN-files from [Bridge Moniteur](http://www.wbridge5.com/bm.htm) - a table manager - into lin-files, that can be viewed in [NetBridgeVu.exe] (https://www.bridgebase.com/intro/installation_guide_for_bbo.php).
+Used for translating PBN-files from [Bridge Moniteur](http://www.wbridge5.com/bm.htm) - a table manager - into lin-files, that can be viewed in [NetBridgeVu.exe] (https://www.bridgebase.com/intro/installation_guide_for_bbo.php).
 
 
 # TMGib
-Enables GIB to called from a table monitor.
+Enables GIB to be called from a table monitor. Both Table Monitora are supported
 
 # Installation
-You can clone this repository or just download the two executables in the dist/ folder.
+You can clone this repository or download a release with executables
 
 You will have to copy the GIB-executable as it is not included in this repository.
 
-Just place it in a folder of your own choice - the program expects to find GIB in a subfolder called GIB
+Just place it in a folder of your own choice - the program expects to find GIB in a subfolder called GIB (But you can change it by sending a parameter)
 
 These files should be present in the GIB folder
 
@@ -76,6 +76,16 @@ TMGib supports the following command line parameters:
 -  --verbose, -v    Display commands issued to GIB and other interesting logging - default False
 
 
+# TMMEdiator
+This program allows you to play with Blue Chip Bridge using Bridge Moniteur.
+
+This program will listen on 4 ports and send it all to Bridge Moniteur, and send the response back to individual clients.
+
+TMMediator is listening on ports 2001-2004 and you can follow the communication between the programs
+
+Now Blue Chip can handle all 4 robots in the same program, or you can start 4 instances of Blue Chip (I did the first and that could explain the randomness was resulting in 0-0)
+
+So just go to Network play and click on all 4 directions. You need to change port for North from 2000 to 2004 as 2000 is used by Bridge Moniteur.
 
 
 

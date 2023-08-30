@@ -141,6 +141,8 @@ def main():
         for i, board in enumerate(boards):
             if board.info.room == None:
                 board.info.room = room[i % len(room)]
+        # Perhaps we should renumber all boards - making it optional
+
     else:
         # From Blue CHip, or Bridge Monituer without instant replay
         # Loop through the array and set the alternating text attribute
@@ -165,21 +167,21 @@ def main():
             board.info.east = board.info.south
             board.info.south = board.info.west
             board.info.west = temp
-
-    # Sort the array of Board objects based on board.number and board.info.room
-    sorted_boards = sorted(
-        boards,
-        key=lambda board: (board.board_num, room_to_numeric(board.info.room))
-    )
+    else:
+        # Sort the array of Board objects based on board.number and board.info.room
+        boards = sorted(
+            boards,
+            key=lambda board: (board.board_num, room_to_numeric(board.info.room))
+        )
 
     filename = os.path.splitext(args.filename)[0]
     co_ns = 0
     co_ew = 0
     chunk_size = 64
-    for i in range(0, len(sorted_boards), chunk_size):
+    for i in range(0, len(boards), chunk_size):
         start_idx = i // 2 + 1
-        chunk = sorted_boards[i:i + chunk_size]
-        last_idx = min(i + chunk_size - 1, len(sorted_boards) - 1) // 2 +1
+        chunk = boards[i:i + chunk_size]
+        last_idx = min(i + chunk_size - 1, len(boards) - 1) // 2 +1
         co_ns, co_ew = generate_vg(start_idx, last_idx, chunk, filename, co_ns, co_ew)
 
 

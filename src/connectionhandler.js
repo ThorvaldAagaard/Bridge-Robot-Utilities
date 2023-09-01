@@ -108,6 +108,11 @@ class ConnectionHandler extends EventEmitter {
             this.emit('completed');
         });
 
+        bcConn.on('error', error => {
+            console.error(`[${this.timeString()}] Error in bcConn:`, error);
+            // You can take appropriate actions here, such as logging the error or closing the socket.
+        });
+
         this.handleIncommingData(bcConn, bmSocket, 'BCPort');
         this.handleIncommingData(bmSocket, bcConn, 'BMPort'); // Forward data to the opposite direction
     }

@@ -6,6 +6,13 @@ const util = require('util');
 const fs = require('fs');
 const minimist = require('minimist');
 const processFinder = require('./processFinder');
+const path = require('path');
+const readline = require('readline');
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
 // This is the protocol definition but Bridge Moniteur expects only \n and will fail when GIB is dummy
 let messageTerminator = "\r\n"
@@ -111,7 +118,9 @@ const parameters = {
     simdecl: 50,
     simdef: 50,
     oppquality: 0.5,
-    auctcont: 0.55
+    auctcont: 0.55,
+    speed: 500,
+    gibson: 10,
 };
 
 const timeString = () => {
@@ -163,7 +172,10 @@ const waitForResponse = async (command, initialWait, maxWaitTime) => {
                 }
                 await saveCommandHistory(true);
                 console.log('Timeout waiting ' + maxWaitTime + ' seconds for response to ' + command);
-                input("Press Enter to exit...")
+                console.error('Press Enter to exit...');
+
+                rl.question('', () => {
+                });
                 process.exit();
                 //resolve("")
             } else {
@@ -373,7 +385,7 @@ async function saveCommandHistory(error) {
 async function startGibProcess(command, args, gibdir) {
 
     teamsSent = false;
-
+    console.log(`[${timeString()}] Loading: "${path.join(gibdir, command)}"`);
     // Spawn the command-line program
     processHolder.gibBackgroundProcess = spawn(command, args, {
         stdio: ['pipe', 'pipe', 'pipe'], // Create pipes for stdin, stdout, and stderr
@@ -382,7 +394,10 @@ async function startGibProcess(command, args, gibdir) {
 
     processHolder.gibBackgroundProcess.on('error', (error) => {
         console.error(`[${timeString()}] Bridge.exe not found in ${gibdir}`);
-        input("Press Enter to exit...")
+        console.error('Press Enter to exit...');
+
+        rl.question('', () => {
+        });
         process.exit();
 
     });
@@ -412,7 +427,7 @@ async function startGibProcess(command, args, gibdir) {
     // Handle process exit
     processHolder.gibBackgroundProcess.on('exit', async (code) => {
         printTrick();
-        console.log(`[${timeString()}] GIB exited`);
+        console.log(`[${timeString()}] GIB exited ${code}`);
     });
 
     const sendCommand = async (command, noResp, ignoreResp) => {
@@ -422,6 +437,26 @@ async function startGibProcess(command, args, gibdir) {
             return null; // Return null or some indication that the command was not sent
         }
         if (command.startsWith("Timing")) {
+            // This is printed when comming from TM
+            // console.log(`[${timeString()}] ${command}`);
+            return null;
+        }
+        if (command.startsWith("Feasability")) {
+            // This is printed when comming from TM
+            // console.log(`[${timeString()}] ${command}`);
+            return null;
+        }
+        if (command.startsWith("Client")) {
+            // This is printed when comming from TM
+            // console.log(`[${timeString()}] ${command}`);
+            return null;
+        }
+        if (command.startsWith("Book")) {
+            // This is printed when comming from TM
+            // console.log(`[${timeString()}] ${command}`);
+            return null;
+        }
+        if (command.startsWith("CC")) {
             // This is printed when comming from TM
             // console.log(`[${timeString()}] ${command}`);
             return null;
@@ -504,7 +539,10 @@ async function startGibProcess(command, args, gibdir) {
         if (command.endsWith("End of session")) {
             await saveCommandHistory();
             processHolder.gibBackgroundProcess.kill();
-            input("Press Enter to exit...") 
+            console.error('Press Enter to exit...');
+
+            rl.question('', () => {
+            });
             process.exit();
         }
         if (noResp) {
@@ -581,7 +619,6 @@ async function processLines() {
             indexOfNewline = receivedDataFromTM.indexOf('\n');
             if (indexOfNewline > 0) {
                 line = receivedDataFromTM.substring(0, indexOfNewline).trim();
-                indexOfNewline += 1
                 receivedDataFromTM = receivedDataFromTM.slice(indexOfNewline + 1).trim();
             } else {
                 receivedDataFromTM = "";
@@ -749,7 +786,10 @@ function connectToTM() {
         console.log(`[${timeString()}] Connection closed by client`);
         await saveCommandHistory(false);
         processHolder.gibBackgroundProcess.kill();
-        input("Press Enter to exit...") 
+        console.error('Press Enter to exit...');
+
+        rl.question('', () => {
+        });
         process.exit();
     });
 
@@ -760,7 +800,10 @@ function connectToTM() {
             processHolder.GibHandler.close();
         }
         processHolder.gibBackgroundProcess.kill();
-        input("Press Enter to exit...") 
+        console.error('Press Enter to exit...');
+
+        rl.question('', () => {
+        });
         process.exit();
     });
 }
@@ -779,6 +822,14 @@ function newFunction() {
     if (parameters.oppquality != 0.5) {
         GIBCommandPart1 += 'o';
         GIBCommandPart2 += ' ' + parameters.oppquality;
+    }
+    if (parameters.speed != 500) {
+        GIBCommandPart1 += 'e';
+        GIBCommandPart2 += ' ' + parameters.speed;
+    }
+    if (parameters.gibson != 10) {
+        GIBCommandPart1 += 'B';
+        GIBCommandPart2 += ' ' + parameters.gibson;
     }
     if (parameters.simdecl != 50 || parameters.simdef != 50) {
         GIBCommandPart1 += 'm';
@@ -800,16 +851,19 @@ Options:
   --gibdir, -g     Directory where to find GIB executables - default ./GIB
   --simdecl, -m    number of deals to analyze to pick a play as declarer - default 50
   --simdef, -e     number of deals to analyze to pick a play as defender - default 50
+  --speed, -z      how agressive GIB should be on system resources - default 500
+  --gibson, -G     Tricks left when GIBSON kicks in - default 10
   --oppquality, -o opponents' bidding quality - 0 = weak; 1 = omniscient  - default 0.5
-  --verbose, -v    Display commands issued to GIB and other interesting logging - default False`);
+  --verbose, -v    Display commands issued to GIB and other interesting logging - default False`
+  );
 }
 
 async function main() {
 
-    console.log(`[${timeString()}] Table manager interface for GIB version 1.0.4 starting.`)
+    console.log(`[${timeString()}] Table manager interface for GIB version 1.0.5 starting.`)
 
     const argv = minimist(process.argv.slice(2), {
-        string: ['seat', 'name', 'ip', 'port', 'timing', 'bidding', 'delay', 'gibdir', 'verbose', 'simdecl', 'simdef'],
+        string: ['seat', 'name', 'ip', 'port', 'timing', 'bidding', 'delay', 'gibdir', 'verbose', 'oppquality', 'simdecl', 'simdef', 'speed', 'gibson'],
         default: parameters, // Set the default values object directly
         alias: {
             s: 'seat',
@@ -821,8 +875,11 @@ async function main() {
             d: 'delay',
             g: 'gibdir',
             v: 'verbose',
+            o: 'oppquality',
             m: 'simdecl',
-            e: 'simdef'
+            e: 'simdef',
+            G: 'gibson',
+            z: 'speed'
         },
         demandOption: ['seat'], // Specify the mandatory parameters
         unknown: (param) => {
@@ -858,13 +915,15 @@ async function main() {
     parameters.simdecl = argv.simdecl;
     parameters.simdef = argv.simdef;
     parameters.oppquality = argv.oppquality;
+    parameters.speed = argv.speed;
+    parameters.gibson = argv.gibson
 
     processHolder.GibHandler = await startGibProcess('bridge.exe', [parameters.seat + parameters.port], parameters.gibdir);
     await waitDelay(1000);
     console.log(`[${timeString()}] Started GIB. ${receivedDataFromGib.split('\n')[0]}`)
     receivedDataFromGib = "";
     newFunction();
-    
+
     await processHolder.GibHandler.sendCommand(GIBCommand, true, false);
     await waitDelay(parameters.delay);
 

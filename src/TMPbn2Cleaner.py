@@ -1,6 +1,6 @@
 import sys
 import endplay.parsers.pbn as pbn
-import endplay.parsers.lin as lin
+from endplay.types.board import Board
 import endplay.config as config
 import argparse
 import io
@@ -56,72 +56,22 @@ def write_playernames_to_file(output_file, sorted_boards):
     output_file.write(f"{sorted_boards[1].info.east}\n")
     output_file.write("|pg||\n")
 
-def generate_vg(start, end, boards, filename, co_ns, co_ew):  
-    # Use a list comprehension to extract the contract information from each board
-    contract_info = [board.contract for board in boards]
-
-    # Join the contract information into a single line
-    contract_line = ','.join(str(contract) for contract in contract_info).replace('NT','N')
-
-     # Construct the output file path with ".lin" extension
-    output_file_path = filename + " " + str(start) + "-" + str(end) + ".lin"
-
-    with open(output_file_path, 'w') as output_file:
-        output_file.write(f"vg|{boards[0].info.event},'{start}-{end}',I,{start},{end},{boards[0].info.north},{co_ns},{boards[0].info.east},{co_ew}|\n")
-        output_file.write(f"rs|{contract_line}|\n")
-        write_playernames_to_file(output_file, boards)
-        for index, board in enumerate(boards):
-            linfile = lin.dumps([board])
-            if index % 2 == 1:
-                if boards[index-1].contract.declarer in (0,2):
-                    ns_score_open = boards[index-1].contract.score(boards[index-1].vul)
-                else:
-                    ns_score_open = -boards[index-1].contract.score(boards[index-1].vul)
-                if boards[index].contract.declarer in (0,2):
-                    ns_score_closed = boards[index].contract.score(boards[index].vul)
-                else:
-                    ns_score_closed = -boards[index].contract.score(boards[index].vul)
-                imp = get_imps(ns_score_open,ns_score_closed)
-                #print(f"{boards[index-1].contract} - {ns_score_open} closed {boards[index].contract} - {ns_score_closed}= {imp}")
-                if imp > 0:
-                    co_ns += imp
-                else: 
-                    co_ew -= imp
-            linfile = linfile.replace('\n', '')
-            if board.info.room == "Closed":
-                linfile = linfile.replace(f',|rh||ah|Board {board.board_num}','')
-                linfile = linfile.replace('|mb|','\n|sa|0|mb|',1)
-                linfile = linfile.replace('st|',f'qx|c{board.board_num},BOARD {board.board_num}|rh||ah|Board {board.board_num}')
-            if board.info.room == "Open":
-                linfile = linfile.replace(f',|rh||ah|Board {board.board_num}','')
-                linfile = linfile.replace('|mb|','\n|sa|0|mb|',1)
-                linfile = linfile.replace('st|',f'qx|o{board.board_num},BOARD {board.board_num}|rh||ah|Board {board.board_num}')
-            linfile += 'pg||'
-            linfile = linfile.replace('||','||\n') 
-            linfile = linfile.replace('||\n','||',1) 
-            output_file.write(linfile + "\n")
-    
-        write_playernames_to_file(output_file, boards)
-
-    print(f"{output_file_path} generated")
-    return co_ns, co_ew
 
 def main():
 
-    print("Table Manager PBN to Lin, Version 1.0")
+    print("Table Manager PBN cleaner, Version 1.0")
     # Create an ArgumentParser object
     parser = argparse.ArgumentParser(description="")
 
     # Add a positional argument for the name
-    parser.add_argument("filename", help="filename for conversion")
-    parser.add_argument("--onefile",default=False, required = False, help="create only one file")
+    parser.add_argument("input", help="filename for conversion")
+    parser.add_argument("output", help="filename for conversion")
 
     # Parse the command-line arguments
     args = parser.parse_args()
-    onefile = args.onefile
 
     # Call the function to remove lines and save the file
-    fakefile = remove_feasability_lines(args.filename)
+    fakefile = remove_feasability_lines(args.input)
 
     try:
         boards = pbn.load(fakefile)
@@ -144,7 +94,6 @@ def main():
             if board.info.room == None:
                 board.info.room = room[i % len(room)]
         # Perhaps we should renumber all boards - making it optional
-        board.board_num = 1 + (i // 2)
 
     else:
         # From Blue Chip, or Bridge Monituer without instant replay
@@ -177,17 +126,23 @@ def main():
             key=lambda board: (board.board_num, room_to_numeric(board.info.room))
         )
 
-    filename = os.path.splitext(args.filename)[0]
-    co_ns = 0
-    co_ew = 0
-    chunk_size = 64
-    if onefile:
-        chunk_size = 10000
-    for i in range(0, len(boards), chunk_size):
-        start_idx = i // 2 + 1
-        chunk = boards[i:i + chunk_size]
-        last_idx = min(i + chunk_size - 1, len(boards) - 1) // 2 +1
-        co_ns, co_ew = generate_vg(start_idx, last_idx, chunk, filename, co_ns, co_ew)
+     # Construct the output file path with ".lin" extension
+    output_file_path = args.output
+    selected_attributes = ['board_num', 'dealer', 'vul', 'deal']
+
+    with open(output_file_path, 'w') as output_file:
+        new_boards = []
+
+        for index, board in enumerate(boards[0::2], start=1):
+            attributes = {attr: getattr(board, attr) for attr in selected_attributes}
+            attributes['info'] = Board.Info()  # Add an empty 'info' dictionary
+            new_board = Board(**attributes)  # Create a new Board object with selected attributes
+            new_board.board_num = index  # Set the 'board_num' attribute explicitly
+            new_boards.append(new_board)
+
+        pbn.dump(new_boards, output_file)
+
+    print(f"{output_file_path} generated")
 
 
 if __name__ == "__main__":

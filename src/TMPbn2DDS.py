@@ -88,11 +88,11 @@ def main():
 
     # If two first boards have the same number we assume it is from Bridge Moniteur
     BM = boards[0].board_num == boards[1].board_num
+    print("File from Bridge Monituer")
     if (BM):
         # Loop through the array and set the alternating text attribute
         for i, board in enumerate(boards):
-            if board.info.room == None:
-                board.info.room = room[i % len(room)]
+            board.info.room = room[i % len(room)]
         # Perhaps we should renumber all boards - making it optional
 
     else:
@@ -128,19 +128,9 @@ def main():
 
      # Construct the output file
     output_file_path = args.output
-    selected_attributes = ['board_num', 'dealer', 'vul', 'deal']
 
     with open(output_file_path, 'w') as output_file:
-        new_boards = []
-
-        for index, board in enumerate(boards[0::2], start=1):
-            attributes = {attr: getattr(board, attr) for attr in selected_attributes}
-            attributes['info'] = Board.Info()  # Add an empty 'info' dictionary
-            new_board = Board(**attributes)  # Create a new Board object with selected attributes
-            new_board.board_num = index  # Set the 'board_num' attribute explicitly
-            new_boards.append(new_board)
-
-        pbn.dump(new_boards, output_file)
+        pbn.dump(boards, output_file)
 
     print(f"{output_file_path} generated")
 

@@ -4,3 +4,4 @@ PyInstaller TMPbn2LinVG.spec
 PyInstaller MergePBNFiles.spec
 PyInstaller CountPBNBoards.spec
 PyInstaller TMPbn2Cleaner.spec
+PyInstaller TMPbn2DDS.spec

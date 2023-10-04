@@ -59,7 +59,7 @@ def write_playernames_to_file(output_file, sorted_boards):
 
 def main():
 
-    print("Table Manager PBN cleaner, Version 1.0")
+    print("PBN cleaner for DDS, Version 1.0")
     # Create an ArgumentParser object
     parser = argparse.ArgumentParser(description="")
 

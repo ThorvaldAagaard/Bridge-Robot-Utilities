@@ -1,17 +1,26 @@
 import os
 import argparse
 
+def process_file(files, merged_file):
+    for filename in files:
+        if filename.lower().endswith('.pbn'):
+            file_path = os.path.join(root, filename)
+            print(f"Merging file: {file_path}")
+            with open(file_path, 'r') as pbn_file:
+                merged_file.write(pbn_file.read())
+            merged_file.write('\n')  # Add a newline between merged files
+
 def merge_pbn_files(directory_path, output_file, recursive=False):
     with open(output_file, 'w') as merged_file:
-        for root, dirs, files in os.walk(directory_path):
-            print(f"Scanning directory: {root}")
-            for filename in files:
-                if filename.lower().endswith('.pbn'):
-                    file_path = os.path.join(root, filename)
-                    print(f"Merging file: {file_path}")
-                    with open(file_path, 'r') as pbn_file:
-                        merged_file.write(pbn_file.read())
-                    merged_file.write('\n')  # Add a newline between merged files
+        if recursive:
+            print(f"Scanning directory: {directory_path} recursively")
+            for root, dirs, files in os.walk(directory_path):
+                process_file(files, merged_file)
+        else:
+            print(f"Scanning directory: {directory_path}")
+            # Use os.listdir() to get files in the current directory only
+            current_directory_files = os.listdir(directory_path)
+            process_file(current_directory_files, merged_file)
 
     print(f"Merging complete! Merged files saved as: {output_file}")
 

@@ -5,22 +5,6 @@ import endplay.config as config
 import argparse
 import io
 import os
-import math
-import bisect
-
-
-IMP = [10, 40, 80, 120, 160, 210, 260, 310, 360, 420, 490, 590, 740, 890, 1090, 1290, 
-       1490, 1740, 1990, 2240, 2490, 3490, 3990]
-
-
-def get_imps(score1, score2):
-    score_diff = score1 - score2
-    imp = bisect.bisect_left(IMP, int(math.fabs(score_diff)))
-    if score_diff >= 0:
-        return imp
-    else:
-        return -imp
-
 
 # Define a function to convert room values to numeric values for sorting
 def room_to_numeric(room):
@@ -43,19 +27,6 @@ def remove_feasability_lines(file_path):
     fake_file = io.StringIO(''.join(new_lines))
     
     return fake_file
-
-def write_playernames_to_file(output_file, sorted_boards):
-    output_file.write("pn|")
-    output_file.write(f"{sorted_boards[0].info.south},")
-    output_file.write(f"{sorted_boards[0].info.west},")
-    output_file.write(f"{sorted_boards[0].info.north},")
-    output_file.write(f"{sorted_boards[0].info.east},")
-    output_file.write(f"{sorted_boards[1].info.south},")
-    output_file.write(f"{sorted_boards[1].info.west},")
-    output_file.write(f"{sorted_boards[1].info.north},")
-    output_file.write(f"{sorted_boards[1].info.east}\n")
-    output_file.write("|pg||\n")
-
 
 def main():
 
@@ -93,7 +64,6 @@ def main():
         # Loop through the array and set the alternating text attribute
         for i, board in enumerate(boards):
             board.info.room = room[i % len(room)]
-        # Perhaps we should renumber all boards - making it optional
 
     else:
         # From Blue Chip, or Bridge Monituer without instant replay
@@ -125,6 +95,14 @@ def main():
             boards,
             key=lambda board: (board.board_num, room_to_numeric(board.info.room))
         )
+
+    # Loop through the array and set the alternating text attribute
+    for i, board in enumerate(boards):
+        board.info.scoring = "IMP"
+        if board.contract.declarer in (0, 2):
+            board.info.score = f'NS {board.contract.score(board.vul)}'
+        else:
+            board.info.score = f'EW {board.contract.score(board.vul)}'
 
      # Construct the output file
     output_file_path = args.output

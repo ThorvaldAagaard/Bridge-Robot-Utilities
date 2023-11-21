@@ -7,7 +7,7 @@ block_cipher = None
 a = Analysis(
     ['..\\src\\TMPbn2DDS.py'],
     pathex=[],
-    binaries=[],
+    binaries=[('C:\\Python311\\Lib\\site-packages\\endplay\\_dds\\dds.dll', '.')],
     datas=[],
     hiddenimports=[],
     hookspath=[],

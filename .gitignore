@@ -16,3 +16,4 @@ Install/dist/*.pbn
 src/*.sql
 src/*.pbn
 Install/dist/*.exe
+src/__pycache__

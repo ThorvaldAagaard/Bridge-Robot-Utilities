@@ -2,9 +2,10 @@ import sys
 import endplay.parsers.pbn as pbn
 from endplay.types.board import Board
 import endplay.config as config
-import argparse
-import io
 import os
+import io
+import tkinter as tk
+from tkinter import filedialog
 
 # Define a function to convert room values to numeric values for sorting
 def room_to_numeric(room):
@@ -31,18 +32,24 @@ def remove_feasability_lines(file_path):
 def main():
 
     print("PBN cleaner for DDS, Version 1.0")
-    # Create an ArgumentParser object
-    parser = argparse.ArgumentParser(description="")
+    # create a root window
+    root = tk.Tk()
+    root.withdraw()
 
-    # Add a positional argument for the name
-    parser.add_argument("input", help="filename for conversion")
-    parser.add_argument("output", help="filename for conversion")
+    # specify the allowed file types
+    file_types = [
+        ("PBN files", "*.pbn"),  # Example: Only allow .txt files
+        ("All files", "*.*")     # Allow all files (in case the user wants to choose other formats)
+]
+    # open the file dialog box
+    file_path = filedialog.askopenfilename(initialdir=".", filetypes=file_types)
 
-    # Parse the command-line arguments
-    args = parser.parse_args()
+    # print the selected file path
+    if not file_path:
+        sys.exit(1)
 
     # Call the function to remove lines and save the file
-    fakefile = remove_feasability_lines(args.input)
+    fakefile = remove_feasability_lines(file_path)
 
     try:
         boards = pbn.load(fakefile)
@@ -104,13 +111,25 @@ def main():
         else:
             board.info.score = f'EW {board.contract.score(board.vul)}'
 
-     # Construct the output file
-    output_file_path = args.output
 
-    with open(output_file_path, 'w') as output_file:
+    # Split the file path into directory and filename
+    _, filename = os.path.split(file_path)
+
+    # Insert "DDS" at the beginning of the filename
+    new_filename = "DDS_" + filename
+
+    # Get the file path to save the data
+    output_file = filedialog.asksaveasfile(defaultextension=".pbn", initialdir=".", filetypes=file_types, initialfile=new_filename)
+
+    if output_file is not None:
+        # Save the data to the selected file
         pbn.dump(boards, output_file)
 
-    print(f"{output_file_path} generated")
+        # Close the file after writing
+        output_file.close()
+        print(f"{output_file.name} generated")
+    else:
+        print("File not saved")
 
 
 if __name__ == "__main__":

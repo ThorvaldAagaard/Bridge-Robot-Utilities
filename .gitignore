@@ -17,3 +17,7 @@ src/*.sql
 src/*.pbn
 Install/dist/*.exe
 src/__pycache__
+rpdd/y.npy
+rpdd/X.npy
+rpdd/rpdd.zrd
+rpdd/rpdd.zdd

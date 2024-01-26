@@ -1,3 +1,4 @@
+import os
 import json
 import sys
 import scoring
@@ -113,27 +114,9 @@ def main():
 
     # Generate the HTML tables
     table1_html = "<table class='border-collapse table-container'>"
-    table1_html += "<style>"
-    table1_html += "th { background-color: #4a86e8; color: white; }"
-    table1_html += ".align-right { text-align: right; }"
-    table1_html += ".positive-imp { background-color: #b8e994; }"
-    table1_html += ".negative-imp { background-color: #ff7675; }"
-    table1_html += ".zero-imp { background-color: white; }"
-    table1_html += ".align-center { text-align: center; }"
-    table1_html += ".row-height { height: 22px; }"
-    table1_html += "</style>"
     table1_html += "<tr><th>Board</th><th>Contract</th><th>Tricks</th><th>Result</th><th>Contract</th><th>Tricks</th><th>Result</th><th class='align-right'>Imps (+)</th><th class='align-right'>Imps (-)</th></tr>"
 
     table2_html = "<table class='border-collapse table-container'>"
-    table2_html += "<style>"
-    table2_html += "th { background-color: #4a86e8; color: white; }"
-    table2_html += ".align-right { text-align: right; }"
-    table2_html += ".positive-imp { background-color: #b8e994; }"
-    table2_html += ".negative-imp { background-color: #ff7675; }"
-    table2_html += ".zero-imp { background-color: white; }"
-    table2_html += ".align-center { text-align: center; }"
-    table2_html += ".row-height { height: 22px; }"
-    table2_html += "</style>"
     table2_html += "<tr><th>Board</th><th>Contract</th><th>Tricks</th><th>Result</th><th>Contract</th><th>Tricks</th><th>Result</th><th class='align-right'>Imps (+)</th><th class='align-right'>Imps (-)</th></tr>"
 
     for i, board_data in enumerate(sorted_data):
@@ -180,27 +163,37 @@ def main():
         "<meta charset='utf-8'>\n"
         "<title>Match deal</title>\n"
         "<link rel='stylesheet' href='viz.css'>\n"
+        "<style>\n"
+            ".th { background-color: #4a86e8; color: white; }\n"
+            ".align-right { text-align: right; }\n"
+            ".positive-imp { background-color: #b8e994; }\n"
+            ".negative-imp { background-color: #ff7675; }\n"
+            ".zero-imp { background-color: white; }\n"
+            ".align-center { text-align: center; }\n"
+            ".row-height { height: 22px; }\n"
+            "</style>\n"
         "</head>\n"
         "<body>\n"
-        f"<div style='display: flex; justify-content: center;'>\n"
-        f"<p><h1 style='text-align: center;'>\n"
+        "<div style='display: flex; justify-content: center;'>\n"
         f"{win_html}\n"
-        f"</h1></p>\n"
-        f"</div>\n"
-        f"<div style='display: flex; justify-content: center;'>\n"
-        f"<div style='margin-right: 20px;'>\n"
+        "</div>\n"
+        "<div style='display: flex; justify-content: center;'>\n"
+        "<div style='margin-right: 20px;'>\n"
         f"{table1_html}\n"
-        f"</div>\n"
-        f"<div>\n"
+        "</div>\n"
+        "<div>\n"
         f"{table2_html}\n"
-        f"</div>\n"
-        f"</div>\n"
+        "</div>\n"
+        "</div>\n"
         f"<p style='text-align: center;'><b>Final score:</b> NS: {positive_imp_sum}, EW: {abs(negative_imp_sum)}</p>\n"
         "</body>\n"
         "</html>"
     )
+        # Split the file path into directory and filename
+    directory, _ = os.path.split(file_path)
+
     # Get the file path to save the data
-    output_file = filedialog.asksaveasfile(defaultextension=".html", initialdir=".", filetypes=file_types_html, initialfile="index.html")
+    output_file = filedialog.asksaveasfile(defaultextension=".html", initialdir=directory, filetypes=file_types_html, initialfile="index.html")
     output_file.writelines(html_content)
     output_file.close()
     print(f"{output_file.name} generated")

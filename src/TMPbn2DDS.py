@@ -4,6 +4,7 @@ from endplay.types.board import Board
 import endplay.config as config
 import os
 import io
+import re
 import tkinter as tk
 from tkinter import filedialog
 
@@ -16,16 +17,36 @@ def room_to_numeric(room):
     else:
         return 2  # Handle other cases as needed
 
-def remove_feasability_lines(file_path):
+def modify_event_string(original_string):
+    match = re.match(r'\[Event\s"([^"]+)"\]', original_string)
+    if match:
+        return original_string  # Return if the name is already in quotes
+
+    # If not in quotes, find the event name and add quotes around it
+    parts = re.split(r'\[Event\s', original_string)
+    if len(parts) > 1:
+        event_name = parts[1][:-1]  # Remove the trailing "]"
+        modified_string = f'[Event "{event_name}"]'
+        return modified_string
+    else:
+        return original_string  # Return original if no match found
+
+def update_event_and_feasability(file_path):
     # Read the contents of the file
     with open(file_path, 'r') as f:
         lines = f.readlines()
-
+    for i, line in enumerate(lines):
+        if line.startswith("[Event "):
+            lines[i] = modify_event_string(line.strip())
+                
     # Filter out lines starting with '{Feasability:'
     new_lines = [line for line in lines if not line.startswith('{Feasability:')]
 
+    # Filter out lines starting with '{Feasability:'
+    lines = [line for line in new_lines if not line.startswith('{PAR of')]
+
     # Create an in-memory file-like object
-    fake_file = io.StringIO(''.join(new_lines))
+    fake_file = io.StringIO(''.join(lines))
     
     return fake_file
 
@@ -49,7 +70,7 @@ def main():
         sys.exit(1)
 
     # Call the function to remove lines and save the file
-    fakefile = remove_feasability_lines(file_path)
+    fakefile = update_event_and_feasability(file_path)
 
     try:
         boards = pbn.load(fakefile)
@@ -105,6 +126,7 @@ def main():
 
     # Loop through the array and set the alternating text attribute
     for i, board in enumerate(boards):
+        board.board_num = (i // 2) + 1
         board.info.scoring = "IMP"
         if board.contract.declarer in (0, 2):
             board.info.score = f'NS {board.contract.score(board.vul)}'
@@ -113,13 +135,13 @@ def main():
 
 
     # Split the file path into directory and filename
-    _, filename = os.path.split(file_path)
+    directory, filename = os.path.split(file_path)
 
     # Insert "DDS" at the beginning of the filename
     new_filename = "DDS_" + filename
 
     # Get the file path to save the data
-    output_file = filedialog.asksaveasfile(defaultextension=".pbn", initialdir=".", filetypes=file_types, initialfile=new_filename)
+    output_file = filedialog.asksaveasfile(defaultextension=".pbn", initialdir=directory, filetypes=file_types, initialfile=new_filename)
 
     if output_file is not None:
         # Save the data to the selected file

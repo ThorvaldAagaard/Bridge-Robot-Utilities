@@ -7,6 +7,8 @@ import io
 import os
 import math
 import bisect
+import tkinter as tk
+from tkinter import filedialog
 
 
 IMP = [10, 40, 80, 120, 160, 210, 260, 310, 360, 420, 490, 590, 740, 890, 1090, 1290, 
@@ -65,7 +67,7 @@ def generate_vg(start, end, boards, filename, co_ns, co_ew):
 
      # Construct the output file path with ".lin" extension
     output_file_path = filename + " " + str(start) + "-" + str(end) + ".lin"
-
+    print("Creating: ",output_file_path)
     with open(output_file_path, 'w') as output_file:
         output_file.write(f"vg|{boards[0].info.event},'{start}-{end}',I,{start},{end},{boards[0].info.north},{co_ns},{boards[0].info.east},{co_ew}|\n")
         output_file.write(f"rs|{contract_line}|\n")
@@ -109,11 +111,29 @@ def generate_vg(start, end, boards, filename, co_ns, co_ew):
 def main():
 
     print("Table Manager PBN to Lin, Version 1.0")
+
+
+    # create a root window
+    root = tk.Tk()
+    root.withdraw()
+
+    # specify the allowed file types
+    file_types = [
+        ("PBN files", "*.pbn"),  # Example: Only allow .txt files
+        # Allow all files (in case the user wants to choose other formats)
+        ("All files", "*.*")
+    ]
+    # open the file dialog box
+    file_path = filedialog.askopenfilename(
+        initialdir=".", filetypes=file_types)
+
+    # print the selected file path
+    if not file_path:
+        sys.exit(1)
+
     # Create an ArgumentParser object
     parser = argparse.ArgumentParser(description="")
 
-    # Add a positional argument for the name
-    parser.add_argument("filename", help="filename for conversion")
     parser.add_argument("--onefile",default=False, required = False, help="create only one file")
 
     # Parse the command-line arguments
@@ -121,7 +141,7 @@ def main():
     onefile = args.onefile
 
     # Call the function to remove lines and save the file
-    fakefile = remove_feasability_lines(args.filename)
+    fakefile = remove_feasability_lines(file_path)
 
     try:
         boards = pbn.load(fakefile)
@@ -177,7 +197,7 @@ def main():
             key=lambda board: (board.board_num, room_to_numeric(board.info.room))
         )
 
-    filename = os.path.splitext(args.filename)[0]
+    filename = os.path.splitext(file_path)[0]
     co_ns = 0
     co_ew = 0
     chunk_size = 64

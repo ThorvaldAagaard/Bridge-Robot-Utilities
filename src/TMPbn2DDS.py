@@ -9,6 +9,8 @@ import tkinter as tk
 from tkinter import filedialog
 
 # Define a function to convert room values to numeric values for sorting
+
+
 def room_to_numeric(room):
     if room == "Open":
         return 0
@@ -16,6 +18,7 @@ def room_to_numeric(room):
         return 1
     else:
         return 2  # Handle other cases as needed
+
 
 def modify_event_string(original_string):
     match = re.match(r'\[Event\s"([^"]+)"\]', original_string)
@@ -31,6 +34,7 @@ def modify_event_string(original_string):
     else:
         return original_string  # Return original if no match found
 
+
 def update_event_and_feasability(file_path):
     # Read the contents of the file
     with open(file_path, 'r') as f:
@@ -38,7 +42,7 @@ def update_event_and_feasability(file_path):
     for i, line in enumerate(lines):
         if line.startswith("[Event "):
             lines[i] = modify_event_string(line.strip())
-                
+
     # Filter out lines starting with '{Feasability:'
     new_lines = [line for line in lines if not line.startswith('{Feasability:')]
 
@@ -47,8 +51,9 @@ def update_event_and_feasability(file_path):
 
     # Create an in-memory file-like object
     fake_file = io.StringIO(''.join(lines))
-    
+
     return fake_file
+
 
 def main():
 
@@ -61,7 +66,7 @@ def main():
     file_types = [
         ("PBN files", "*.pbn"),  # Example: Only allow .txt files
         ("All files", "*.*")     # Allow all files (in case the user wants to choose other formats)
-]
+    ]
     # open the file dialog box
     file_path = filedialog.askopenfilename(initialdir=".", filetypes=file_types)
 
@@ -81,8 +86,8 @@ def main():
         print("Line number:", e.lineno)
         sys.exit(1)
 
-    #Don't use unicode
-    config.use_unicode = False 
+    # Don't use unicode
+    config.use_unicode = False
     room = ["Open", "Closed"]
 
     # If two first boards have the same number we assume it is from Bridge Moniteur
@@ -108,9 +113,9 @@ def main():
         # Now all the boards in the closed room is rotated 90 degress, so we need to rotate it back.
         for index, board in enumerate(boards[1::2]):
             original_index = 2 * index + 1
-            boards[original_index].deal = boards[original_index -  1].deal
-            boards[original_index].vul = boards[original_index -  1].vul
-            boards[original_index].dealer = boards[original_index -  1].dealer
+            boards[original_index].deal = boards[original_index - 1].deal
+            boards[original_index].vul = boards[original_index - 1].vul
+            boards[original_index].dealer = boards[original_index - 1].dealer
             board.contract.declarer = ((board.contract.declarer - 1) + 4) % 4
             temp = board.info.north
             board.info.north = board.info.east
@@ -132,7 +137,6 @@ def main():
             board.info.score = f'NS {board.contract.score(board.vul)}'
         else:
             board.info.score = f'EW {board.contract.score(board.vul)}'
-
 
     # Split the file path into directory and filename
     directory, filename = os.path.split(file_path)
@@ -156,4 +160,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

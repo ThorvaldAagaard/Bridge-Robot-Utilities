@@ -1,14 +1,15 @@
 # Bridge-Robot-Utilities
-Some utilities for arranging matches between robots playing bridge.
+Some utilities for arranging and displaying the result of matches between robots playing bridge.
 
 # TMPbn2LinVG 
 Used for translating PBN-files from [Bridge Moniteur](http://www.wbridge5.com/bm.htm) - a table manager - into lin-files, that can be viewed in [NetBridgeVu.exe] (https://www.bridgebase.com/intro/installation_guide_for_bbo.php).
 
+Each match will be split in 32 board sections.
 
 # TMGib
-Enables GIB to be called from a table monitor. Both Table Monitora are supported
+Enables GIB to be called from a table monitor. Both Table Monitors are supported
 
-# Installation
+## Installation
 You can clone this repository or download a release with executables
 
 You will have to copy the GIB-executable as it is not included in this repository.
@@ -87,5 +88,15 @@ Now Blue Chip can handle all 4 robots in the same program, or you can start 4 in
 
 So just go to Network play and click on all 4 directions. You need to change port for North from 2000 to 2004 as 2000 is used by Bridge Moniteur.
 
+# TMPbn2DDS
 
+This utility will take a pbn-file from Bridge Moniteur with instant replay and remove some non-standard lines, and rotate the deal from the replay, so the file can be opened in Double Dummy Solver, or Bridge Composer.
+
+# printmatchashtml
+
+Based on the output from TMPbn2DDS this utility will create an index file with the results from all boards and with a link to each Board played. The link is to a file called BEN.htm, and is expected to be produces using Bridge Composer (using the script format match and save as HTML).
+
+# TMPbn2Cleaner
+
+Utility to clean a pbn-file for certain non-standard lines.
 

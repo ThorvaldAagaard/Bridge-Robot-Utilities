@@ -860,7 +860,7 @@ Options:
 
 async function main() {
 
-    console.log(`[${timeString()}] Table manager interface for GIB version 1.0.5 starting.`)
+    console.log(`[${timeString()}] Table manager interface for GIB version 1.0.8 starting.`)
 
     const argv = minimist(process.argv.slice(2), {
         string: ['seat', 'name', 'ip', 'port', 'timing', 'bidding', 'delay', 'gibdir', 'verbose', 'oppquality', 'simdecl', 'simdef', 'speed', 'gibson'],

@@ -25,6 +25,7 @@ def merge_pbn_files(directory_path, output_file, recursive=False):
     print(f"Merging complete! Merged files saved as: {output_file}")
 
 def main():
+    print("Merge PBN Files, Version 1.0.8")
     parser = argparse.ArgumentParser(description="Merge .PBN files in a directory into a single file.")
     parser.add_argument("-d", "--directory", required=True, help="Path to the directory containing .PBN files.")
     parser.add_argument("-o", "--output", default="All.PBN", help="Name of the output file.")

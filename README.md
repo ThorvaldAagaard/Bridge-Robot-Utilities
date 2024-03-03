@@ -77,7 +77,7 @@ TMGib supports the following command line parameters:
 -  --verbose, -v    Display commands issued to GIB and other interesting logging - default False
 
 
-# TMMEdiator
+# TMMediator
 This program allows you to play with Blue Chip Bridge using Bridge Moniteur.
 
 This program will listen on 4 ports and send it all to Bridge Moniteur, and send the response back to individual clients.
@@ -100,3 +100,12 @@ Based on the output from TMPbn2DDS this utility will create an index file with t
 
 Utility to clean a pbn-file for certain non-standard lines.
 
+# CalculateMatch
+
+Merges PBN-file from open and closed room into one new file for a match.
+
+# MergePBNFiles
+Scans a directory (including subdirectories) and merge all PBN-files into one new PBe
+
+# CountPBNBoards
+Count the number of boards in a PBN-file

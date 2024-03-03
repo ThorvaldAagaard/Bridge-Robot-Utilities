@@ -57,7 +57,7 @@ def update_event_and_feasability(file_path):
 
 def main():
 
-    print("PBN cleaner for DDS, Version 1.0.7")
+    print("PBN cleaner for DDS, Version 1.0.8")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -97,6 +97,9 @@ def main():
         # Loop through the array and set the alternating text attribute
         for i, board in enumerate(boards):
             board.info.room = room[i % len(room)]
+            if boards[i].board_num != i // 2 + 1:
+                print("Missing a board:",i // 2 + 1)
+                sys.exit()
 
     else:
         # From Blue Chip, or Bridge Monituer without instant replay

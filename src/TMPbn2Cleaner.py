@@ -7,6 +7,8 @@ import io
 import os
 import math
 import bisect
+import tkinter as tk
+from tkinter import filedialog
 
 
 IMP = [10, 40, 80, 120, 160, 210, 260, 310, 360, 420, 490, 590, 740, 890, 1090, 1290, 
@@ -59,19 +61,25 @@ def write_playernames_to_file(output_file, sorted_boards):
 
 def main():
 
-    print("Table Manager PBN cleaner, Version 1.0.7")
-    # Create an ArgumentParser object
-    parser = argparse.ArgumentParser(description="")
+    print("Table Manager PBN cleaner, Version 1.0.8")
+    # create a root window
+    root = tk.Tk()
+    root.withdraw()
 
-    # Add a positional argument for the name
-    parser.add_argument("input", help="filename for conversion")
-    parser.add_argument("output", help="filename for conversion")
+    # specify the allowed file types
+    file_types = [
+        ("PBN files", "*.pbn"),  # Example: Only allow .txt files
+        ("All files", "*.*")     # Allow all files (in case the user wants to choose other formats)
+    ]
+    # open the file dialog box
+    file_path = filedialog.askopenfilename(initialdir=".", filetypes=file_types)
 
-    # Parse the command-line arguments
-    args = parser.parse_args()
+    # print the selected file path
+    if not file_path:
+        sys.exit(1)
 
     # Call the function to remove lines and save the file
-    fakefile = remove_feasability_lines(args.input)
+    fakefile = remove_feasability_lines(file_path)
 
     try:
         boards = pbn.load(fakefile)
@@ -127,10 +135,18 @@ def main():
         )
 
      # Construct the output file
-    output_file_path = args.output
-    selected_attributes = ['board_num', 'dealer', 'vul', 'deal']
+    # Split the file path into directory and filename
+    directory, filename = os.path.split(file_path)
 
-    with open(output_file_path, 'w') as output_file:
+    # Insert "DDS" at the beginning of the filename
+    new_filename = "Cleaned_" + filename
+
+    # Get the file path to save the data
+    output_file = filedialog.asksaveasfile(defaultextension=".pbn", initialdir=directory, filetypes=file_types, initialfile=new_filename)
+
+    if output_file is not None:
+        selected_attributes = ['board_num', 'dealer', 'vul', 'deal']
+
         new_boards = []
 
         for index, board in enumerate(boards[0::2], start=1):
@@ -141,8 +157,11 @@ def main():
             new_boards.append(new_board)
 
         pbn.dump(new_boards, output_file)
-
-    print(f"{output_file_path} generated")
+        # Close the file after writing
+        output_file.close()
+        print(f"{output_file.name} generated")
+    else:
+        print("File not saved")
 
 
 if __name__ == "__main__":

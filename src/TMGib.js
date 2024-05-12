@@ -860,7 +860,7 @@ Options:
 
 async function main() {
 
-    console.log(`[${timeString()}] Table manager interface for GIB version 1.0.8 starting.`)
+    console.log(`[${timeString()}] Table manager interface for GIB version 1.0.9 starting.`)
 
     const argv = minimist(process.argv.slice(2), {
         string: ['seat', 'name', 'ip', 'port', 'timing', 'bidding', 'delay', 'gibdir', 'verbose', 'oppquality', 'simdecl', 'simdef', 'speed', 'gibson'],
@@ -901,6 +901,11 @@ async function main() {
 
     // Set parameters based on parsed arguments
     parameters.seat = argv.seat;
+    if (parameters.seat.toUpperCase() != "NORTH" && parameters.seat.toUpperCase() != "EAST" && parameters.seat.toUpperCase() != "SOUTH" && parameters.seat.toUpperCase() != "WEST") {
+        console.log(`[${timeString()}] Invalid seat: ${parameters.seat}`);
+        displayUsage();
+        process.exit(1);
+    }
     parameters.name = argv.name;
     parameters.ip = argv.ip;
     parameters.port = argv.port;

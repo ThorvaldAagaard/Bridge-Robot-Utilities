@@ -53,6 +53,23 @@ def load(fin):
             hands_pbn = extract_value(line)
         else:
             continue
+    # pick up any pending deals
+    if dealer != None:
+        v = False
+        if (vulnerable == "All" or vulnerable == "Both"):
+            v = True
+        if (declarer == "N" or declarer == "S") and (vulnerable == "NS" or vulnerable == "N-S"):
+            v= True
+        if (declarer == "E" or declarer == "W") and (vulnerable == "EW" or vulnerable == "E-W"):
+            v= True
+        X = scoring.score(contract_parts, v , int(result))
+        if declarer == "E":
+            X = -X
+        if declarer == "W":
+            X= -X
+        #print(f"Appending board {board}")
+        data_list.append((int(board), vulnerable, declarer, contract_parts, int(result), X))
+        dealer= None
     return data_list
 
 def extract_value(s: str) -> str:
@@ -95,8 +112,8 @@ def main():
 
     #print(data_list)
     for i in range(0, len(data_list), 2):
-        if (i+1 >= len(data_list)): 
-            continue
+        #if (i > len(data_list)): 
+        #    continue
         imp = compare.get_imps(data_list[i][-1],data_list[i+1][-1])
         # Sum positive and negative imp values
         if imp > 0:
@@ -107,17 +124,15 @@ def main():
         merged_tuple = data_list[i] + data_list[i + 1][2:] + (imp,)
         new_data_list.append(merged_tuple)
 
-    #print(new_data_list)
-
     # Sort the data_list based on the imp value in descending order
     sorted_data = sorted(new_data_list, key=lambda x: x[0], reverse=False)
 
     # Generate the HTML tables
-    table1_html = "<table class='border-collapse table-container'>"
-    table1_html += "<tr><th>Board</th><th>Contract</th><th>Tricks</th><th>Result</th><th>Contract</th><th>Tricks</th><th>Result</th><th class='align-right'>Imps (+)</th><th class='align-right'>Imps (-)</th></tr>"
+    table1_html = "<table class='border-collapse table-container'>\n"
+    table1_html += "<tr><th>Board</th><th>Contract</th><th>Tricks</th><th>Result</th><th>Contract</th><th>Tricks</th><th>Result</th><th class='align-right'>Imps (+)</th><th class='align-right'>Imps (-)</th></tr>\n"
 
-    table2_html = "<table class='border-collapse table-container'>"
-    table2_html += "<tr><th>Board</th><th>Contract</th><th>Tricks</th><th>Result</th><th>Contract</th><th>Tricks</th><th>Result</th><th class='align-right'>Imps (+)</th><th class='align-right'>Imps (-)</th></tr>"
+    table2_html = "<table class='border-collapse table-container'>\n"
+    table2_html += "<tr><th>Board</th><th>Contract</th><th>Tricks</th><th>Result</th><th>Contract</th><th>Tricks</th><th>Result</th><th class='align-right'>Imps (+)</th><th class='align-right'>Imps (-)</th></tr>\n"
 
     for i, board_data in enumerate(sorted_data):
         board, vul, declarer1, contract1, result1, score1, declarer2, contract2, result2, score2, imp = board_data

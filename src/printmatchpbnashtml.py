@@ -23,11 +23,12 @@ def load(fin):
                     v= True
                 if (declarer == "E" or declarer == "W") and (vulnerable == "EW" or vulnerable == "E-W"):
                     v= True
-                X = scoring.score(contract_parts, v , int(result))
-                if declarer == "E":
-                    X = -X
-                if declarer == "W":
-                    X= -X
+                if (contract_parts != ""):
+                    X = scoring.score(contract_parts, v , int(result))
+                    if declarer == "E":
+                        X = -X
+                    if declarer == "W":
+                        X= -X
                 #print(f"Appending board {board}")
                 data_list.append((int(board), vulnerable, declarer, contract_parts, int(result), X))
                 dealer= None
@@ -37,6 +38,9 @@ def load(fin):
             declarer = extract_value(line)
         if line.startswith('[Contract'):
             contract_parts = extract_value(line.upper())
+            if contract_parts == "":
+                print(f"contract is empty {board}")
+                print(line)
         if line.startswith('[Board'):
             board = extract_value(line)
             if not board.isdigit():

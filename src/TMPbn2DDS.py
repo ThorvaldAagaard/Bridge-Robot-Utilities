@@ -21,6 +21,8 @@ def room_to_numeric(room):
 
 
 def modify_event_string(original_string):
+    if original_string == '[Event ""]':
+        return original_string
     match = re.match(r'\[Event\s"([^"]+)"\]', original_string)
     if match:
         return original_string  # Return if the name is already in quotes
@@ -57,7 +59,7 @@ def update_event_and_feasability(file_path):
 
 def main():
 
-    print("PBN cleaner for DDS, Version 1.0.8")
+    print("PBN cleaner for DDS, Version 1.0.9")
     # create a root window
     root = tk.Tk()
     root.withdraw()

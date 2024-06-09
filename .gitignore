@@ -22,3 +22,6 @@ rpdd/X.npy
 rpdd/rpdd.zrd
 rpdd/rpdd.zdd
 src/Random B1-256-GIB.*
+src/github_issues.csv
+src/*.lin
+

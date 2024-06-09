@@ -112,6 +112,12 @@ def main():
     # Insert "DDS" at the beginning of the filename
     new_filename = filename
 
+    # specify the allowed file types
+    file_types = [
+        ("PBN files", "*.lin"),  # Example: Only allow .txt files
+        ("All files", "*.*")     # Allow all files (in case the user wants to choose other formats)
+    ]
+
     # Get the file path to save the data
     output_file = filedialog.asksaveasfile(defaultextension=".lin", initialdir=directory, filetypes=file_types, initialfile=new_filename)
 

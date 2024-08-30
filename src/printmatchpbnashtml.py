@@ -80,7 +80,7 @@ def extract_value(s: str) -> str:
     return s[s.index('"') + 1 : s.rindex('"')]
 
 def main():
-    print("HTML Generator fpr PBN, Version 1.0.10")
+    print("HTML Generator fpr PBN, Version 1.0.11")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -153,7 +153,15 @@ def main():
         imp_negative = f"<td class='align-right'>{abs(imp) if imp < 0 else '--'}</td>"
 
         # Add class to the row based on imp value
-        row_class = "positive-imp" if imp > 0 else "negative-imp" if imp < 0 else "zero-imp"
+        row_class = "zero-imp"
+        if imp > 0:
+            row_class = "positive-imp"
+        if imp < 0:
+            row_class = "negative-imp"
+        if imp > 6:
+            row_class = "good-imp"
+        if imp < -6:
+            row_class = "bad-imp"
         row_height_class = "row-height"
         row_html = f"<tr class='{row_class} {row_height_class}'><td class='align-center'><a href='BEN.htm#Board{board}Open'>{board}</a></td><td>{declarer1} {contract1}</td>{tricks1}{res1}<td>{declarer2} {contract2}</td>{tricks2}{res2}{imp_positive}{imp_negative}</tr>\n"
 
@@ -185,8 +193,10 @@ def main():
         "<style>\n"
             ".th { background-color: #4a86e8; color: white; }\n"
             ".align-right { text-align: right; }\n"
-            ".positive-imp { background-color: #b8e994; }\n"
-            ".negative-imp { background-color: #ff7675; }\n"
+            ".good-imp { background-color: #a0c15a; }\n"
+            ".bad-imp { background-color: #ff8c5a; }\n"
+            ".positive-imp { background-color: #add633; }\n"
+            ".negative-imp { background-color: #ffb234; }\n"
             ".zero-imp { background-color: white; }\n"
             ".align-center { text-align: center; }\n"
             ".row-height { height: 22px; }\n"

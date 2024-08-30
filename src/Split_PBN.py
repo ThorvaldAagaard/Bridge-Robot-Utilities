@@ -67,9 +67,17 @@ def update_event_and_feasability(file_path):
 
     return fake_file
 
+def getScore(str):
+    if "NS" in str:
+        return int(str.split(" ")[1])
+    
+    elif "EW" in str:
+        return -int(str.split(" ")[1])
+    return 0
+
 def main():
 
-    print("PBN -> Lin, Version 1.0.11")
+    print("Split PBN in 3 files. Doubled and making, more than 2000 from par, and the rest, Version 1.0.11")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -99,38 +107,42 @@ def main():
         sys.exit(1)
 
     # Don't use unicode
+    db_making = []
+    disaster = []
+    ok_boards = []
     config.use_unicode = False
+    for i in range(len(boards)):
+        skip = False
+        if boards[i].contract.penalty > 1:
+            if boards[i].contract.result > 0:
+                print(boards[i].board_num, boards[i].contract,  boards[i].info.Score, boards[i].info.OptimumScore)
+                db_making.append(boards[i])
+                skip = True
 
-    print(f"No of boards {len(boards)}")
+        NS_Score = getScore(boards[i].info.Score)
+        PAR_Score = getScore(boards[i].info.OptimumScore)
+        if abs(NS_Score - PAR_Score) > 2000:
+            print(boards[i].board_num, boards[i].contract,  boards[i].info.Score, boards[i].info.OptimumScore)
+            disaster.append(boards[i])
+            skip = True
 
-    #for raw_key, value in boards[0].info.items():
-    #    print(raw_key, value)
+        if not skip:
+            ok_boards.append(boards[i])
 
-    # Split the file path into directory and filename
-    directory, filename = os.path.split(file_path)
+    print(f"No of OK boards {len(ok_boards)}")
+    with open("OK_boards.pbn", 'w') as output_file:
+        pbn.dump(ok_boards, output_file)
+        print(f"OK_boards.pbn generated")
 
-    # Insert "DDS" at the beginning of the filename
-    new_filename = filename
+    print(f"No of disaster boards {len(disaster)}")
+    with open("disaster.pbn", 'w') as output_file:
+        pbn.dump(disaster, output_file)
+        print(f"disaster.pbn generated")
 
-    # specify the allowed file types
-    file_types = [
-        ("PBN files", "*.lin"),  # Example: Only allow .txt files
-        ("All files", "*.*")     # Allow all files (in case the user wants to choose other formats)
-    ]
-
-    # Get the file path to save the data
-    output_file = filedialog.asksaveasfile(defaultextension=".lin", initialdir=directory, filetypes=file_types, initialfile=new_filename)
-
-    if output_file is not None:
-        # Save the data to the selected file
-        lin.dump(boards, output_file)
-
-        # Close the file after writing
-        output_file.close()
-        print(f"{output_file.name} generated")
-    else:
-        print("File not saved")
-
+    print(f"No of db making boards {len(db_making)}")
+    with open("db_making.pbn", 'w') as output_file:
+        pbn.dump(db_making, output_file)
+        print(f"db_making.pbn generated")
 
 if __name__ == "__main__":
     main()

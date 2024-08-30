@@ -29,7 +29,7 @@ def remove_feasability_lines(file_path):
 
 
 def main():
-    print("Calculate match from PBN, Version 1.0.8")
+    print("Calculate match from PBN, Version 1.0.11")
 
     parser = argparse.ArgumentParser(description="Calculate a match from 2 PBN files and create a single PBN file.")
     parser.add_argument("-o", "--open", default="open.PBN", help="Name of the open room file.")

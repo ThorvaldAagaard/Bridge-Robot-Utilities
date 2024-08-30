@@ -94,7 +94,7 @@ This utility will take a pbn-file from Bridge Moniteur with instant replay and r
 
 # printmatchashtml
 
-Based on the output from TMPbn2DDS this utility will create an index file with the results from all boards and with a link to each Board played. The link is to a file called BEN.htm, and is expected to be produces using Bridge Composer (using the script format match and save as HTML).
+Based on the output from TMPbn2DDS this utility will create an index file with the results from all boards and with a link to each Board played. The link is to a file called BEN.htm, and is expected to be produces using Bridge Composer (using the script FormatMatch and Save as HTML).
 
 # TMPbn2Cleaner
 
@@ -109,3 +109,12 @@ Scans a directory (including subdirectories) and merge all PBN-files into one ne
 
 # CountPBNBoards
 Count the number of boards in a PBN-file
+
+# RenumberPBNBoards
+Renumber all boards in a PBN-file
+
+# Split_PBN
+Based on Double Dummy results in the PBN-file, this application split the file in three. Doubled contracts making, result more than 2000 away from the par result and the rest
+
+# PBN2LinUI
+A simple application, that converts a PBN-file to a LIN-file

@@ -4,7 +4,7 @@
 a = Analysis(
     ['..\\src\\PBN2LIN.py'],
     pathex=[],
-    binaries=[],
+    binaries=[('..\\bin\\dds.dll', '.')],
     datas=[],
     hiddenimports=[],
     hookspath=[],

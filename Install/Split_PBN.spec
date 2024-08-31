@@ -4,7 +4,7 @@
 a = Analysis(
     ['..\\src\\Split_PBN.py'],
     pathex=[],
-    binaries=[],
+    binaries=[('..\\bin\\dds.dll', '.')],
     datas=[],
     hiddenimports=[],
     hookspath=[],

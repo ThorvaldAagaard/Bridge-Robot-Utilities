@@ -7,7 +7,7 @@ block_cipher = None
 a = Analysis(
     ['..\\src\\TMPbn2LinVG.py'],
     pathex=[],
-    binaries=[],
+    binaries=[('..\\bin\\dds.dll', '.')],
     datas=[],
     hiddenimports=[],
     hookspath=[],

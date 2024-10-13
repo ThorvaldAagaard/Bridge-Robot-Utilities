@@ -110,8 +110,8 @@ Scans a directory (including subdirectories) and merge all PBN-files into one ne
 # CountPBNBoards
 Count the number of boards in a PBN-file
 
-# RenumberPBNBoards
-Renumber all boards in a PBN-file
+# ResetAndRenumberPBNBoards
+Renumber all boards in a PBN-file. Be aware that any play information is removed in the processing
 
 # Split_PBN
 Based on Double Dummy results in the PBN-file, this application split the file in three. Doubled contracts making, result more than 2000 away from the par result and the rest

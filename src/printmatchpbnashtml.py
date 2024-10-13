@@ -80,7 +80,7 @@ def extract_value(s: str) -> str:
     return s[s.index('"') + 1 : s.rindex('"')]
 
 def main():
-    print("HTML Generator fpr PBN, Version 1.0.11")
+    print("HTML Generator fpr PBN, Version 1.0.12")
     # create a root window
     root = tk.Tk()
     root.withdraw()

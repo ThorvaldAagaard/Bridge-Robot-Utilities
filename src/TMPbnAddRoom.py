@@ -1,6 +1,5 @@
 import sys
 import endplay.parsers.pbn as pbn
-import endplay.parsers.lin as lin
 from endplay.types.board import Board
 import endplay.config as config
 import os
@@ -57,19 +56,10 @@ def update_event_and_feasability(file_path):
 
     return fake_file
 
-def update_event_and_feasability(file_path):
-    # Read the contents of the file
-    with open(file_path, 'r') as f:
-        lines = f.readlines()
-
-    # Create an in-memory file-like object
-    fake_file = io.StringIO(''.join(lines))
-
-    return fake_file
 
 def main():
 
-    print("PBN -> Lin, Version 1.0.12")
+    print("PBN add room, Version 1.0.12")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -100,24 +90,42 @@ def main():
 
     # Don't use unicode
     config.use_unicode = False
+    room = ["Open", "Closed"]
 
-    print(f"No of boards {len(boards)}")
+    # Loop through the array and set the alternating text attribute
+    for i, board in enumerate(boards):
+        board.info.room = room[i % len(room)]
+        if boards[i].board_num != i // 2 + 1:
+            print("Missing a board:",i // 2 + 1)
+            sys.exit()
 
-    #for raw_key, value in boards[0].info.items():
-    #    print(raw_key, value)
+    # Sort the array of Board objects based on board.number and board.info.room
+    boards = sorted(
+        boards,
+        key=lambda board: (board.board_num, room_to_numeric(board.info.room))
+    )
+
+    # Loop through the array and set the alternating text attribute
+    for i, board in enumerate(boards):
+        board.board_num = (i // 2) + 1
+        board.info.scoring = "IMP"
+        if board.contract.declarer in (0, 2):
+            board.info.score = f'NS {board.contract.score(board.vul)}'
+        else:
+            board.info.score = f'EW {board.contract.score(board.vul)}'
 
     # Split the file path into directory and filename
     directory, filename = os.path.split(file_path)
 
     # Insert "DDS" at the beginning of the filename
-    new_filename = filename
+    new_filename = "Room_" + filename
 
     # Get the file path to save the data
-    output_file = filedialog.asksaveasfile(defaultextension=".lin", initialdir=directory, filetypes=file_types, initialfile=new_filename)
+    output_file = filedialog.asksaveasfile(defaultextension=".pbn", initialdir=directory, filetypes=file_types, initialfile=new_filename)
 
     if output_file is not None:
         # Save the data to the selected file
-        lin.dump(boards, output_file)
+        pbn.dump(boards, output_file)
 
         # Close the file after writing
         output_file.close()

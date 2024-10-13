@@ -25,7 +25,7 @@ def remove_feasability_lines(file_path):
 
 def main():
 
-    print("PBN Renumber boards, Version 1.0.11")
+    print("PBN Renumber boards, Version 1.0.12")
 
     # create a root window
     root = tk.Tk()
@@ -78,7 +78,7 @@ def main():
         new_boards = []
         number = 1
         for index, board in enumerate(boards):
-            print(board.dealer, board.vul)
+            #print(board.dealer, board.vul)
             if board.dealer > 0:
                 # Switch vulnerabolity
                 if board.dealer != 2:

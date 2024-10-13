@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['..\\src\\RenumberPBNBoards.py'],
+    ['..\\src\\ResetAndRenumberPBNBoards.py'],
     pathex=[],
     binaries=[('..\\bin\\dds.dll', '.')],
     datas=[],
@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='RenumberPBNBoards',
+    name='ResetAndRenumberPBNBoards',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

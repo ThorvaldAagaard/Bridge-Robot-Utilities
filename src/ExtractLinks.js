@@ -3,6 +3,7 @@ const { exec } = require('child_process');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const path = require('path');
+const readline = require('readline');
 
 // Constant for the Bridge Composer application path
 const BRIDGE_COMPOSER_PATH = '"C:\\Program Files\\Bridge Club Software\\BridgeComposer\\BridgeComposer.exe"';
@@ -18,12 +19,20 @@ function timeString() {
     return `${hours}:${minutes}:${seconds}.${milliseconds}`;
 };
 
+function dateString() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const day = String(now.getDate()).padStart(2, '0');
+
+    // Construct the date string in YYYYMMDD format
+    return `${year}${month}${day}`;
+}
 
 function sanitizeFilename(title) {
     // Replace any character that is not a word character (alphanumeric & underscore) or space with an underscore
     return title.replace(/[<>:"\/\\|?*\x00-\x1F]/g, '_').trim().replace(/\s+/g, '_');
 }
-
 // Function to extract links
 async function extractLinks(url) {
     var content = ""
@@ -36,15 +45,46 @@ async function extractLinks(url) {
 
         // Extract the title from the <td> element
         const titleElement = $('td.bbo_tlv').first(); // Use .first() to get the first match
+        var name1 
+        var name2
         if (titleElement.length) {
             pageTitle = titleElement.text().trim(); // Extract and trim the title
+
+            // Extract the usernames from the <th> elements with the class 'username'
+            const usernames = [];
+            $('th.username').each((index, element) => {
+                usernames.push($(element).text().trim());
+            });
+            // Log the names to the console
+            console.log(usernames);
+            if (usernames.length == 2) {
+                name1 = usernames[0]; // first name
+                name2 = usernames[1]; // second name
+                pageTitle = dateString() + "_" + name1 + "_" + name2
+            } else {
+                // Use a regular expression to capture the two names, ignoring the "Friend Challenge: " part
+                const regex = /(\w+)\s*\/\s*(\w+)/;
+                const match = pageTitle.match(regex);
+
+                if (match) {
+                    name1 = match[1]; // first name
+                    name2 = match[2]; // second name
+                    console.log("First name:", name1);
+                    console.log("Second name:", name2);
+                    pageTitle = dateString() + "_" + name1 + "_" + name2
+                } else {
+                    console.log("No match found.");
+                }
+            }
             console.log('Page Title:', pageTitle); // Log the page title
+            console.log(pageTitle)
             pageTitle = sanitizeFilename(pageTitle) + ".pbn"
         } else {
             console.log('Title not found.');
             pageTitle = "test.pbn"
         }
 
+        content = "vg|Robot Challenge,,MP,1,32,"+name1+",0,"+name2+",0|\n"
         var i = 0
         // Find all anchor tags and extract links
         $('a').each((_, element) => {
@@ -71,13 +111,32 @@ async function extractLinks(url) {
     return {content, pageTitle}
 }
 
+function askForUrl() {
+    return new Promise((resolve) => {
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+        
+        rl.question('Please enter the URL: ', (url) => {
+            rl.close();
+            resolve(url); // Resolve the promise with the user-provided URL
+        });
+    });
+}
+
 async function main() {
     // Check if a URL is passed as a command-line argument
-    const webpageUrl = process.argv[2]; // Get the URL from the command line
+    console.log(process.argv)
+    var webpageUrl = process.argv[2]; // Get the URL from the command line
     if (!webpageUrl) {
-        console.error('Please provide a URL as a command-line argument.');
-        process.exit(1); // Exit the program with an error code
-    }    const currentDirectory = process.cwd();
+        if (!webpageUrl) {
+            webpageUrl = await askForUrl(); // Await the user input
+            console.log(`You entered: ${webpageUrl}`);
+        }
+    }    
+    
+    const currentDirectory = process.cwd();
 
     console.log("Requesting", webpageUrl)
     // Run ExtractLinks logic and save to test.pbn
@@ -139,14 +198,25 @@ async function updateFileContent(filePath) {
     // Read the existing content
     let content = await fs.promises.readFile(filePath, 'utf8');
 
-    // Replace the line starting with %PipColors
-    const newContent = content.split('\n').map(line => {
-        // Check if the line starts with %PipColors
+    const newContent = content
+    .split('\n')
+    .map(line => {
+        // Replace the line starting with %PipColors
         if (line.startsWith('%PipColors')) {
-            return '// %PipColors #0000ff,#ff0000,#ffc000,#008000'; // Replace with the new line
+            return '%PipColors #0000ff,#ff0000,#ffc000,#008000'; // Replace with the new line
+        }
+        // Skip the line if it matches '[Event ""]'
+        if (line.startsWith('[Event ""]')) {
+            return null; // Return null to indicate this line should be removed
+        }
+        if (line.startsWith('[Event "')) {
+            line = line.replace('[Event "', '[Event "##');
+            return line
         }
         return line; // Return the original line if no match
-    }).join('\n'); // Rejoin the lines to form the updated content
+    })
+    .filter(line => line !== null) // Filter out any null entries to delete them
+    .join('\n'); // Rejoin the lines to form the updated content
 
     console.log(`Content updated: ${filePath}`);
     // Write the updated content back to the file

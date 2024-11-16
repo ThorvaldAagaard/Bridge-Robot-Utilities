@@ -1,11 +1,15 @@
 import requests
 import pandas as pd
+import os
 
 # Replace with your personal access token and repository details
-GITHUB_TOKEN = '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'
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 REPO_OWNER = 'edwardpiwowar'
 REPO_NAME = 'BBA'
 API_URL = f'https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/issues'
+
+if not GITHUB_TOKEN:
+    raise ValueError("GitHub token not found. Please set it as an environment variable.")
 
 # Headers for the request
 headers = {

@@ -100,8 +100,7 @@ def main():
         for i, board in enumerate(boards):
             board.info.room = room[i % len(room)]
             if boards[i].board_num != i // 2 + 1:
-                print("Missing a board:",i // 2 + 1)
-                sys.exit()
+                print(f"Missing a board. Found {boards[i].board_num} expected {i // 2 + 1}")
 
     else:
         # From Blue Chip, or Bridge Monituer without instant replay

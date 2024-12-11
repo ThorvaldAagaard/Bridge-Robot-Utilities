@@ -110,6 +110,11 @@ def main():
         print('Error:', ex)
         raise ex
 
+    if len(data_list) % 2 != 0:
+        print("Error: The number of boards must be even.")
+        input("\n Press any key to exit...")
+        sys.exit(1)
+
     new_data_list = []
     positive_imp_sum = 0
     negative_imp_sum = 0

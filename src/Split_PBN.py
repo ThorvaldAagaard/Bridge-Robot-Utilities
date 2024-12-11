@@ -11,6 +11,7 @@ from tkinter import filedialog, ttk
 from collections import Counter
 from colorama import Fore, Back, Style, init
 import threading
+import pickle
 
 # Define a function to convert room values to numeric values for sorting
 
@@ -80,7 +81,17 @@ def getScore(str):
         return -int(str.split(" ")[1])
     return 0
 
+def load_optimumscores(pickle_path):
+    with open(pickle_path, 'rb') as pkl_file:
+        return pickle.load(pkl_file)
+
+def lookup(data, deal_line):
+    return data.get(deal_line, None)
+
 def process_file(file_path, info_label,progress_window, progress_bar):
+
+    pickle_path = 'DatumScores.pkl'
+    data = load_optimumscores(pickle_path)
 
     # Once done, update the label to show completion message
     info_label.config(text="Removing bad text in files")
@@ -109,11 +120,11 @@ def process_file(file_path, info_label,progress_window, progress_bar):
     disaster = []
     ok_boards = []
     duplicates = []
+    missing = []
     # Count the occurrences of each line
     deal_count = Counter()
 
-    print(Fore.GREEN,end="")
-    print(f"Loaded {len(boards)} boards")
+    print(f"{Fore.GREEN}Loaded {len(boards)} boards{Fore.RESET}")
 
     config.use_unicode = False
     for i in range(len(boards)):
@@ -127,9 +138,15 @@ def process_file(file_path, info_label,progress_window, progress_bar):
 
         skip = False
         if boards[i].info.OptimumScore is None:
-            print(Fore.RED,end="")
-            print("No optimum score for board", boards[i].deal)
-            continue
+            deal_line = f'[Deal "{boards[i].deal.to_pbn()}"]'  # Replace with an actual deal line
+            optimumScore = lookup(data, deal_line)
+            if optimumScore is None:
+                print(f"{Fore.RED}No optimum score for board{Fore.RESET}", deal_line)
+                missing.append(boards[i])
+                continue
+        else:   
+            optimumScore = boards[i].info.OptimumScore
+            
 
         if boards[i].contract.penalty > 1:
             if boards[i].contract.result >= 0:
@@ -143,7 +160,7 @@ def process_file(file_path, info_label,progress_window, progress_bar):
                 db_not_making.append(boards[i])
 
         NS_Score = getScore(boards[i].info.Score)
-        PAR_Score = getScore(boards[i].info.OptimumScore)
+        PAR_Score = getScore(optimumScore)
         if abs(NS_Score - PAR_Score) > 2000:
             #print(boards[i].board_num, boards[i].contract,  boards[i].info.Score, boards[i].info.OptimumScore)
             disaster.append(boards[i])
@@ -158,26 +175,29 @@ def process_file(file_path, info_label,progress_window, progress_bar):
     # Once done, update the label to show completion message
     info_label.config(text="Writing results")
 
-    print(Fore.WHITE,end="")
-    with open("OK_boards.pbn", 'w') as output_file:
+    with open(f"{file_path}-OK_boards.pbn", 'w') as output_file:
         pbn.dump(ok_boards, output_file)
         print(f"OK_boards.pbn with {len(ok_boards)} deals generated")
 
-    with open("disaster.pbn", 'w') as output_file:
+    with open(f"{file_path}-disaster.pbn", 'w') as output_file:
         pbn.dump(disaster, output_file)
-        print(f"disaster.pbn with {len(disaster)} deals generated")
+        print(f"{file_path}-disaster.pbn with {len(disaster)} deals generated")
 
-    with open("db_making.pbn", 'w') as output_file:
+    with open(f"{file_path}-db_making.pbn", 'w') as output_file:
         pbn.dump(db_making, output_file)
-        print(f"db_making.pbn with {len(db_making)} deals generated")
+        print(f"{file_path}-db_making.pbn with {len(db_making)} deals generated")
 
-    with open("db_not_making.pbn", 'w') as output_file:
+    with open(f"{file_path}-db_not_making.pbn", 'w') as output_file:
         pbn.dump(db_not_making, output_file)
-        print(f"db_not_making.pbn with {len(db_not_making)} deals generated")
+        print(f"{file_path}-db_not_making.pbn with {len(db_not_making)} deals generated")
 
-    with open("duplicates.pbn", 'w') as output_file:
+    with open(f"{file_path}-duplicates.pbn", 'w') as output_file:
         pbn.dump(duplicates, output_file)
-        print(f"duplicates.pbn with {len(duplicates)} deals generated")
+        print(f"{file_path}-duplicates.pbn with {len(duplicates)} deals generated")
+
+    with open(f"{file_path}-missing-DD.pbn", 'w') as output_file:
+        pbn.dump(missing, output_file)
+        print(f"{file_path}-missing-DD.pbn with {len(missing)} deals generated")
 
     # Once done, update the label to show completion message
     info_label.config(text="Files generated")

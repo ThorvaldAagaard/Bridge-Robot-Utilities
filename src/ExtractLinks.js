@@ -26,7 +26,7 @@ function dateString() {
     const day = String(now.getDate()).padStart(2, '0');
 
     // Construct the date string in YYYYMMDD format
-    return `${year}${month}${day}`;
+    return `${year}.${month}.${day}`;
 }
 
 function sanitizeFilename(title) {
@@ -209,8 +209,18 @@ async function updateFileContent(filePath) {
         if (line.startsWith('[Event ""]')) {
             return null; // Return null to indicate this line should be removed
         }
+        // Skip the line if it matches '[Event ""]'
+        if (line.startsWith('[Date ""]')) {
+            return null; // Return null to indicate this line should be removed
+        }
+        // Skip the line if it matches '[Event ""]'
+        if (line.startsWith('[Site ""]')) {
+            return null; // Return null to indicate this line should be removed
+        }
         if (line.startsWith('[Event "')) {
             line = line.replace('[Event "', '[Event "##');
+            line += "[Site \"##BBO\"]\n";
+            line += "[Date \"##"+dateString()+"\"]";
             return line
         }
         return line; // Return the original line if no match

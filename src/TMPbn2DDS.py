@@ -59,7 +59,7 @@ def update_event_and_feasability(file_path):
 
 def main():
 
-    print("PBN cleaner for DDS, Version 1.0.12")
+    print("PBN cleaner for DDS, Version 1.0.13")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -94,8 +94,8 @@ def main():
 
     # If two first boards have the same number we assume it is from Bridge Moniteur
     BM = boards[0].board_num == boards[1].board_num
-    print("File from Bridge Monituer")
     if (BM):
+        print("File from Bridge Monituer")
         # Loop through the array and set the alternating text attribute
         for i, board in enumerate(boards):
             board.info.room = room[i % len(room)]
@@ -103,14 +103,22 @@ def main():
                 print(f"Missing a board. Found {boards[i].board_num} expected {i // 2 + 1}")
 
     else:
+        # Sort the array of Board objects based on board.number 
+        boards = sorted(
+            boards,
+            key=lambda board: (board.board_num)
+        )
         # From Blue Chip, or Bridge Monituer without instant replay
         # Loop through the array and set the alternating text attribute
         for i, board in enumerate(boards):
+
             if board.info.room is None:
-                if i < len(boards) / 2:
+                if i % 2 == 0:
                     board.info.room = room[0]
                 else:
                     board.info.room = room[1]
+            print(board.board_num, board.info.room)
+
 
     if (BM):
         # From Bridge Moniteur
@@ -126,12 +134,6 @@ def main():
             board.info.east = board.info.south
             board.info.south = board.info.west
             board.info.west = temp
-    else:
-        # Sort the array of Board objects based on board.number and board.info.room
-        boards = sorted(
-            boards,
-            key=lambda board: (board.board_num, room_to_numeric(board.info.room))
-        )
 
     # Loop through the array and set the alternating text attribute
     for i, board in enumerate(boards):

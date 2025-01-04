@@ -11,8 +11,7 @@ Install/dist/GIB/sys.ns
 Install/dist/GIB/sys.ew
 Install/dist/GIB/EVAL.DAT
 src/draft
-Install/dist/TMPbn2Cleaner.exe
-Install/dist/*.pbn
+Install/dist
 src/*.sql
 src/*.pbn
 Install/dist/*.exe
@@ -26,3 +25,4 @@ src/github_issues.csv
 src/*.lin
 
 src/Round 1
+src/DatumScores.pkl

@@ -5,6 +5,8 @@ python -m PyInstaller MergePBNFiles.spec
 python -m PyInstaller CountPBNBoards.spec
 python -m PyInstaller TMPbn2Cleaner.spec
 python -m PyInstaller TMPbn2DDS.spec 
+python -m PyInstaller comparematchpbnashtml.spec
+python -m PyInstaller listmatchpbnashtml.spec
 python -m PyInstaller printmatchpbnashtml.spec
 python -m PyInstaller CalculateMatch.spec
 python -m PyInstaller ResetAndRenumberPBNBoards.spec

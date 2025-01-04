@@ -25,7 +25,7 @@ def remove_feasability_lines(file_path):
 
 def main():
 
-    print("PBN Renumber boards, Version 1.0.12")
+    print("PBN Renumber boards, Version 1.0.13")
 
     # create a root window
     root = tk.Tk()

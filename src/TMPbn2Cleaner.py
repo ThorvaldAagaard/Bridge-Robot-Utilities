@@ -61,7 +61,7 @@ def write_playernames_to_file(output_file, sorted_boards):
 
 def main():
 
-    print("Table Manager PBN cleaner, Version 1.0.12")
+    print("Table Manager PBN cleaner, Version 1.0.13")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -96,43 +96,49 @@ def main():
 
     # If two first boards have the same number we assume it is from Bridge Moniteur
     BM = boards[0].board_num == boards[1].board_num
-    if (BM):
-        # Loop through the array and set the alternating text attribute
-        for i, board in enumerate(boards):
-            if board.info.room == None:
-                board.info.room = room[i % len(room)]
-        # Perhaps we should renumber all boards - making it optional
+    print("Number of boards:", len(boards))
+    print("Last board:", boards[len(boards)-1].board_num)
+    one_set = boards[len(boards)-1].board_num == len(boards)
+    print(one_set)
+    if not one_set:
+        if (BM):
+            # Loop through the array and set the alternating text attribute
+            for i, board in enumerate(boards):
+                if board.info.room == None:
+                    board.info.room = room[i % len(room)]
+            # Perhaps we should renumber all boards - making it optional
 
-    else:
-        # From Blue Chip, or Bridge Monituer without instant replay
-        # Loop through the array and set the alternating text attribute
-        for i, board in enumerate(boards):
-            if board.info.room is None:
-                if i < len(boards) / 2:
-                    board.info.room = room[0]
-                else:
-                    board.info.room = room[1]
+        else:
+            # From Blue Chip, or Bridge Monituer without instant replay
+            # Loop through the array and set the alternating text attribute
+            for i, board in enumerate(boards):
+                if board.info.room is None:
+                    if i < len(boards) / 2:
+                        board.info.room = room[0]
+                    else:
+                        board.info.room = room[1]
 
-    if (BM):
-        # From Bridge Moniteur
-        # Now all the boards in the closed room is rotated 90 degress, so we need to rotate it back.
-        for index, board in enumerate(boards[1::2]):
-            original_index = 2 * index + 1
-            boards[original_index].deal = boards[original_index -  1].deal
-            boards[original_index].vul = boards[original_index -  1].vul
-            boards[original_index].dealer = boards[original_index -  1].dealer
-            board.contract.declarer = ((board.contract.declarer - 1) + 4) % 4
-            temp = board.info.north
-            board.info.north = board.info.east
-            board.info.east = board.info.south
-            board.info.south = board.info.west
-            board.info.west = temp
-    else:
-        # Sort the array of Board objects based on board.number and board.info.room
-        boards = sorted(
-            boards,
-            key=lambda board: (board.board_num, room_to_numeric(board.info.room))
-        )
+    if not one_set:
+        if (BM):
+            # From Bridge Moniteur
+            # Now all the boards in the closed room is rotated 90 degress, so we need to rotate it back.
+            for index, board in enumerate(boards[1::2]):
+                original_index = 2 * index + 1
+                boards[original_index].deal = boards[original_index -  1].deal
+                boards[original_index].vul = boards[original_index -  1].vul
+                boards[original_index].dealer = boards[original_index -  1].dealer
+                board.contract.declarer = ((board.contract.declarer - 1) + 4) % 4
+                temp = board.info.north
+                board.info.north = board.info.east
+                board.info.east = board.info.south
+                board.info.south = board.info.west
+                board.info.west = temp
+        else:
+            # Sort the array of Board objects based on board.number and board.info.room
+            boards = sorted(
+                boards,
+                key=lambda board: (board.board_num, room_to_numeric(board.info.room))
+            )
 
      # Construct the output file
     # Split the file path into directory and filename
@@ -149,12 +155,14 @@ def main():
 
         new_boards = []
 
-        for index, board in enumerate(boards[0::2], start=1):
+        for index, board in enumerate(boards, start=1):
+            
             attributes = {attr: getattr(board, attr) for attr in selected_attributes}
             attributes['info'] = Board.Info()  # Add an empty 'info' dictionary
             new_board = Board(**attributes)  # Create a new Board object with selected attributes
             new_board.board_num = index  # Set the 'board_num' attribute explicitly
-            new_boards.append(new_board)
+            if one_set or index % 2 == 0:
+                new_boards.append(new_board)
 
         pbn.dump(new_boards, output_file)
         # Close the file after writing

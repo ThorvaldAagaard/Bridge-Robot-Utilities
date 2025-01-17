@@ -160,7 +160,7 @@ def main():
             attributes = {attr: getattr(board, attr) for attr in selected_attributes}
             attributes['info'] = Board.Info()  # Add an empty 'info' dictionary
             new_board = Board(**attributes)  # Create a new Board object with selected attributes
-            new_board.board_num = index  # Set the 'board_num' attribute explicitly
+            new_board.board_num = index // 2  # Set the 'board_num' attribute explicitly
             if one_set or index % 2 == 0:
                 new_boards.append(new_board)
 

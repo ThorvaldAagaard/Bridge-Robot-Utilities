@@ -74,6 +74,7 @@ def update_event_and_feasability(file_path):
 def getScore(str):
     if str == None:
         return 0
+    print(str)
     if "NS" in str:
         return int(str.split(" ")[1])
     
@@ -86,7 +87,11 @@ def load_optimumscores(pickle_path):
         return pickle.load(pkl_file)
 
 def lookup(data, deal_line):
-    return data.get(deal_line, None)
+    value = data.get(deal_line, None)
+    score, par_contract, vulnerable = value
+    optimum_score = score.split("\"")[1]
+    return optimum_score, par_contract, vulnerable
+
 
 def process_file(file_path, info_label,progress_window, progress_bar):
 
@@ -130,21 +135,27 @@ def process_file(file_path, info_label,progress_window, progress_bar):
     for i in range(len(boards)):
         if (i+1) % 10000 == 0:
             print("Processed",i+1)
-        if deal_count[boards[i].deal.to_pbn()] > 0:
+        if deal_count[boards[i].deal.to_pbn()] > 1:
             #print(Fore.GREEN,end="")
-            #print(f"Duplicate deal: {boards[i].deal.to_pbn()}")
+            print(f"Duplicate deal {boards[i].board_num}: {boards[i].deal.to_pbn()} {deal_count[boards[i].deal.to_pbn()]}")
             duplicates.append(boards[i])
             continue
+        print("Adding:",boards[i].deal.to_pbn())
+        deal_count[boards[i].deal.to_pbn()] += 1
 
         skip = False
         if boards[i].info.OptimumScore is None:
             deal_line = f'[Deal "{boards[i].deal.to_pbn()}"]'  # Replace with an actual deal line
-            optimumScore = lookup(data, deal_line)
+            optimumScore,_,_ = lookup(data, deal_line)
             if optimumScore is None:
-                print(f"{Fore.RED}No optimum score for board{Fore.RESET}", deal_line)
+                print(f"{Fore.RED}{i+1} No optimum score for board {boards[i].board_num}{Fore.RESET}", deal_line)
                 missing.append(boards[i])
                 continue
+            else:
+                boards[i].info.OptimumScore = optimumScore
+                print(f"{Fore.RED}{i+1} Optimum score for board {boards[i].board_num} found in archive:  {optimumScore} {Fore.RESET}")
         else:   
+            print(f"{Fore.RED}{i} Optimum score for board  {boards[i].board_num}: {boards[i].info.OptimumScore}{Fore.RESET}")
             optimumScore = boards[i].info.OptimumScore
             
 
@@ -162,12 +173,11 @@ def process_file(file_path, info_label,progress_window, progress_bar):
         NS_Score = getScore(boards[i].info.Score)
         PAR_Score = getScore(optimumScore)
         if abs(NS_Score - PAR_Score) > 2000:
-            #print(boards[i].board_num, boards[i].contract,  boards[i].info.Score, boards[i].info.OptimumScore)
+            print(boards[i].board_num, boards[i].contract,  boards[i].info.Score, boards[i].info.OptimumScore, NS_Score, PAR_Score, optimumScore)
             disaster.append(boards[i])
             continue
 
         ok_boards.append(boards[i])
-        deal_count[boards[i].deal.to_pbn()] += 1
         # Update the progress bar
         progress_bar["value"] = i
     
@@ -175,29 +185,35 @@ def process_file(file_path, info_label,progress_window, progress_bar):
     # Once done, update the label to show completion message
     info_label.config(text="Writing results")
 
-    with open(f"{file_path}-OK_boards.pbn", 'w') as output_file:
-        pbn.dump(ok_boards, output_file)
-        print(f"OK_boards.pbn with {len(ok_boards)} deals generated")
+    if len(ok_boards) > 0:
+        with open(f"{file_path}-OK_boards.pbn", 'w') as output_file:
+            pbn.dump(ok_boards, output_file)
+            print(f"OK_boards.pbn with {len(ok_boards)} deals generated")
 
-    with open(f"{file_path}-disaster.pbn", 'w') as output_file:
-        pbn.dump(disaster, output_file)
-        print(f"{file_path}-disaster.pbn with {len(disaster)} deals generated")
+    if len(disaster) > 0:
+        with open(f"{file_path}-disaster.pbn", 'w') as output_file:
+            pbn.dump(disaster, output_file)
+            print(f"{file_path}-disaster.pbn with {len(disaster)} deals generated")
 
-    with open(f"{file_path}-db_making.pbn", 'w') as output_file:
-        pbn.dump(db_making, output_file)
-        print(f"{file_path}-db_making.pbn with {len(db_making)} deals generated")
+    if len(db_making) > 0:
+        with open(f"{file_path}-db_making.pbn", 'w') as output_file:
+            pbn.dump(db_making, output_file)
+            print(f"{file_path}-db_making.pbn with {len(db_making)} deals generated")
 
-    with open(f"{file_path}-db_not_making.pbn", 'w') as output_file:
-        pbn.dump(db_not_making, output_file)
-        print(f"{file_path}-db_not_making.pbn with {len(db_not_making)} deals generated")
+    if len(db_not_making) > 0:
+        with open(f"{file_path}-db_not_making.pbn", 'w') as output_file:
+            pbn.dump(db_not_making, output_file)
+            print(f"{file_path}-db_not_making.pbn with {len(db_not_making)} deals generated")
 
-    with open(f"{file_path}-duplicates.pbn", 'w') as output_file:
-        pbn.dump(duplicates, output_file)
-        print(f"{file_path}-duplicates.pbn with {len(duplicates)} deals generated")
+    if len(duplicates) > 0:
+        with open(f"{file_path}-duplicates.pbn", 'w') as output_file:
+            pbn.dump(duplicates, output_file)
+            print(f"{file_path}-duplicates.pbn with {len(duplicates)} deals generated")
 
-    with open(f"{file_path}-missing-DD.pbn", 'w') as output_file:
-        pbn.dump(missing, output_file)
-        print(f"{file_path}-missing-DD.pbn with {len(missing)} deals generated")
+    if len(missing) > 0:
+        with open(f"{file_path}-missing-DD.pbn", 'w') as output_file:
+            pbn.dump(missing, output_file)
+            print(f"{file_path}-missing-DD.pbn with {len(missing)} deals generated")
 
     # Once done, update the label to show completion message
     info_label.config(text="Files generated")

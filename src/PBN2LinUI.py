@@ -114,7 +114,7 @@ def main():
 
     # specify the allowed file types
     file_types = [
-        ("PBN files", "*.lin"),  # Example: Only allow .txt files
+        ("LIN files", "*.lin"),  # Example: Only allow .txt files
         ("All files", "*.*")     # Allow all files (in case the user wants to choose other formats)
     ]
 

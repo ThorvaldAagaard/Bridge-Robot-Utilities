@@ -10,7 +10,7 @@ function timeString() {
     return `${hours}:${minutes}:${seconds}.${milliseconds}`;
 };
 
-console.log(`[${timeString()}] Table manager mediator for Blue Chip Bridge version 1.0.8 starting.`)
+console.log(`[${timeString()}] Table manager mediator version 1.0.14 for Blue Chip Bridge starting.`)
 
 const bcPort1 = 2001;
 const bmPort1 = 2000;

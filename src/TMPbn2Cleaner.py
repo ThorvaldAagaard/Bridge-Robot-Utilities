@@ -61,7 +61,7 @@ def write_playernames_to_file(output_file, sorted_boards):
 
 def main():
 
-    print("Table Manager PBN cleaner, Version 1.0.13")
+    print("Table Manager PBN cleaner, Version 1.0.14")
     # create a root window
     root = tk.Tk()
     root.withdraw()

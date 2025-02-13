@@ -138,7 +138,7 @@ def extract_value(s: str) -> str:
     return s[s.index('"') + 1 : s.rindex('"')]
 
 def main():
-    print("List matches as html, Version 1.0.13")
+    print("List matches as html, Version 1.0.14")
     # create a root window
     root = tk.Tk()
     root.withdraw()

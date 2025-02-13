@@ -11,6 +11,7 @@ from tkinter import filedialog, messagebox
 def load(fin):
     data_list = []
     dealer = ""
+    board = 0
     dealer, vulnerable = None, None
     for line in fin:
         #print(line)
@@ -66,12 +67,13 @@ def load(fin):
             v= True
         if (declarer == "E" or declarer == "W") and (vulnerable == "EW" or vulnerable == "E-W"):
             v= True
-        X = scoring.score(contract_parts, v , int(result))
-        if declarer == "E":
-            X = -X
-        if declarer == "W":
-            X= -X
-        #print(f"Appending board {board}")
+        if (contract_parts != ""):
+            X = scoring.score(contract_parts, v , int(result))
+            if declarer == "E":
+                X = -X
+            if declarer == "W":
+                X= -X
+            #print(f"Appending board {board}")
         data_list.append((int(board), vulnerable, declarer, contract_parts, int(result), X))
         dealer= None
     return data_list
@@ -80,7 +82,7 @@ def extract_value(s: str) -> str:
     return s[s.index('"') + 1 : s.rindex('"')]
 
 def main():
-    print("Compare match as html, Version 1.0.13")
+    print("Compare match as html, Version 1.0.14")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -125,13 +127,8 @@ def main():
         print('Error:', ex)
         raise ex
 
-    if len(data_list1) % 2 != 0:
-        print("Error: The number of boards must be even.")
-        input("\n Press any key to exit...")
-        sys.exit(1)
-
-    if len(data_list2) % 2 != 0:
-        print("Error: The number of boards must be even.")
+    if len(data_list1) % 2 != 0 or len(data_list2) % 2 != 0:
+        print(f"Error: The number of boards must be even. {len(data_list1)} and {len(data_list2)} boards found. " )
         input("\n Press any key to exit...")
         sys.exit(1)
 

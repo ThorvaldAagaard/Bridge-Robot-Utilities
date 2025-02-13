@@ -118,3 +118,12 @@ Based on Double Dummy results in the PBN-file, this application split the file i
 
 # PBN2LinUI
 A simple application, that converts a PBN-file to a LIN-file
+
+# csvlin2pbn
+Convert a csv-file from Danish Bridge federation to a .PBN-file
+
+# ExtractLinks
+Extract challenge match from BBO as PBN
+
+# comparematchpbnashtml
+Compare two matches (typical replay between robots) and present the result as html

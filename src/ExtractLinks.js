@@ -234,6 +234,6 @@ async function updateFileContent(filePath) {
     console.log(`File updated: ${filePath}`);
 }
 
-console.log(`[${timeString()}] Extract challenge match from BBO as PBN. version 1.0.13 starting.`)
+console.log(`[${timeString()}] Extract challenge match from BBO as PBN. version 1.0.14 starting.`)
 
 main();

@@ -1,5 +1,6 @@
 call pkg -t node16 ..\src\TMGib.js -o dist/TMGib.exe
 call pkg -t node16 ..\src\TMMediator.js -o dist/TMMediator.exe
+call pkg -t node16 ..\src\ExtractLinks.js -o dist/ExtractLinks.exe
 python -m PyInstaller TMPbn2LinVG.spec 
 python -m PyInstaller MergePBNFiles.spec
 python -m PyInstaller CountPBNBoards.spec
@@ -13,3 +14,4 @@ python -m PyInstaller ResetAndRenumberPBNBoards.spec
 python -m PyInstaller PBN2LinUI.spec
 python -m PyInstaller PBN2Lin.spec
 python -m PyInstaller Split_PBN.spec
+python -m PyInstaller csvlin2pbn.spec

@@ -228,7 +228,7 @@ def check_thread_status(thread, root):
 
 def main():
 
-    print("Split PBN in 3 files. Doubled and making, more than 2000 from par, and the rest, Version 1.0.13")
+    print("Split PBN in 3 files. Doubled and making, more than 2000 from par, and the rest, Version 1.0.14")
     # create a root window
     root = tk.Tk()
     root.withdraw()

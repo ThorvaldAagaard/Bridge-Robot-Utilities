@@ -6,6 +6,10 @@ import compare
 import tkinter as tk
 from tkinter import filedialog, messagebox
 
+import endplay.parsers.pbn as pbn
+import endplay.parsers.lin as lin
+import webbrowser
+
 # Read the file line by line and process each JSON object
 
 def load(fin):
@@ -82,7 +86,7 @@ def extract_value(s: str) -> str:
     return s[s.index('"') + 1 : s.rindex('"')]
 
 def main():
-    print("Compare match as html, Version 1.0.14")
+    print("Compare match as html, Version 1.0.15")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -117,8 +121,12 @@ def main():
 
     try:
         with open(file1, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding
+            pbn_boards1 = pbn.load(file)
+        with open(file1, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding
             lines = file.readlines()
         data_list1 = load(lines)
+        with open(file2, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding
+            pbn_boards2 = pbn.load(file)
         with open(file2, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding
             lines = file.readlines()
         data_list2 = load(lines)
@@ -155,7 +163,9 @@ def main():
         else:
             negative_imp_sum1 += imp
 
-        merged_tuple = data_list1[i] + data_list1[i + 1][2:] + (imp,)
+        lin_board_open1 = lin.LINEncoder().serialise_board(pbn_boards1[i ])
+        lin_board_closed1 = lin.LINEncoder().serialise_board(pbn_boards1[i + 1])
+        merged_tuple = data_list1[i] + data_list1[i + 1][2:] + (imp,) + (lin_board_open1, lin_board_closed1)
         new_data_list1.append(merged_tuple)
 
     #print(data_list)
@@ -169,7 +179,9 @@ def main():
         else:
             negative_imp_sum2 += imp
 
-        merged_tuple = data_list2[i] + data_list2[i + 1][2:] + (imp,)
+        lin_board_open2 = lin.LINEncoder().serialise_board(pbn_boards2[i ])
+        lin_board_closed2 = lin.LINEncoder().serialise_board(pbn_boards2[i + 1])
+        merged_tuple = data_list2[i] + data_list2[i + 1][2:] + (imp,)  + (lin_board_open2, lin_board_closed2)
         new_data_list2.append(merged_tuple)
 
     # Sort the data_list based on the imp value in descending order
@@ -180,7 +192,7 @@ def main():
     table1_html += "<tr><th>Board</th><th>Contract</th><th>Tricks</th><th>Result</th><th>Contract</th><th>Tricks</th><th>Result</th><th class='align-right'>Imps (+)</th><th class='align-right'>Imps (-)</th></tr>\n"
     row_html = ""
     for i, board_data in enumerate(sorted_data):
-        board, vul, declarer1, contract1, result1, score1, declarer2, contract2, result2, score2, imp = board_data
+        board, vul, declarer1, contract1, result1, score1, declarer2, contract2, result2, score2, imp, lin_open, lin_closed = board_data
 
         #print(board_data)
         # Align right for Result and Tricks columns
@@ -193,13 +205,18 @@ def main():
         imp_positive = f"<td class='align-right'>{imp if imp > 0 else '--'}</td>"
         imp_negative = f"<td class='align-right'>{abs(imp) if imp < 0 else '--'}</td>"
 
+        link_open = "https://www.bridgebase.com/tools/handviewer.html?lin=" + lin_open
+        link_closed = "https://www.bridgebase.com/tools/handviewer.html?lin=" + lin_closed
+        contract_open = f"<a href='{link_open}' target='_blank'>{declarer1} {contract1}</a>"
+        contract_closed = f"<a href='{link_closed}' target='_blank'>{declarer2} {contract2}</a>"
+
         # Add class to the row based on imp value
         row_class = "zero-imp"
         row_height_class = "row-height"
-        row_html += f"<tr class='{row_class} {row_height_class}'><td class='align-center'><a href='Match{i % 2 + 1}.htm#Board{board}Open'>{board}</a></td><td>{declarer1} {contract1}</td>{tricks1}{res1}<td>{declarer2} {contract2}</td>{tricks2}{res2}{imp_positive}{imp_negative}</tr>\n"
+        row_html += f"<tr class='{row_class} {row_height_class}'><td class='align-center'><a href='Match{i % 2 + 1}.htm#Board{board}Open'>{board}</a></td><td>{contract_open}</td>{tricks1}{res1}<td>{contract_closed}</td>{tricks2}{res2}{imp_positive}{imp_negative}</tr>\n"
         if i % 2 == 1:
             imp_change = imp - sorted_data[i - 1][-1]
-            if imp_change == 0:
+            if abs(imp_change) < 10:
                 row_html = ""
                 continue
             if imp_change > 0:
@@ -233,14 +250,27 @@ def main():
     else:
         win_html2 = "<h1>Match 2: It is a draw</h1>\n"
 
+    if getattr(sys, 'frozen', False):
+        # Running as bundled
+        base_path = sys._MEIPASS
+    else:
+        # Running normally
+        base_path = os.path.dirname(__file__)
+
+    css_path = os.path.join(base_path, 'viz.css')
+
+    # Read the CSS file
+    with open(css_path, 'r') as f:
+        css_content = f.read()
+
     html_content = (
         "<!DOCTYPE html>\n"
         "<html lang='en'>\n"
         "<head>\n"
         "<meta charset='utf-8'>\n"
         "<title>Match deal</title>\n"
-        "<link rel='stylesheet' href='viz.css'>\n"
         "<style>\n"
+            f"{css_content}\n"
             ".th { background-color: #4a86e8; color: white; }\n"
             ".align-right { text-align: right; }\n"
             ".good-imp { background-color: #a0c15a; }\n"
@@ -273,10 +303,15 @@ def main():
     directory, _ = os.path.split(file1)
 
     # Get the file path to save the data
-    output_file = filedialog.asksaveasfile(defaultextension=".html", initialdir=directory, filetypes=file_types_html, initialfile="index.html")
+    output_file = filedialog.asksaveasfile(defaultextension=".html", initialdir=directory, filetypes=file_types_html, initialfile="compareindex.html")
+    if output_file is None:
+        return
     output_file.writelines(html_content)
     output_file.close()
     print(f"{output_file.name} generated")
+
+    # After closing the file
+    webbrowser.open(f'file://{output_file.name}')
 
 
 if __name__ == "__main__":

@@ -6,6 +6,10 @@ import compare
 import tkinter as tk
 from tkinter import filedialog
 
+import endplay.parsers.pbn as pbn
+import endplay.parsers.lin as lin
+import webbrowser
+
 # Read the file line by line and process each JSON object
 
 def load(fin):
@@ -80,7 +84,7 @@ def extract_value(s: str) -> str:
     return s[s.index('"') + 1 : s.rindex('"')]
 
 def main():
-    print("Print match as html, Version 1.0.14")
+    print("Print match as html, Version 1.0.15")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -103,6 +107,9 @@ def main():
 
     try:
         with open(file_path, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding
+            pbn_boards = pbn.load(file)
+
+        with open(file_path, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding
             lines = file.readlines()
         data_list = load(lines)
 
@@ -121,8 +128,8 @@ def main():
 
     #print(data_list)
     for i in range(0, len(data_list), 2):
-        #if (i > len(data_list)): 
-        #    continue
+        lin_board_open = lin.LINEncoder().serialise_board(pbn_boards[i ])
+        lin_board_closed = lin.LINEncoder().serialise_board(pbn_boards[i + 1])
         imp = compare.get_imps(data_list[i][-1],data_list[i+1][-1])
         # Sum positive and negative imp values
         if imp > 0:
@@ -130,7 +137,7 @@ def main():
         else:
             negative_imp_sum += imp
 
-        merged_tuple = data_list[i] + data_list[i + 1][2:] + (imp,)
+        merged_tuple = data_list[i] + data_list[i + 1][2:] + (imp,) + (lin_board_open, lin_board_closed)
         new_data_list.append(merged_tuple)
 
     # Sort the data_list based on the imp value in descending order
@@ -144,7 +151,7 @@ def main():
     table2_html += "<tr><th>Board</th><th>Contract</th><th>Tricks</th><th>Result</th><th>Contract</th><th>Tricks</th><th>Result</th><th class='align-right'>Imps (+)</th><th class='align-right'>Imps (-)</th></tr>\n"
 
     for i, board_data in enumerate(sorted_data):
-        board, vul, declarer1, contract1, result1, score1, declarer2, contract2, result2, score2, imp = board_data
+        board, vul, declarer1, contract1, result1, score1, declarer2, contract2, result2, score2, imp, lin_open, lin_closed = board_data
 
         #print(board_data)
         # Align right for Result and Tricks columns
@@ -157,6 +164,11 @@ def main():
         imp_positive = f"<td class='align-right'>{imp if imp > 0 else '--'}</td>"
         imp_negative = f"<td class='align-right'>{abs(imp) if imp < 0 else '--'}</td>"
 
+        link_open = "https://www.bridgebase.com/tools/handviewer.html?lin=" + lin_open
+        link_closed = "https://www.bridgebase.com/tools/handviewer.html?lin=" + lin_closed
+        contract_open = f"<a href='{link_open}' target='_blank'>{declarer1} {contract1}</a>"
+        contract_closed = f"<a href='{link_closed}' target='_blank'>{declarer2} {contract2}</a>"
+
         # Add class to the row based on imp value
         row_class = "zero-imp"
         if imp > 0:
@@ -168,7 +180,7 @@ def main():
         if imp < -6:
             row_class = "bad-imp"
         row_height_class = "row-height"
-        row_html = f"<tr class='{row_class} {row_height_class}'><td class='align-center'><a href='BEN.htm#Board{board}Open'>{board}</a></td><td>{declarer1} {contract1}</td>{tricks1}{res1}<td>{declarer2} {contract2}</td>{tricks2}{res2}{imp_positive}{imp_negative}</tr>\n"
+        row_html = f"<tr class='{row_class} {row_height_class}'><td class='align-center'>{board}</a></td><td>{contract_open}</td>{tricks1}{res1}<td>{contract_closed}</td>{tricks2}{res2}{imp_positive}{imp_negative}</tr>\n"
 
         # Split rows evenly between the two tables
         if i < len(sorted_data) / 2:
@@ -181,12 +193,26 @@ def main():
 
     # Print the winner at the top of the tables with <h1> tags
     total_imp_sum = positive_imp_sum + negative_imp_sum
+
     if total_imp_sum > 0:
-        win_html = f"<h1>NS wins by {total_imp_sum}</h1>\n"
+        win_html = f"<h1>{pbn_boards[0].info.north} wins by {total_imp_sum}</h1>\n"
     elif total_imp_sum < 0:
-        win_html = f"<h1>EW wins by {abs(total_imp_sum)}</h1>\n"
+        win_html = f"<h1>{pbn_boards[0].info.east} wins by {abs(total_imp_sum)}</h1>\n"
     else:
         win_html = "<h1>It is a draw</h1>\n"
+
+    if getattr(sys, 'frozen', False):
+        # Running as bundled
+        base_path = sys._MEIPASS
+    else:
+        # Running normally
+        base_path = os.path.dirname(__file__)
+
+    css_path = os.path.join(base_path, 'viz.css')
+
+    # Read the CSS file
+    with open(css_path, 'r') as f:
+        css_content = f.read()
 
     html_content = (
         "<!DOCTYPE html>\n"
@@ -194,8 +220,8 @@ def main():
         "<head>\n"
         "<meta charset='utf-8'>\n"
         "<title>Match deal</title>\n"
-        "<link rel='stylesheet' href='viz.css'>\n"
         "<style>\n"
+            f"{css_content}\n"
             ".th { background-color: #4a86e8; color: white; }\n"
             ".align-right { text-align: right; }\n"
             ".good-imp { background-color: #a0c15a; }\n"
@@ -226,11 +252,20 @@ def main():
         # Split the file path into directory and filename
     directory, _ = os.path.split(file_path)
 
+    file_path = file_path.replace(".pbn", ".html")
+
+
     # Get the file path to save the data
-    output_file = filedialog.asksaveasfile(defaultextension=".html", initialdir=directory, filetypes=file_types_html, initialfile="index.html")
+    output_file = filedialog.asksaveasfile(defaultextension=".html", initialdir=directory, filetypes=file_types_html, initialfile=file_path)
+    if output_file is None:
+        return
     output_file.writelines(html_content)
     output_file.close()
     print(f"{output_file.name} generated")
+
+    # After closing the file
+    webbrowser.open(f'file://{output_file.name}')
+
 
 
 if __name__ == "__main__":

@@ -88,6 +88,8 @@ def load_optimumscores(pickle_path):
 
 def lookup(data, deal_line):
     value = data.get(deal_line, None)
+    if value == None:
+        return None, None, None
     score, par_contract, vulnerable = value
     optimum_score = score.split("\"")[1]
     return optimum_score, par_contract, vulnerable
@@ -153,9 +155,9 @@ def process_file(file_path, info_label,progress_window, progress_bar):
                 continue
             else:
                 boards[i].info.OptimumScore = optimumScore
-                print(f"{Fore.RED}{i+1} Optimum score for board {boards[i].board_num} found in archive:  {optimumScore} {Fore.RESET}")
+                #print(f"{Fore.RED}{i+1} Optimum score for board {boards[i].board_num} found in archive:  {optimumScore} {Fore.RESET}")
         else:   
-            print(f"{Fore.RED}{i} Optimum score for board  {boards[i].board_num}: {boards[i].info.OptimumScore}{Fore.RESET}")
+            #print(f"{Fore.RED}{i} Optimum score for board  {boards[i].board_num}: {boards[i].info.OptimumScore}{Fore.RESET}")
             optimumScore = boards[i].info.OptimumScore
             
 
@@ -228,7 +230,7 @@ def check_thread_status(thread, root):
 
 def main():
 
-    print("Split PBN in 3 files. Doubled and making, more than 2000 from par, and the rest, Version 1.0.14")
+    print("Split PBN in 3 files. Doubled and making, more than 2000 from par, and the rest, Version 1.0.15")
     # create a root window
     root = tk.Tk()
     root.withdraw()

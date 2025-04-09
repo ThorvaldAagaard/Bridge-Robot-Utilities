@@ -1,10 +1,15 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+from PyInstaller.utils.hooks import collect_dynamic_libs
+import endplay._dds
+
+# Collect the dds.dll
+binaries = collect_dynamic_libs('endplay._dds')
 
 a = Analysis(
-    ['..\\src\\listmatchpbnashtm.py'],
+    ['..\\src\\PbnExtractBoards.py'],
     pathex=[],
-    binaries=[],
+    binaries=binaries,
     datas=[],
     hiddenimports=[],
     hookspath=[],
@@ -19,13 +24,16 @@ pyz = PYZ(a.pure)
 exe = EXE(
     pyz,
     a.scripts,
+    a.binaries,
+    a.datas,
     [],
-    exclude_binaries=True,
-    name='listmatchpbnashtm',
+    name='PbnExtractBoards',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
+    upx_exclude=[],
+    runtime_tmpdir=None,
     console=True,
     disable_windowed_traceback=False,
     argv_emulation=False,

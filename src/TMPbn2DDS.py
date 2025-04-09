@@ -49,6 +49,9 @@ def update_event_and_feasability(file_path):
     new_lines = [line for line in lines if not line.startswith('{Feasability:')]
 
     # Filter out lines starting with '{Feasability:'
+    new_lines = [line for line in new_lines if not line.startswith('"')]
+
+    # Filter out lines starting with '{Feasability:'
     lines = [line for line in new_lines if not line.startswith('{PAR of')]
 
     # Create an in-memory file-like object
@@ -59,7 +62,7 @@ def update_event_and_feasability(file_path):
 
 def main():
 
-    print("PBN cleaner for DDS, Version 1.0.14")
+    print("PBN cleaner for DDS, Version 1.0.15")
     # create a root window
     root = tk.Tk()
     root.withdraw()

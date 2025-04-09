@@ -28,7 +28,7 @@ def remove_feasability_lines(file_path):
 
 def main():
 
-    print("Table Manager PBN Extract, Version 1.0.14")
+    print("Table Manager PBN Extract, Version 1.0.15")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -85,12 +85,15 @@ def main():
         new_boards = []
 
         board_num = 1
+        deal = ""
         for board in boards:
             
             attributes = {attr: getattr(board, attr) for attr in selected_attributes}
             attributes['info'] = Board.Info()  # Add an empty 'info' dictionary
             new_board = Board(**attributes)  # Create a new Board object with selected attributes
-            if new_board.board_num == board_num:
+            if new_board.deal != deal:
+                deal = new_board.deal
+                new_board.board_num = board_num
                 new_boards.append(new_board)
                 board_num += 1
 

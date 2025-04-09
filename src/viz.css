@@ -1,4 +1,5 @@
 #deal {
+    position: relative; /* Ensures children are positioned relative to this box */
     border: 1px solid black;
     width: 540px;
     height: 540px;

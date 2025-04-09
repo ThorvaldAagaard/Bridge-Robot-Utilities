@@ -69,7 +69,7 @@ def update_event_and_feasability(file_path):
 
 def main():
 
-    print("PBN -> Lin, Version 1.0.14")
+    print("PBN -> Lin, Version 1.0.15")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -118,6 +118,7 @@ def main():
         ("All files", "*.*")     # Allow all files (in case the user wants to choose other formats)
     ]
 
+    new_filename = filename.replace(".pbn", ".lin")
     # Get the file path to save the data
     output_file = filedialog.asksaveasfile(defaultextension=".lin", initialdir=directory, filetypes=file_types, initialfile=new_filename)
 

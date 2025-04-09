@@ -215,7 +215,7 @@ def main():
         row_height_class = "row-height"
         row_html += f"<tr class='{row_class} {row_height_class}'><td class='align-center'><a href='Match{i % 2 + 1}.htm#Board{board}Open'>{board}</a></td><td>{contract_open}</td>{tricks1}{res1}<td>{contract_closed}</td>{tricks2}{res2}{imp_positive}{imp_negative}</tr>\n"
         if i % 2 == 1:
-            imp_change = imp - sorted_data[i - 1][-1]
+            imp_change = imp - sorted_data[i - 1][10]
             if abs(imp_change) < 10:
                 row_html = ""
                 continue

@@ -1,0 +1,188 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+#deal {
+    position: relative;
+    border: 1px solid black;
+    width: 300px;
+    height: 300px;
+    background-color: #beecef;
+    font-size: 10px; /* REDUCED base font size for hands */
+    box-sizing: border-box;
+    margin: 0px auto;
+}
+
+#north, #south, #east, #west {
+    position: absolute;
+    width: 100px;
+    height: 90px; /* Increased height slightly for padding */
+    padding: 4px; /* INCREASED padding inside hand container */
+    box-sizing: border-box;
+    font-size: 10px; /* Ensure this matches #deal or desired card size */
+}
+
+/* Using the previously confirmed positions */
+#north { top: 10px; left: 110px; text-align: left; }
+#south { top: 200px; left: 110px; text-align: left; } /* Adjusted top slightly */
+#west { top: 105px; left: 10px; text-align: left; }   /* Adjusted top slightly */
+#east { top: 105px; left: 190px; text-align: right; } /* Adjusted top slightly */
+
+.suit {
+    position: relative;
+    margin-top: 5px; 
+    width: 99%;     /* Let width be dictated by parent */
+    height: 18%;    
+    padding-top: 1px;
+    font-size: inherit; 
+    line-height: 1;
+    font-size: 16px;
+}
+.suit span {
+    display: inline-block;
+    width: 12px;
+    vertical-align: middle;
+}
+
+#vul-north {
+    position: absolute;
+    top: 15px;
+    left: 35px;
+    width: 40px;
+    height: 20px;
+}
+
+#vul-west {
+    position: absolute;
+    top: 35px;
+    left: 15px;
+    width: 20px;
+    height: 40px;
+}
+
+#vul-south {
+    position: absolute;
+    top: 75px;
+    left: 35px;
+    width: 40px;
+    height: 20px;
+}
+
+#vul-east {
+    position: absolute;
+    top: 35px;
+    left: 75px;
+    width: 20px;
+    height: 40px;
+}
+
+.red {
+    background-color: red;
+}
+
+.white {
+    background-color: white;
+}
+
+#vul-north .dealer, #vul-south .dealer {
+    margin: auto;
+    position: absolute;
+    top: 2px;
+    left: 14px;
+}
+
+#vul-west .dealer, #vul-east .dealer {
+    margin: auto;
+    position: absolute;
+    top: 11px;
+    left: 4px;
+}
+
+.dealer {
+    font-weight: bold;
+}
+
+.font-red {
+    color: red;
+}
+
+#boardno {
+    position: absolute;
+    border: 1px solid black;
+    border-radius: 3px;
+    left: 41px;
+    top: 45px;
+    width: 26px;
+    text-align: center;
+    background-color: #efcdf5e0;
+}
+
+table { 
+    border-collapse: collapse; 
+    margin: 10px auto; 
+    table-layout: fixed; 
+    width: 100%;
+}
+
+th, td { 
+    border: 1px solid #ccc; 
+    padding: 4px 6px; 
+    text-align: left;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Board Section Layout */
+.board-section {
+    display: flex;
+    flex-wrap: nowrap; /* Allow wrapping on smaller screens */
+    justify-content: space-around;
+    align-items: center; /* Align tops */
+    margin-bottom: 25px;
+    padding: 15px;
+    border: 1px solid #eee; /* Added border to see section */
+}
+.diagram-container {
+    flex: 0 0 320px; /* Fixed width for diagram */
+    margin-right: 20px;
+    margin-bottom: 10px; /* Add margin for wrap */
+}
+
+.results-container {
+    flex-grow: 1;       /* Allow it to take available space */
+    flex-shrink: 1;     /* Allow it to shrink */
+    flex-basis: auto;   /* Let content determine initial size, up to max-width */
+    min-width: 600px;   /* Keep previous minimum */
+    max-width: 1200px;  /* *** ADD THIS LINE *** */
+    overflow-x: auto;   /* Keep horizontal scroll for internal content overflow */
+}
+
+/* Alternating row colors for EVERY row, targeting the correct class */
+.table-container tbody tr:nth-child(odd) { /* Use .table-container */
+    background-color: #ffffff; /* White (or a light color) */
+}
+
+.table-container tbody tr:nth-child(even) { /* Use .table-container */
+    background-color: #f0f0f0; /* Light grey */
+}
+
+/* Ensure header color remains distinct */
+.table-container th {  /* Target th within .table-container */
+    background-color: #4a86e8; /* Blue background */
+    color: white;            /* White text */
+    white-space: nowrap;    /* Prevent wrapping */
+    padding: 5px 4px;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Fixed Column Widths */
+.col-tricks { width: 40px; min-width: 40px;  max-width: 40px; }
+.col-result { width: 55px; min-width: 55px; max-width: 55px; }
+.col-imps { width: 35px; min-width: 35px; max-width: 35px;  } 
+.col-contract { width: 60px; min-width: 60px; max-width: 60px;  }
+.col-name { width: 150px; min-width: 100px; max-width: 300px; }

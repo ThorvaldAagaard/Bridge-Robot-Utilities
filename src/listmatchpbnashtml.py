@@ -23,49 +23,52 @@ def generate_html_card(suit, cards):
 def generate_html_deal(dealer, vulnerable, cards, board_number):
     cards = cards.split(':')[1].split()
     html = f"""
-        <div id='deal'>
-            <div id='dealer-vuln'>
-                <div id='vul-north' class='{"red" if vulnerable in ('N-S', 'Both') else 'white'}'>
-                    {"<span class='dealer'>N</span>" if dealer == 'N' else ''}
+        <div class='board-section'>
+            <div class='diagram-container'>
+                <div id='deal'>
+                    <div id='dealer-vuln'>
+                        <div id='vul-north' class='{"red" if vulnerable in ('N-S', 'Both') else 'white'}'>
+                            {"<span class='dealer'>N</span>" if dealer == 'N' else ''}
+                        </div>
+                        <div id='vul-east' class='{"red" if vulnerable in ('E-W', 'Both') else 'white'}'>
+                            {"<span class='dealer'>E</span>" if dealer == 'E' else ''}
+                        </div>
+                        <div id='vul-south' class='{"red" if vulnerable in ('N-S', 'Both') else 'white'}'>
+                            {"<span class='dealer'>S</span>" if dealer == 'S' else ''}
+                        </div>
+                        <div id='vul-west' class='{"red" if vulnerable in ('E-W', 'Both') else 'white'}'>
+                            {"<span class='dealer'>W</span>" if dealer == 'W' else ''}
+                        </div>
+                        <div id='boardno'>
+                            {board_number}
+                        </div>
+                    </div>
+                    <div id='north'>
+                        {generate_html_card('&spades;', cards[0].split('.')[0])}
+                        {generate_html_card('<span class="font-red">&hearts;</span>', cards[0].split('.')[1])}
+                        {generate_html_card('<span class="font-red">&diams;</span>', cards[0].split('.')[2])}
+                        {generate_html_card('&clubs;', cards[0].split('.')[3])}
+                    </div>
+                    <div id='west'>
+                        {generate_html_card('&spades;', cards[3].split('.')[0])}
+                        {generate_html_card('<span class="font-red">&hearts;</span>', cards[3].split('.')[1])}
+                        {generate_html_card('<span class="font-red">&diams;</span>', cards[3].split('.')[2])}
+                        {generate_html_card('&clubs;', cards[3].split('.')[3])}
+                    </div>
+                    <div id='east'>
+                        {generate_html_card('&spades;', cards[1].split('.')[0])}
+                        {generate_html_card('<span class="font-red">&hearts;</span>', cards[1].split('.')[1])}
+                        {generate_html_card('<span class="font-red">&diams;</span>', cards[1].split('.')[2])}
+                        {generate_html_card('&clubs;', cards[1].split('.')[3])}
+                    </div>
+                    <div id='south'>
+                        {generate_html_card('&spades;', cards[2].split('.')[0])}
+                        {generate_html_card('<span class="font-red">&hearts;</span>', cards[2].split('.')[1])}
+                        {generate_html_card('<span class="font-red">&diams;</span>', cards[2].split('.')[2])}
+                        {generate_html_card('&clubs;', cards[2].split('.')[3])}
+                    </div>
                 </div>
-                <div id='vul-east' class='{"red" if vulnerable in ('E-W', 'Both') else 'white'}'>
-                    {"<span class='dealer'>E</span>" if dealer == 'E' else ''}
-                </div>
-                <div id='vul-south' class='{"red" if vulnerable in ('N-S', 'Both') else 'white'}'>
-                    {"<span class='dealer'>S</span>" if dealer == 'S' else ''}
-                </div>
-                <div id='vul-west' class='{"red" if vulnerable in ('E-W', 'Both') else 'white'}'>
-                    {"<span class='dealer'>W</span>" if dealer == 'W' else ''}
-                </div>
-                <div id='boardno'>
-                    {board_number}
-                </div>
-            </div>
-            <div id='north'>
-                {generate_html_card('&spades;', cards[0].split('.')[0])}
-                {generate_html_card('<span class="font-red">&hearts;</span>', cards[0].split('.')[1])}
-                {generate_html_card('<span class="font-red">&diams;</span>', cards[0].split('.')[2])}
-                {generate_html_card('&clubs;', cards[0].split('.')[3])}
-            </div>
-            <div id='west'>
-                {generate_html_card('&spades;', cards[3].split('.')[0])}
-                {generate_html_card('<span class="font-red">&hearts;</span>', cards[3].split('.')[1])}
-                {generate_html_card('<span class="font-red">&diams;</span>', cards[3].split('.')[2])}
-                {generate_html_card('&clubs;', cards[3].split('.')[3])}
-            </div>
-            <div id='east'>
-                {generate_html_card('&spades;', cards[1].split('.')[0])}
-                {generate_html_card('<span class="font-red">&hearts;</span>', cards[1].split('.')[1])}
-                {generate_html_card('<span class="font-red">&diams;</span>', cards[1].split('.')[2])}
-                {generate_html_card('&clubs;', cards[1].split('.')[3])}
-            </div>
-            <div id='south'>
-                {generate_html_card('&spades;', cards[2].split('.')[0])}
-                {generate_html_card('<span class="font-red">&hearts;</span>', cards[2].split('.')[1])}
-                {generate_html_card('<span class="font-red">&diams;</span>', cards[2].split('.')[2])}
-                {generate_html_card('&clubs;', cards[2].split('.')[3])}
-            </div>
-        </div>"""
+         </div>"""
     return html
 
 
@@ -195,8 +198,10 @@ def main():
 
 
 
-    # Sort the data_list based on the imp value in descending order
+    # Sort the data_list based on board number  
     sorted_data = sorted(new_data_list, key=lambda x: x[0], reverse=False)
+
+    #sorted_data = sorted([x for x in new_data_list if x[0] == 1], key=lambda x: x[1])
 
     # Generate the HTML tables
     row_html = ""
@@ -208,11 +213,25 @@ def main():
         board, ns, ew, dealer, vul, declarer1, contract1, result1, score1, hands_pbn, declarer2, contract2, result2, score2, imp, lin_open, lin_closed = board_data
         if board != old_board:
             if i > 0:
-                table1_html += "</table>\n"
+                table1_html += "</table>\n</div>\n</div>\n"
                 html += table1_html
             html += generate_html_deal(dealer, vul, hands_pbn, board)
-            table1_html = "\n<table class='border-collapse table-container'>\n"
-            table1_html += "<tr><th>Board</th><th>NS</th><th>EW</th><th>Contract</th><th>Tricks</th><th>Result</th><th>NS</th><th>EW</th><th>Contract</th><th>Tricks</th><th>Result</th><th class='align-right'>Imps (+)</th><th class='align-right'>Imps (-)</th></tr>\n"
+            table1_html = "\n<div class='results-container'>\n"
+            table1_html += "\n<table class='border-collapse table-container'>\n"
+            table1_html += "<tr>\n"
+            table1_html += "<th class='col-name'>NS</th>\n"
+            table1_html += "<th class='col-name'>EW</th>\n"
+            table1_html += "<th class='col-contract'>Contract</th>\n"
+            table1_html += "<th class='col-tricks'>Tricks</th>\n"
+            table1_html += "<th class='col-result'>Result</th>\n"
+            table1_html += "<th class='col-name'>NS</th>\n"
+            table1_html += "<th class='col-name'>EW</th>\n"
+            table1_html += "<th class='col-contract'>Contract</th>\n"
+            table1_html += "<th class='col-tricks'>Tricks</th>\n"
+            table1_html += "<th class='col-result'>Result</th>\n"
+            table1_html += "<th class='align-right col-imps'>Imps (+)</th>\n"
+            table1_html += "<th class='align-right col-imps'>Imps (-)</th>\n"
+            table1_html += "</tr>\n"
             old_board = board
         # Align right for Result and Tricks columns
         res1 = f"<td class='align-right'>{score1}</td>" if score1 is not None else "<td class='align-right'></td>"
@@ -229,13 +248,12 @@ def main():
         contract_open = f"<a href='{link_open}' target='_blank'>{declarer1} {contract1}</a>"
         contract_closed = f"<a href='{link_closed}' target='_blank'>{declarer2} {contract2}</a>"
         # Add class to the row based on imp value
-        row_class = "zero-imp"
         row_height_class = "row-height"
-        row_html += f"<tr class='{row_class} {row_height_class}'><td class='align-center'>{board}</td><td>{ns}</td><td>{ew}</td><td>{contract_open}</td>{tricks1}{res1}<td>{ew}</td><td>{ns}</td><td>{contract_closed}</td>{tricks2}{res2}{imp_positive}{imp_negative}</tr>\n"
+        row_html += f"<tr class='{row_height_class}'>\n<td>{ns}</td>\n<td>{ew}</td>\n<td>{contract_open}</td>{tricks1}{res1}<td>{ew}</td>\n<td>{ns}</td>\n<td>{contract_closed}</td>{tricks2}{res2}{imp_positive}{imp_negative}</tr>\n"
         table1_html += row_html
         row_html = ""
 
-    table1_html += "</table>"
+    table1_html += "</table></div</div>\n"
     html += table1_html
 
     if getattr(sys, 'frozen', False):
@@ -245,7 +263,7 @@ def main():
         # Running normally
         base_path = os.path.dirname(__file__)
 
-    css_path = os.path.join(base_path, 'viz.css')
+    css_path = os.path.join(base_path, 'listmatch.css')
 
     # Read the CSS file
     with open(css_path, 'r') as f:
@@ -259,13 +277,7 @@ def main():
         "<title>Match deal</title>\n"
         "<style>\n"
             f"{css_content}\n"
-            ".th { background-color: #4a86e8; color: white; }\n"
             ".align-right { text-align: right; }\n"
-            ".good-imp { background-color: #a0c15a; }\n"
-            ".bad-imp { background-color: #ff8c5a; }\n"
-            ".positive-imp { background-color: #add633; }\n"
-            ".negative-imp { background-color: #ffb234; }\n"
-            ".zero-imp { background-color: white; }\n"
             ".align-center { text-align: center; }\n"
             ".row-height { height: 22px; }\n"
             "</style>\n"

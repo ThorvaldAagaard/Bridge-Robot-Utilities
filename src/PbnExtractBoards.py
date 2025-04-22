@@ -91,7 +91,7 @@ def main():
             attributes = {attr: getattr(board, attr) for attr in selected_attributes}
             attributes['info'] = Board.Info()  # Add an empty 'info' dictionary
             new_board = Board(**attributes)  # Create a new Board object with selected attributes
-            if new_board.deal != deal:
+            if str(new_board.deal) != str(deal):
                 deal = new_board.deal
                 new_board.board_num = board_num
                 new_boards.append(new_board)

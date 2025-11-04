@@ -8,10 +8,16 @@ from tkinter import filedialog, messagebox
 import endplay.parsers.pbn as pbn
 import endplay.parsers.lin as lin
 import webbrowser
+import re
+import urllib.parse
 
 # Read the file line by line and process each JSON object
-import sys
-import os
+
+def encode_annotations(lin):
+    def encode_match(m):
+        text = m.group(1)
+        return f"|an|{urllib.parse.quote(text)}|"
+    return re.sub(r"\|an\|(.*?)\|", encode_match, lin)
 
 def generate_html_card(suit, cards):
     html = f"<div class='suit'><span>{suit}</span>"
@@ -186,8 +192,8 @@ def main():
 
             #print(data_list)
             for i in range(0, len(data_list), 2):
-                lin_board_open = lin.LINEncoder().serialise_board(pbn_boards[i ])
-                lin_board_closed = lin.LINEncoder().serialise_board(pbn_boards[i + 1])
+                lin_board_open = encode_annotations(lin.LINEncoder().serialise_board(pbn_boards[i ]))
+                lin_board_closed = encode_annotations(lin.LINEncoder().serialise_board(pbn_boards[i + 1]))
                 imp = compare.get_imps(data_list[i][-2],data_list[i+1][-2])
                 merged_tuple = data_list[i] + data_list[i + 1][5:-1] + (imp,) + (lin_board_open, lin_board_closed)
                 new_data_list.append(merged_tuple)

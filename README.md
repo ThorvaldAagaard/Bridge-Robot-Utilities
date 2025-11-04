@@ -127,3 +127,10 @@ Extract challenge match from BBO as PBN
 
 # comparematchpbnashtml
 Compare two matches (typical replay between robots) and present the result as html
+Each deal is presented in the handviewer
+
+# listmatchpbnashtml
+Merging multiple PBN-files with the same boards into one html-file, so it is possible to compare all results for a round in the same file
+Each deal is presented in the handviewer.
+The html-page is standalone and require no stylesheet or script
+

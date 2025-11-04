@@ -24,7 +24,7 @@ def remove_feasability_lines(file_path):
 
 def main():
 
-    print("PBN Board Counter, Version 1.0.15")
+    print("PBN Board Counter, Version 1.0.16")
     # Create an ArgumentParser object
     parser = argparse.ArgumentParser(description="Example program with command-line arguments")
 

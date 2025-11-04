@@ -166,7 +166,7 @@ def validate_lead(suit: str, lead: str, contract_type: str):
 
 def main():
 
-    print("Read a PBN-file and validate the opening lead against common rules, Version 1.0.15")
+    print("Read a PBN-file and validate the opening lead against common rules, Version 1.0.16")
     # specify the allowed file types
     file_types = [
         ("PBN files", "*.pbn"),  # Example: Only allow .txt files

@@ -117,11 +117,11 @@ body {
     background-color: #efcdf5e0;
 }
 
-table { 
-    border-collapse: collapse; 
-    margin: 10px auto; 
-    table-layout: fixed; 
-    width: 200px;
+table {
+    border-collapse: collapse;
+    margin: 10px auto;
+    table-layout: fixed;
+    width: 500px;
 }
 
 th, td { 
@@ -181,5 +181,7 @@ th, td {
 }
 
 /* Fixed Column Widths */
-.col-contract { width: 80px; min-width: 80px; max-width: 80px;  }
-.col-name { width: 200px; min-width: 200px; max-width: 200px; }
+.col-contract { width: 80px; min-width: 80px; max-width: 80px; }
+.col-name { width: 120px; min-width: 120px; max-width: 120px; }
+.col-tricks { width: 50px; min-width: 50px; max-width: 50px; text-align: right; }
+.col-result { width: 60px; min-width: 60px; max-width: 60px; text-align: right; }

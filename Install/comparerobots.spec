@@ -8,10 +8,10 @@ binaries = collect_dynamic_libs('endplay._dds')
 
 
 a = Analysis(
-    ['..\\src\\listmatchpbnashtml.py'],
+    ['..\\src\\comparerobots.py'],
     pathex=[],
     binaries=binaries,
-    datas=[('..\\src\\listmatch.css', '.')],
+    datas=[('..\\src\\robotcompare.css', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -28,7 +28,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='listmatchpbnashtml',
+    name='comparerobots',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

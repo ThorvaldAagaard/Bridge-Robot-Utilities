@@ -1,21 +1,34 @@
-This is the output from a match between 4 GIB-robots
+# Example Files
 
-[Match 1.pbn](./Match%201.pbn) is the boards to be played
+Sample files demonstrating robot match setup and output.
 
-[RunBM.cmd](runBM.cmd) starts for robots and expect to connect to Bridge Moniteur
+## Running Robot Matches
 
-[Match- GIBNS v GIBEW](Match-%20GIBNS%20v%20GIBEW.pbn) is the boards after being played. Be aware that BridgeMoniteur is using instant replay and rotating the boards for replay
+| Script | Table Manager | Description |
+|--------|---------------|-------------|
+| [runBM.cmd](runBM.cmd) | Bridge Moniteur | Starts four GIB robots on port 2000 |
+| [runBC.cmd](runBC.cmd) | Blue Chip | Starts robots for Blue Chip Table Manager |
+| [runBBA.cmd](runBBA.cmd) | BBA | Starts robots for BBA |
 
-So here we use [TMPbn2LinVG.exe](../dist/TMPbn2LinVG.exe) to create the lin-file for VuGraph
+## Sample Match Files
 
-The final result is in
-[Match- GIBNS v GIBEW 1-4](Match-%20GIBNS%20v%20GIBEW%201-4.lin)
+[Match 1.pbn](./Match%201.pbn) - Input boards to be played
 
-Final result
+[Match- GIBNS v GIBEW.pbn](Match-%20GIBNS%20v%20GIBEW.pbn) - Output after playing. Note: Bridge Moniteur uses instant replay and rotates boards.
+
+[Match- GIBNS v GIBEW 1-4.lin](Match-%20GIBNS%20v%20GIBEW%201-4.lin) - LIN file created with TMPbn2LinVG for NetBridgeVu viewing
+
 ![Match result](../images/MatchResult.png)
 
-Using Blue CHip Table Manager we use
+## Blue Chip / Bridge Composer Files
 
-[RunBM.cmd](runBM.cmd) tostart the robots.
+Files for formatting Blue Chip robot results using Bridge Composer:
 
-
+| File | Description |
+|------|-------------|
+| [BCConst.js](BCConst.js) | Bridge Composer constants |
+| [BCDeal.js](BCDeal.js) | Bridge Composer deal handling |
+| [TextConvert.wsf](TextConvert.wsf) | Windows Script for text conversion |
+| [txtcvt.wsf](txtcvt.wsf) | Text conversion utility |
+| [Match- GIBNS v GIBEW BC.pbn](Match-%20GIBNS%20v%20GIBEW%20BC.pbn) | Blue Chip match output |
+| [GIBNS v GIBEW.rpt](GIBNS%20v%20GIBEW.rpt) | Match report |

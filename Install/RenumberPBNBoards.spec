@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['..\\src\\ResetAndRenumberPBNBoards.py'],
+    ['..\\src\\RenumberPBNBoards.py'],
     pathex=[],
     binaries=[('..\\bin\\dds.dll', '.')],
     datas=[],

@@ -59,7 +59,7 @@ def update_event_and_feasability(file_path):
 
 def main():
 
-    print("PBN add room, Version 1.0.16")
+    print("PBN add room, Version 1.0.17")
     # create a root window
     root = tk.Tk()
     root.withdraw()

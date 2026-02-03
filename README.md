@@ -129,8 +129,23 @@ Extract challenge match from BBO as PBN
 Compare two matches (typical replay between robots) and present the result as html
 Each deal is presented in the handviewer
 
+# comparerobots
+Select a PBN-file from each robot and create an HTML comparison report showing bidding and play results side-by-side with tricks, scores, IMP differences, and a final summary table
+
 # listmatchpbnashtml
 Merging multiple PBN-files with the same boards into one html-file, so it is possible to compare all results for a round in the same file
 Each deal is presented in the handviewer.
 The html-page is standalone and require no stylesheet or script
+
+# PBN2LIN
+Command-line utility to convert a PBN-file to LIN format. Output filename is optional (defaults to input filename with .lin extension)
+
+# ExtractDatumScore
+Extracts optimum scores and par contracts from a PBN-file and saves them to a pickle file (DatumScores.pkl) for later analysis
+
+# PbnExtractBoards
+Extracts unique boards from a PBN-file, removing duplicate deals and renumbering boards sequentially
+
+# benchmark
+System performance benchmark for comparing machines used in robot matches. Tests NumPy operations (matrix multiply, SVD, FFT), TensorFlow matrix operations (if installed), disk I/O (100MB read/write), and JSON serialization. Produces a weighted score (NumPy 40%, TensorFlow 30%, I/O 20%, JSON 10%) useful for evaluating hardware before running neural-network-based robots like BEN
 

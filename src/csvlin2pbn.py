@@ -52,7 +52,7 @@ def convert_to_pbn(card_string):
 
 def main():
 
-    print("csvLin -> PBN, Version 1.0.16")
+    print("csvLin -> PBN, Version 1.0.17")
     # create a root window
     root = tk.Tk()
     root.withdraw()

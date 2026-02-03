@@ -1,17 +1,11 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-from PyInstaller.utils.hooks import collect_dynamic_libs
-import endplay._dds
-
-# Collect the dds.dll
-binaries = collect_dynamic_libs('endplay._dds')
-
 
 a = Analysis(
-    ['..\\src\\listmatchpbnashtml.py'],
+    ['..\\src\\benchmark.py'],
     pathex=[],
-    binaries=binaries,
-    datas=[('..\\src\\listmatch.css', '.')],
+    binaries=[],
+    datas=[],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -28,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='listmatchpbnashtml',
+    name='benchmark',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

@@ -1,28 +1,17 @@
 node_modules
 package-lock.json
 build
-Install/dist/GIB/bridge.exe
-Install/dist/GIB/Comments.txt
-Install/dist/GIB/EVAL.DAT
-Install/dist/GIB/gib.ini
-Install/dist/GIB/MB.TXT
-Install/dist/Logs
-Install/dist/GIB/sys.ns
-Install/dist/GIB/sys.ew
-Install/dist/GIB/EVAL.DAT
-src/draft
+Install/build
 Install/dist
+src/draft
 src/*.sql
 src/*.pbn
-Install/dist/*.exe
 src/__pycache__
 rpdd/y.npy
 rpdd/X.npy
 rpdd/rpdd.zrd
 rpdd/rpdd.zdd
-src/Random B1-256-GIB.*
 src/github_issues.csv
 src/*.lin
-
-src/Round 1
 src/DatumScores.pkl
+.claude/

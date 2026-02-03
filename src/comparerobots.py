@@ -81,6 +81,8 @@ def generate_html_deal(dealer, vulnerable, cards, board_number):
 def load(fin):
     data_list = []
     dealer = ""
+    ns = ""
+    ew = ""
     dealer, vulnerable, declarer = None, None, None
     result = 0
     for line in fin:
@@ -184,22 +186,13 @@ def main():
                 lines = file.readlines()
             data_list = load(lines)
 
-            if len(data_list) % 2 != 0:
-                print("Error: The number of boards must be even.")
-                input("\n Press any key to exit...")
-                sys.exit(1)
-
-            #print(data_list)
-            for i in range(0, len(data_list), 2):
+            for i in range(0, len(data_list), 1):
                 lin_board_open = encode_annotations(lin.LINEncoder().serialise_board(pbn_boards[i ]))
-                lin_board_closed = encode_annotations(lin.LINEncoder().serialise_board(pbn_boards[i + 1]))
-                imp = compare.get_imps(data_list[i][-2],data_list[i+1][-2])
-                merged_tuple = data_list[i] + data_list[i + 1][5:-1] + (imp,) + (lin_board_open, lin_board_closed)
-                new_data_list.append(merged_tuple)
-
+                data_list[i] = data_list[i] + (lin_board_open,)
         except Exception as ex:
             print('Error:', ex)
             raise ex
+        new_data_list.extend(data_list)
 
 
 
@@ -215,7 +208,7 @@ def main():
     html = ""
     for i, board_data in enumerate(sorted_data):
 
-        board, ns, ew, dealer, vul, declarer1, contract1, result1, score1, hands_pbn, declarer2, contract2, result2, score2, imp, lin_open, lin_closed = board_data
+        board, ns, ew, dealer, vul, declarer1, contract1, result1, score1, hands_pbn, lin_open = board_data
         if board != old_board:
             if i > 0:
                 table1_html += "</table>\n</div>\n</div>\n"
@@ -229,32 +222,18 @@ def main():
             table1_html += "<th class='col-contract'>Contract</th>\n"
             table1_html += "<th class='col-tricks'>Tricks</th>\n"
             table1_html += "<th class='col-result'>Result</th>\n"
-            table1_html += "<th class='col-name'>NS</th>\n"
-            table1_html += "<th class='col-name'>EW</th>\n"
-            table1_html += "<th class='col-contract'>Contract</th>\n"
-            table1_html += "<th class='col-tricks'>Tricks</th>\n"
-            table1_html += "<th class='col-result'>Result</th>\n"
-            table1_html += "<th class='align-right col-imps'>Imps (+)</th>\n"
-            table1_html += "<th class='align-right col-imps'>Imps (-)</th>\n"
             table1_html += "</tr>\n"
             old_board = board
-        # Align right for Result and Tricks columns
-        res1 = f"<td class='align-right'>{score1}</td>" if score1 is not None else "<td class='align-right'></td>"
-        tricks1 = f"<td class='align-right'>{result1}</td>" if result1 is not None else "<td class='align-right'></td>"
-        res2 = f"<td class='align-right'>{score2}</td>" if score2 is not None else "<td class='align-right'></td>"
-        tricks2 = f"<td class='align-right'>{result2}</td>" if result2 is not None else "<td class='align-right'></td>"
 
-        # Split Imps column into positive and negative columns
-        imp_positive = f"<td class='align-right'>{imp if imp > 0 else '--'}</td>"
-        imp_negative = f"<td class='align-right'>{abs(imp) if imp < 0 else '--'}</td>"
+        # Align right for Result and Tricks columns
+        tricks1 = f"<td class='align-right'>{result1}</td>" if result1 is not None else "<td class='align-right'></td>"
+        res1 = f"<td class='align-right'>{score1}</td>" if score1 is not None else "<td class='align-right'></td>"
 
         link_open = "https://www.bridgebase.com/tools/handviewer.html?lin=" + lin_open
-        link_closed = "https://www.bridgebase.com/tools/handviewer.html?lin=" + lin_closed
         contract_open = f"<a href='{link_open}' target='_blank'>{declarer1} {contract1}</a>"
-        contract_closed = f"<a href='{link_closed}' target='_blank'>{declarer2} {contract2}</a>"
         # Add class to the row based on imp value
         row_height_class = "row-height"
-        row_html += f"<tr class='{row_height_class}'>\n<td>{ns}</td>\n<td>{ew}</td>\n<td>{contract_open}</td>{tricks1}{res1}<td>{ew}</td>\n<td>{ns}</td>\n<td>{contract_closed}</td>{tricks2}{res2}{imp_positive}{imp_negative}</tr>\n"
+        row_html += f"<tr class='{row_height_class}'>\n<td>{ns}</td>\n<td>{ew}</td>\n<td>{contract_open}</td>{tricks1}{res1}</tr>\n"
         table1_html += row_html
         row_html = ""
 
@@ -268,7 +247,7 @@ def main():
         # Running normally
         base_path = os.path.dirname(__file__)
 
-    css_path = os.path.join(base_path, 'listmatch.css')
+    css_path = os.path.join(base_path, 'robotcompare.css')
 
     # Read the CSS file
     with open(css_path, 'r') as f:

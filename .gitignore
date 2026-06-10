@@ -3,6 +3,8 @@ package-lock.json
 build
 Install/build
 Install/dist
+Install/.buildenv
+Install/__pycache__
 src/draft
 src/*.sql
 src/*.pbn
@@ -15,3 +17,4 @@ src/github_issues.csv
 src/*.lin
 src/DatumScores.pkl
 .claude/
+src/extractBBA.py

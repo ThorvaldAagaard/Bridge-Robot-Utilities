@@ -3,6 +3,7 @@ import json
 import sys
 import scoring
 import compare
+import lastdir
 import tkinter as tk
 from tkinter import filedialog, messagebox
 import endplay.parsers.pbn as pbn
@@ -75,6 +76,75 @@ def generate_html_deal(dealer, vulnerable, cards, board_number):
                     </div>
                 </div>
          </div>"""
+    return html
+
+
+def team_totals(matches):
+    """Aggregate the per-match IMPs into a per-team (robot) standings list.
+
+    Each match is 'NS vs EW'; the net belongs to NS and the opposite to EW, so a
+    team's totals are summed across every match it played, sorted best first.
+    """
+    teams = {}
+    for m in matches:
+        ns_name, ew_name = m.get('ns'), m.get('ew')
+        if not (ns_name and ew_name):
+            continue
+        ns = teams.setdefault(ns_name, {'label': ns_name, 'played': 0, 'plus': 0, 'minus': 0})
+        ew = teams.setdefault(ew_name, {'label': ew_name, 'played': 0, 'plus': 0, 'minus': 0})
+        ns['played'] += 1; ns['plus'] += m['plus']; ns['minus'] += m['minus']
+        ew['played'] += 1; ew['plus'] += m['minus']; ew['minus'] += m['plus']
+    result = list(teams.values())
+    for t in result:
+        t['net'] = t['plus'] - t['minus']
+    result.sort(key=lambda t: t['net'], reverse=True)
+    return result
+
+
+def generate_match_summary(matches):
+    """Render the per-match IMP results plus a per-team totals table."""
+    html = "<div class='match-summary'>\n"
+    html += "<h2>Match results</h2>\n"
+    html += "<table class='border-collapse table-container'>\n"
+    html += "<tr>\n"
+    html += "<th class='col-name'>Match</th>\n"
+    html += "<th class='align-right'>Boards</th>\n"
+    html += "<th class='align-right col-imps'>Imps (+)</th>\n"
+    html += "<th class='align-right col-imps'>Imps (-)</th>\n"
+    html += "<th class='align-right col-imps'>Net</th>\n"
+    html += "</tr>\n"
+    for m in matches:
+        html += (
+            f"<tr class='row-height'><td>{m['label']}</td>"
+            f"<td class='align-right'>{m['boards']}</td>"
+            f"<td class='align-right'>{m['plus']}</td>"
+            f"<td class='align-right'>{m['minus']}</td>"
+            f"<td class='align-right'>{m['net']}</td></tr>\n"
+        )
+    html += "</table>\n"
+
+    teams = team_totals(matches)
+    if teams:
+        html += "<h2>Team totals</h2>\n"
+        html += "<table class='border-collapse table-container'>\n"
+        html += "<tr>\n"
+        html += "<th class='col-name'>Team</th>\n"
+        html += "<th class='align-right'>Matches</th>\n"
+        html += "<th class='align-right col-imps'>Imps (+)</th>\n"
+        html += "<th class='align-right col-imps'>Imps (-)</th>\n"
+        html += "<th class='align-right col-imps'>Net</th>\n"
+        html += "</tr>\n"
+        for t in teams:
+            html += (
+                f"<tr class='row-height'><td>{t['label']}</td>"
+                f"<td class='align-right'>{t['played']}</td>"
+                f"<td class='align-right'>{t['plus']}</td>"
+                f"<td class='align-right'>{t['minus']}</td>"
+                f"<td class='align-right'>{t['net']}</td></tr>\n"
+            )
+        html += "</table>\n"
+
+    html += "</div>\n"
     return html
 
 
@@ -155,7 +225,7 @@ def extract_value(s: str) -> str:
     return s[s.index('"') + 1 : s.rindex('"')]
 
 def main():
-    print("List matches as html, Version 1.0.17")
+    print("List matches as html, Version 1.0.18")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -171,10 +241,13 @@ def main():
     ]
 
 
-    # open the file dialog box
-    file_paths = filedialog.askopenfilenames(initialdir=".", filetypes=file_types)
+    # open the file dialog box in the folder used last time
+    file_paths = filedialog.askopenfilenames(initialdir=lastdir.get_last_dir(), filetypes=file_types)
+    if file_paths:
+        lastdir.set_last_dir(file_paths[0])
 
     new_data_list = []
+    matches = []
     for file_path in file_paths:
         print(file_path)
         try:
@@ -190,16 +263,45 @@ def main():
                 sys.exit(1)
 
             #print(data_list)
+            imp_plus = 0
+            imp_minus = 0
+            n_pairs = 0
             for i in range(0, len(data_list), 2):
                 lin_board_open = encode_annotations(lin.LINEncoder().serialise_board(pbn_boards[i ]))
                 lin_board_closed = encode_annotations(lin.LINEncoder().serialise_board(pbn_boards[i + 1]))
                 imp = compare.get_imps(data_list[i][-2],data_list[i+1][-2])
                 merged_tuple = data_list[i] + data_list[i + 1][5:-1] + (imp,) + (lin_board_open, lin_board_closed)
                 new_data_list.append(merged_tuple)
+                if imp > 0:
+                    imp_plus += imp
+                elif imp < 0:
+                    imp_minus += -imp
+                n_pairs += 1
 
         except Exception as ex:
             print('Error:', ex)
             raise ex
+
+        if data_list:
+            # Each file is a match between two robots (NS vs EW); label by both
+            # seat names, fall back to the file name if either is missing.
+            ns_name, ew_name = data_list[0][1], data_list[0][2]
+            if ns_name and ew_name:
+                label = f"{ns_name} vs {ew_name}"
+            else:
+                label = os.path.splitext(os.path.basename(file_path))[0]
+            matches.append({
+                'label': label,
+                'boards': n_pairs,
+                'plus': imp_plus,
+                'minus': imp_minus,
+                'net': imp_plus - imp_minus,
+                'ns': ns_name,
+                'ew': ew_name,
+            })
+
+    # Rank the matches by net IMPs, best first
+    matches.sort(key=lambda m: m['net'], reverse=True)
 
 
 
@@ -212,7 +314,7 @@ def main():
     row_html = ""
     old_board = -1
     table1_html = ""
-    html = ""
+    html = generate_match_summary(matches)
     for i, board_data in enumerate(sorted_data):
 
         board, ns, ew, dealer, vul, declarer1, contract1, result1, score1, hands_pbn, declarer2, contract2, result2, score2, imp, lin_open, lin_closed = board_data
@@ -285,6 +387,9 @@ def main():
             ".align-right { text-align: right; }\n"
             ".align-center { text-align: center; }\n"
             ".row-height { height: 22px; }\n"
+            ".match-summary { margin-bottom: 20px; }\n"
+            ".match-summary h2 { text-align: center; }\n"
+            ".match-summary table { width: auto; table-layout: auto; margin: 10px auto; }\n"
             "</style>\n"
         "</head>\n"
         "<body>\n"

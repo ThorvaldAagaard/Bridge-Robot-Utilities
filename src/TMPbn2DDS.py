@@ -1,12 +1,14 @@
 import sys
 import endplay.parsers.pbn as pbn
 from endplay.types.board import Board
+from endplay import Player
 import endplay.config as config
 import os
 import io
 import re
 import tkinter as tk
 from tkinter import filedialog
+import lastdir
 
 # Define a function to convert room values to numeric values for sorting
 
@@ -45,14 +47,35 @@ def update_event_and_feasability(file_path):
         if line.startswith("[Event "):
             lines[i] = modify_event_string(line.strip())
 
-    # Filter out lines starting with '{Feasability:'
-    new_lines = [line for line in lines if not line.startswith('{Feasability:')]
-
-    # Filter out lines starting with '{Feasability:'
-    new_lines = [line for line in new_lines if not line.startswith('"')]
-
-    # Filter out lines starting with '{Feasability:'
-    lines = [line for line in new_lines if not line.startswith('{PAR of')]
+    # Filter out multi-line blocks starting with '{Feasability:', '{PAR ' and lines starting with '"'
+    # Note: Some BM files have malformed blocks where '{Feasability:' has no closing '}'
+    # Also filter empty tags so the parser picks up the real values that appear later
+    empty_tags = ('[Declarer ""]', '[Contract ""]', '[Result ""]')
+    filtered = []
+    inside_block = False
+    for line in lines:
+        if not inside_block:
+            if line.startswith('{Feasability:') or line.startswith('{PAR '):
+                inside_block = True
+                if '}' in line:
+                    inside_block = False
+                continue
+            if line.startswith('"'):
+                continue
+            if line.strip() in empty_tags:
+                continue
+            filtered.append(line)
+        else:
+            if '}' in line:
+                inside_block = False
+                continue
+            if line.startswith('['):
+                # Malformed block without closing '}', stop skipping
+                inside_block = False
+                filtered.append(line)
+                continue
+            continue
+    lines = filtered
 
     # Create an in-memory file-like object
     fake_file = io.StringIO(''.join(lines))
@@ -62,7 +85,7 @@ def update_event_and_feasability(file_path):
 
 def main():
 
-    print("PBN cleaner for DDS, Version 1.0.17")
+    print("PBN cleaner for DDS, Version 1.0.18")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -73,7 +96,9 @@ def main():
         ("All files", "*.*")     # Allow all files (in case the user wants to choose other formats)
     ]
     # open the file dialog box
-    file_path = filedialog.askopenfilename(initialdir=".", filetypes=file_types)
+    file_path = filedialog.askopenfilename(initialdir=lastdir.get_last_dir(), filetypes=file_types)
+    if file_path:
+        lastdir.set_last_dir(file_path)
 
     # print the selected file path
     if not file_path:
@@ -131,7 +156,7 @@ def main():
             boards[original_index].deal = boards[original_index - 1].deal
             boards[original_index].vul = boards[original_index - 1].vul
             boards[original_index].dealer = boards[original_index - 1].dealer
-            board.contract.declarer = ((board.contract.declarer - 1) + 4) % 4
+            board.contract.declarer = Player((board.contract.declarer - 1) % 4)
             temp = board.info.north
             board.info.north = board.info.east
             board.info.east = board.info.south

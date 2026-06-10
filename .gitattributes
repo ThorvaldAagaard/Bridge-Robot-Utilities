@@ -1,0 +1,22 @@
+# Normalize line endings. Text files are stored as LF in the repository and
+# checked out with the platform's native endings. This prevents the whole-file
+# CRLF/LF churn that otherwise shows up when files are re-saved on Windows.
+* text=auto
+
+# Windows batch files need CRLF to be safe
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Keep shell scripts LF
+*.sh text eol=lf
+
+# Binary files git must never touch
+*.dll binary
+*.exe binary
+*.png binary
+*.pdf binary
+*.zip binary
+*.npy binary
+*.pkl binary
+*.zrd binary
+*.zdd binary

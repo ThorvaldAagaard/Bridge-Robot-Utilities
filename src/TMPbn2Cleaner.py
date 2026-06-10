@@ -9,6 +9,7 @@ import math
 import bisect
 import tkinter as tk
 from tkinter import filedialog
+import lastdir
 
 
 IMP = [10, 40, 80, 120, 160, 210, 260, 310, 360, 420, 490, 590, 740, 890, 1090, 1290, 
@@ -61,7 +62,7 @@ def write_playernames_to_file(output_file, sorted_boards):
 
 def main():
 
-    print("Table Manager PBN cleaner, Version 1.0.17")
+    print("Table Manager PBN cleaner, Version 1.0.18")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -72,7 +73,9 @@ def main():
         ("All files", "*.*")     # Allow all files (in case the user wants to choose other formats)
     ]
     # open the file dialog box
-    file_path = filedialog.askopenfilename(initialdir=".", filetypes=file_types)
+    file_path = filedialog.askopenfilename(initialdir=lastdir.get_last_dir(), filetypes=file_types)
+    if file_path:
+        lastdir.set_last_dir(file_path)
 
     # print the selected file path
     if not file_path:

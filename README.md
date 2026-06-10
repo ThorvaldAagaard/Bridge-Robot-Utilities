@@ -140,12 +140,24 @@ The html-page is standalone and require no stylesheet or script
 # PBN2LIN
 Command-line utility to convert a PBN-file to LIN format. Output filename is optional (defaults to input filename with .lin extension)
 
+# LIN2PBN
+Command-line utility to convert a LIN-file to PBN format. Output filename is optional (defaults to input filename with .pbn extension)
+
+# Lin2PBNUI
+A simple application, that converts a LIN-file to a PBN-file
+
 # ExtractDatumScore
 Extracts optimum scores and par contracts from a PBN-file and saves them to a pickle file (DatumScores.pkl) for later analysis
 
 # PbnExtractBoards
 Extracts unique boards from a PBN-file, removing duplicate deals and renumbering boards sequentially
 
-# benchmark
-System performance benchmark for comparing machines used in robot matches. Tests NumPy operations (matrix multiply, SVD, FFT), TensorFlow matrix operations (if installed), disk I/O (100MB read/write), and JSON serialization. Produces a weighted score (NumPy 40%, TensorFlow 30%, I/O 20%, JSON 10%) useful for evaluating hardware before running neural-network-based robots like BEN
+# benchmark (source only - not in releases)
+A developer script (`src/benchmark.py`) for comparing machines used in robot matches. Tests NumPy operations (matrix multiply, SVD, FFT), TensorFlow matrix operations (if installed), disk I/O (100MB read/write), and JSON serialization. Produces a weighted score (NumPy 40%, TensorFlow 30%, I/O 20%, JSON 10%) useful for evaluating hardware before running neural-network-based robots like BEN.
+
+This is **not** shipped as an executable (bundling TensorFlow produces a ~530 MB binary). Run it directly from source instead:
+
+```cmd
+python src/benchmark.py
+```
 

@@ -5,6 +5,7 @@ import scoring
 import compare
 import tkinter as tk
 from tkinter import filedialog, messagebox
+import lastdir
 
 import endplay.parsers.pbn as pbn
 import endplay.parsers.lin as lin
@@ -86,7 +87,7 @@ def extract_value(s: str) -> str:
     return s[s.index('"') + 1 : s.rindex('"')]
 
 def main():
-    print("Compare match as html, Version 1.0.17")
+    print("Compare match as html, Version 1.0.18")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -105,7 +106,9 @@ def main():
     messagebox.showinfo("File Selection", "Please select exactly 2 files.")
 
     # open the file dialog box
-    file_paths = filedialog.askopenfilenames(initialdir=".", filetypes=file_types)
+    file_paths = filedialog.askopenfilenames(initialdir=lastdir.get_last_dir(), filetypes=file_types)
+    if file_paths:
+        lastdir.set_last_dir(file_paths[0])
 
     # Print the selected file paths
     if len(file_paths) != 2:  # Check if the user selected exactly 2 files

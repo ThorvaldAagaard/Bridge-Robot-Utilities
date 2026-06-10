@@ -43,15 +43,6 @@ def update_event_and_feasability(file_path):
     # Read the contents of the file
     with open(file_path, 'r') as f:
         lines = f.readlines()
-    for i, line in enumerate(lines):
-        if line.startswith("[Event "):
-            lines[i] = modify_event_string(line.strip())
-
-    # Filter out lines starting with '{Feasability:'
-    new_lines = [line for line in lines if not line.startswith('{Feasability:')]
-
-    # Filter out lines starting with '{Feasability:'
-    lines = [line for line in new_lines if not line.startswith('{PAR of')]
 
     # Create an in-memory file-like object
     fake_file = io.StringIO(''.join(lines))
@@ -70,14 +61,14 @@ def update_event_and_feasability(file_path):
 
 def main():
 
-    print("PBN -> Lin, Version 1.0.18")
+    print("LIN -> PBN, Version 1.0.18")
     # create a root window
     root = tk.Tk()
     root.withdraw()
 
     # specify the allowed file types
     file_types = [
-        ("PBN files", "*.pbn"),  # Example: Only allow .txt files
+        ("PBN files", "*.lin"),  # Example: Only allow .txt files
         ("All files", "*.*")     # Allow all files (in case the user wants to choose other formats)
     ]
     # open the file dialog box
@@ -93,9 +84,9 @@ def main():
     fakefile = update_event_and_feasability(file_path)
 
     try:
-        boards = pbn.load(fakefile)
+        boards = lin.load(fakefile)
     except pbn.PBNDecodeError as e:
-        print("OK: There was an issue decoding the PBN file.")
+        print("OK: There was an issue decoding the LIN file.")
         print("Error message:", e)
         print("Current line:", e.line)
         print("Line number:", e.lineno)
@@ -106,28 +97,23 @@ def main():
 
     print(f"No of boards {len(boards)}")
 
-    #for raw_key, value in boards[0].info.items():
-    #    print(raw_key, value)
-
     # Split the file path into directory and filename
     directory, filename = os.path.split(file_path)
 
-    # Insert "DDS" at the beginning of the filename
-    new_filename = filename
+    new_filename = filename.replace("lin", "pbn")
 
     # specify the allowed file types
     file_types = [
-        ("LIN files", "*.lin"),  # Example: Only allow .txt files
+        ("PBN files", "*.pbn"),  # Example: Only allow .txt files
         ("All files", "*.*")     # Allow all files (in case the user wants to choose other formats)
     ]
 
-    new_filename = filename.replace(".pbn", ".lin")
     # Get the file path to save the data
-    output_file = filedialog.asksaveasfile(defaultextension=".lin", initialdir=directory, filetypes=file_types, initialfile=new_filename)
+    output_file = filedialog.asksaveasfile(defaultextension=".pbn", initialdir=directory, filetypes=file_types, initialfile=new_filename)
 
     if output_file is not None:
         # Save the data to the selected file
-        lin.dump(boards, output_file)
+        pbn.dump(boards, output_file)
 
         # Close the file after writing
         output_file.close()

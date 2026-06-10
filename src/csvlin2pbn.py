@@ -9,6 +9,7 @@ import io
 import re
 import tkinter as tk
 from tkinter import filedialog
+import lastdir
 
 # Define the rank and suit mappings
 rank_map = {
@@ -52,7 +53,7 @@ def convert_to_pbn(card_string):
 
 def main():
 
-    print("csvLin -> PBN, Version 1.0.17")
+    print("csvLin -> PBN, Version 1.0.18")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -63,7 +64,9 @@ def main():
         ("All files", "*.*")     # Allow all files (in case the user wants to choose other formats)
     ]
     # open the file dialog box
-    file_path = filedialog.askopenfilename(initialdir=".", filetypes=file_types)
+    file_path = filedialog.askopenfilename(initialdir=lastdir.get_last_dir(), filetypes=file_types)
+    if file_path:
+        lastdir.set_last_dir(file_path)
 
     # print the selected file path
     if not file_path:

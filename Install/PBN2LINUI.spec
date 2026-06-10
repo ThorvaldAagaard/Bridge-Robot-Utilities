@@ -1,5 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+import os, sys
+sys.path.insert(0, SPECPATH)
+from build_excludes import EXCLUDES
+
 
 a = Analysis(
     ['..\\src\\PBN2LINUI.py'],
@@ -10,7 +14,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=EXCLUDES,
     noarchive=False,
     optimize=0,
 )

@@ -5,6 +5,7 @@ import scoring
 import compare
 import tkinter as tk
 from tkinter import filedialog
+import lastdir
 
 import endplay.parsers.pbn as pbn
 import endplay.parsers.lin as lin
@@ -84,7 +85,7 @@ def extract_value(s: str) -> str:
     return s[s.index('"') + 1 : s.rindex('"')]
 
 def main():
-    print("Print match as html, Version 1.0.17")
+    print("Print match as html, Version 1.0.18")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -99,7 +100,9 @@ def main():
         ("All files", "*.*")     # Allow all files (in case the user wants to choose other formats)
     ]
     # open the file dialog box
-    file_path = filedialog.askopenfilename(initialdir=".", filetypes=file_types)
+    file_path = filedialog.askopenfilename(initialdir=lastdir.get_last_dir(), filetypes=file_types)
+    if file_path:
+        lastdir.set_last_dir(file_path)
 
     # print the selected file path
     if not file_path:

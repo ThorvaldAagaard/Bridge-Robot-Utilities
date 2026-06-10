@@ -147,7 +147,7 @@ def summary(score):
 
 
 if __name__ == "__main__":
-    print("System Benchmark, Version 1.0.17")
+    print("System Benchmark, Version 1.0.18")
     cpu_info()
     numpy_time = benchmark_numpy()
     tf_time = benchmark_tensorflow()

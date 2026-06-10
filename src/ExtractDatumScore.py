@@ -3,6 +3,7 @@ import os
 import pickle
 import tkinter as tk
 from tkinter import filedialog
+import lastdir
 
 def extract_data(file_path, output_path):
     # Load existing data if the output file exists
@@ -87,7 +88,7 @@ def extract_data(file_path, output_path):
 
 def main():
 
-    print("Extract Datum Score, Version 1.0.17")
+    print("Extract Datum Score, Version 1.0.18")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -98,7 +99,9 @@ def main():
         ("All files", "*.*")     # Allow all files (in case the user wants to choose other formats)
     ]
     # open the file dialog box
-    file_path = filedialog.askopenfilename(initialdir=".", filetypes=file_types)
+    file_path = filedialog.askopenfilename(initialdir=lastdir.get_last_dir(key="extract"), filetypes=file_types)
+    if file_path:
+        lastdir.set_last_dir(file_path, key="extract")
 
     # print the selected file path
     if not file_path:

@@ -5,11 +5,8 @@ sys.path.insert(0, SPECPATH)
 from build_excludes import EXCLUDES
 
 
-block_cipher = None
-
-
 a = Analysis(
-    ['..\\src\\CountPBNBoards.py'],
+    ['..\\src\\LIN2PBN.py'],
     pathex=[],
     binaries=[('..\\bin\\dds.dll', '.')],
     datas=[],
@@ -18,21 +15,18 @@ a = Analysis(
     hooksconfig={},
     runtime_hooks=[],
     excludes=EXCLUDES,
-    win_no_prefer_redirects=False,
-    win_private_assemblies=False,
-    cipher=block_cipher,
     noarchive=False,
+    optimize=0,
 )
-pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+pyz = PYZ(a.pure)
 
 exe = EXE(
     pyz,
     a.scripts,
     a.binaries,
-    a.zipfiles,
     a.datas,
     [],
-    name='CountPBNBoards',
+    name='LIN2PBN',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

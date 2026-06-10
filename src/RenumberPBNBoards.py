@@ -8,6 +8,7 @@ import io
 import os
 import tkinter as tk
 from tkinter import filedialog
+import lastdir
 from collections import Counter
 
 def remove_feasability_lines(file_path):
@@ -25,7 +26,7 @@ def remove_feasability_lines(file_path):
 
 def main():
 
-    print("PBN Renumber boards, Version 1.0.17")
+    print("PBN Renumber boards, Version 1.0.18")
 
     # create a root window
     root = tk.Tk()
@@ -37,7 +38,9 @@ def main():
         ("All files", "*.*")     # Allow all files (in case the user wants to choose other formats)
     ]
     # open the file dialog box
-    file_path = filedialog.askopenfilename(initialdir=".", filetypes=file_types)
+    file_path = filedialog.askopenfilename(initialdir=lastdir.get_last_dir(key="renumber"), filetypes=file_types)
+    if file_path:
+        lastdir.set_last_dir(file_path, key="renumber")
 
     # print the selected file path
     if not file_path:

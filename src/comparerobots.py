@@ -3,6 +3,7 @@ import json
 import sys
 import scoring
 import compare
+import lastdir
 import tkinter as tk
 from tkinter import filedialog, messagebox
 import endplay.parsers.pbn as pbn
@@ -75,6 +76,64 @@ def generate_html_deal(dealer, vulnerable, cards, board_number):
                     </div>
                 </div>
          </div>"""
+    return html
+
+
+def team_totals(matches):
+    """Aggregate the per-match scores into per-team (robot) totals.
+
+    A team may appear in more than one selected file; its scores are summed
+    across all of them, sorted best first.
+    """
+    teams = {}
+    for m in matches:
+        t = teams.setdefault(m['label'], {'label': m['label'], 'played': 0, 'boards': 0, 'total': 0})
+        t['played'] += 1
+        t['boards'] += m['boards']
+        t['total'] += m['total']
+    result = list(teams.values())
+    result.sort(key=lambda t: t['total'], reverse=True)
+    return result
+
+
+def generate_match_summary(matches):
+    """Render the per-match results plus a per-team totals table."""
+    html = "<div class='match-summary'>\n"
+    html += "<h2>Match results</h2>\n"
+    html += "<table class='border-collapse table-container'>\n"
+    html += "<tr>\n"
+    html += "<th class='col-name'>Match</th>\n"
+    html += "<th class='align-right'>Boards</th>\n"
+    html += "<th class='align-right'>Total NS</th>\n"
+    html += "</tr>\n"
+    for m in matches:
+        html += (
+            f"<tr class='row-height'><td>{m['label']}</td>"
+            f"<td class='align-right'>{m['boards']}</td>"
+            f"<td class='align-right'>{m['total']}</td></tr>\n"
+        )
+    html += "</table>\n"
+
+    teams = team_totals(matches)
+    if teams:
+        html += "<h2>Team totals</h2>\n"
+        html += "<table class='border-collapse table-container'>\n"
+        html += "<tr>\n"
+        html += "<th class='col-name'>Team</th>\n"
+        html += "<th class='align-right'>Matches</th>\n"
+        html += "<th class='align-right'>Boards</th>\n"
+        html += "<th class='align-right'>Total NS</th>\n"
+        html += "</tr>\n"
+        for t in teams:
+            html += (
+                f"<tr class='row-height'><td>{t['label']}</td>"
+                f"<td class='align-right'>{t['played']}</td>"
+                f"<td class='align-right'>{t['boards']}</td>"
+                f"<td class='align-right'>{t['total']}</td></tr>\n"
+            )
+        html += "</table>\n"
+
+    html += "</div>\n"
     return html
 
 
@@ -157,7 +216,7 @@ def extract_value(s: str) -> str:
     return s[s.index('"') + 1 : s.rindex('"')]
 
 def main():
-    print("List matches as html, Version 1.0.17")
+    print("List matches as html, Version 1.0.18")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -173,10 +232,13 @@ def main():
     ]
 
 
-    # open the file dialog box
-    file_paths = filedialog.askopenfilenames(initialdir=".", filetypes=file_types)
+    # open the file dialog box in the folder used last time
+    file_paths = filedialog.askopenfilenames(initialdir=lastdir.get_last_dir(), filetypes=file_types)
+    if file_paths:
+        lastdir.set_last_dir(file_paths[0])
 
     new_data_list = []
+    matches = []
     for file_path in file_paths:
         print(file_path)
         try:
@@ -192,7 +254,18 @@ def main():
         except Exception as ex:
             print('Error:', ex)
             raise ex
+        if data_list:
+            # Label the match by the robot/seat name (North), fall back to the file name
+            label = data_list[0][1] or os.path.splitext(os.path.basename(file_path))[0]
+            matches.append({
+                'label': label,
+                'boards': len(data_list),
+                'total': sum(d[8] for d in data_list),
+            })
         new_data_list.extend(data_list)
+
+    # Rank the matches by total NS score, best first
+    matches.sort(key=lambda m: m['total'], reverse=True)
 
 
 
@@ -205,7 +278,7 @@ def main():
     row_html = ""
     old_board = -1
     table1_html = ""
-    html = ""
+    html = generate_match_summary(matches)
     for i, board_data in enumerate(sorted_data):
 
         board, ns, ew, dealer, vul, declarer1, contract1, result1, score1, hands_pbn, lin_open = board_data
@@ -264,6 +337,9 @@ def main():
             ".align-right { text-align: right; }\n"
             ".align-center { text-align: center; }\n"
             ".row-height { height: 22px; }\n"
+            ".match-summary { margin-bottom: 20px; }\n"
+            ".match-summary h2 { text-align: center; }\n"
+            ".match-summary table { width: auto; table-layout: auto; margin: 10px auto; }\n"
             "</style>\n"
         "</head>\n"
         "<body>\n"

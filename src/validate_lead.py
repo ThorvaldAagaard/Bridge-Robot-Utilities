@@ -4,6 +4,7 @@ import endplay.parsers.pbn as pbn
 from endplay.types.board import Board
 import endplay.config as config
 from tkinter import filedialog, ttk
+import lastdir
 from colorama import Fore, Back, Style, init
 
 from dataclasses import dataclass
@@ -166,14 +167,16 @@ def validate_lead(suit: str, lead: str, contract_type: str):
 
 def main():
 
-    print("Read a PBN-file and validate the opening lead against common rules, Version 1.0.17")
+    print("Read a PBN-file and validate the opening lead against common rules, Version 1.0.18")
     # specify the allowed file types
     file_types = [
         ("PBN files", "*.pbn"),  # Example: Only allow .txt files
         ("All files", "*.*")     # Allow all files (in case the user wants to choose other formats)
     ]
     # open the file dialog box
-    file_path = filedialog.askopenfilename(initialdir=".", filetypes=file_types)
+    file_path = filedialog.askopenfilename(initialdir=lastdir.get_last_dir(), filetypes=file_types)
+    if file_path:
+        lastdir.set_last_dir(file_path)
 
     # print the selected file path
     if not file_path:

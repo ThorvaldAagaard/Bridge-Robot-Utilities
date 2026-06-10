@@ -8,6 +8,7 @@ import io
 import re
 import tkinter as tk
 from tkinter import filedialog, ttk
+import lastdir
 from collections import Counter
 from colorama import Fore, Back, Style, init
 import threading
@@ -230,7 +231,7 @@ def check_thread_status(thread, root):
 
 def main():
 
-    print("Split PBN in 6 files. Doubled and making, doubled not making more than 2000 from par, duplicates, missing DD and the rest, Version 1.0.17")
+    print("Split PBN in 6 files. Doubled and making, doubled not making more than 2000 from par, duplicates, missing DD and the rest, Version 1.0.18")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -241,7 +242,9 @@ def main():
         ("All files", "*.*")     # Allow all files (in case the user wants to choose other formats)
     ]
     # open the file dialog box
-    file_path = filedialog.askopenfilename(initialdir=".", filetypes=file_types)
+    file_path = filedialog.askopenfilename(initialdir=lastdir.get_last_dir(key="split"), filetypes=file_types)
+    if file_path:
+        lastdir.set_last_dir(file_path, key="split")
 
     # print the selected file path
     if not file_path:

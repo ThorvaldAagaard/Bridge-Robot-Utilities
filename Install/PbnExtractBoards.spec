@@ -1,5 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+import os, sys
+sys.path.insert(0, SPECPATH)
+from build_excludes import EXCLUDES
+
 from PyInstaller.utils.hooks import collect_dynamic_libs
 import endplay._dds
 
@@ -15,7 +19,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=EXCLUDES,
     noarchive=False,
     optimize=0,
 )

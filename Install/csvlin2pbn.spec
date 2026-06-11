@@ -4,11 +4,17 @@ import os, sys
 sys.path.insert(0, SPECPATH)
 from build_excludes import EXCLUDES
 
+from PyInstaller.utils.hooks import collect_dynamic_libs
+import endplay._dds
+
+# csvlin2pbn imports endplay.types.deal, which eagerly loads dds.dll. Collect it.
+binaries = collect_dynamic_libs('endplay._dds')
+
 
 a = Analysis(
     ['..\\src\\csvlin2pbn.py'],
     pathex=[],
-    binaries=[],
+    binaries=binaries,
     datas=[],
     hiddenimports=[],
     hookspath=[],

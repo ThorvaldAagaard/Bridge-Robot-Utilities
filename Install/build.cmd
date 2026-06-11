@@ -19,6 +19,21 @@ if not exist "%VENV%\Scripts\python.exe" (
 
 call "%VENV%\Scripts\activate.bat"
 
+REM ---------------------------------------------------------------------------
+REM If the venv was created off a conda/miniconda base, _ctypes.pyd depends on
+REM ffi-8.dll which conda keeps in <base>\Library\bin -- a directory that a plain
+REM "python -m venv" does NOT add to PATH. Without it PyInstaller cannot find the
+REM DLL, silently omits it, and every exe dies at startup with
+REM "ImportError: DLL load failed while importing _ctypes". Put it on PATH so the
+REM dependency is discovered and bundled. Harmless for a standard python.org base
+REM (no Library\bin; libffi lives in DLLs, which PyInstaller already scans).
+REM ---------------------------------------------------------------------------
+for /f "tokens=2 delims== " %%H in ('findstr /b /c:"home" "%VENV%\pyvenv.cfg"') do set "BASEPY=%%H"
+if exist "%BASEPY%\Library\bin\ffi-8.dll" (
+    echo Adding "%BASEPY%\Library\bin" to PATH for conda libffi ...
+    set "PATH=%BASEPY%\Library\bin;%PATH%"
+)
+
 echo Installing build dependencies ...
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt

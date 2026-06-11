@@ -390,6 +390,7 @@ def main():
             ".match-summary { margin-bottom: 20px; }\n"
             ".match-summary h2 { text-align: center; }\n"
             ".match-summary table { width: auto; table-layout: auto; margin: 10px auto; }\n"
+            ".match-summary th, .match-summary td { white-space: nowrap; }\n"
             "</style>\n"
         "</head>\n"
         "<body>\n"

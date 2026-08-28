@@ -186,7 +186,7 @@ Run with no arguments for the file-picker GUI. Output filename defaults to `<inp
 
 ## Prebuilt DatumScores.pkl
 
-A prebuilt, DD-enriched `DatumScores.pkl` is attached to the GitHub release as **`DatumScores.zip`** (the raw pickle is too large to ship in the repo). To use it:
+A prebuilt, DD-enriched `DatumScores.pkl` is attached to the GitHub release as **`DatumScores.zip`** (the raw pickle is too large to ship in the repo). It covers ~2.28M deals — the match/training data plus the random deals — each with `OptimumScore`, `ParContract` and the packed double-dummy table. To use it:
 
 1. Download `DatumScores.zip` from the [latest release](https://github.com/ThorvaldAagaard/Bridge-Robot-Utilities/releases/latest).
 2. Unzip it to get `DatumScores.pkl`.

@@ -183,6 +183,15 @@ A prebuilt, DD-enriched `DatumScores.pkl` is attached to the GitHub release as *
 
 You only need this if you want the shared datum-score/double-dummy cache; otherwise you can rebuild it yourself with `ExtractDatumScore` followed by `ComputeDDTables`.
 
+## Prebuilt board datasets
+
+Two annotated board sets are attached to the GitHub release (zipped, as the raw files are hundreds of MB):
+
+- **`TrainingDeals.zip`** — ~1.18M boards with bidding/play, each annotated with `OptimumScore`, `ParContract` and the 20-row `OptimumResultTable`.
+- **`RandomDeals.zip`** — 1M random deals, each annotated with `OptimumScore`, `ParContract` and the `OptimumResultTable` (computed double-dummy).
+
+Download from the [latest release](https://github.com/ThorvaldAagaard/Bridge-Robot-Utilities/releases/latest) and unzip to get the `.pbn`.
+
 # PbnExtractBoards
 Extracts unique boards from a PBN-file, removing duplicate deals and renumbering boards sequentially
 

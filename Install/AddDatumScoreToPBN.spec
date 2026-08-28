@@ -6,7 +6,7 @@ from build_excludes import EXCLUDES
 
 
 a = Analysis(
-    ['..\\src\\AddDatumScore.py'],
+    ['..\\src\\AddDatumScoreToPBN.py'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -26,7 +26,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='AddDatumScore',
+    name='AddDatumScoreToPBN',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

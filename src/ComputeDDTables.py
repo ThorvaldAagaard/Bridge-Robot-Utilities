@@ -6,7 +6,7 @@ and rewrites each value as a 4-tuple (OptimumScore, ParContract, vul, dd_bytes),
 where dd_bytes is the 20-entry result table packed one byte per (declarer,
 denomination) in the order below.
 
-It is the expensive, one-time step: after it runs, AddDatumScore.py writes the
+It is the expensive, one-time step: after it runs, AddDatumScoreToPBN.py writes the
 OptimumResultTable straight from the cache, instantly. The solve is resumable -
 worker checkpoints let an interrupted run continue where it left off.
 """
@@ -33,7 +33,7 @@ WORKERS = int(os.environ.get("DD_WORKERS", "2"))
 # Flush a worker checkpoint every this many freshly solved deals (resume support).
 CHECKPOINT_EVERY = 6400
 
-# Packing order of the 20 bytes: 4 declarers x 5 denominations. AddDatumScore.py
+# Packing order of the 20 bytes: 4 declarers x 5 denominations. AddDatumScoreToPBN.py
 # unpacks in this same order, so keep the two in sync.
 PLAYERS = [Player.north, Player.east, Player.south, Player.west]
 DENOMS = [Denom.spades, Denom.hearts, Denom.diamonds, Denom.clubs, Denom.nt]

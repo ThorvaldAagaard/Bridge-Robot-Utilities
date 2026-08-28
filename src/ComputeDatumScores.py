@@ -13,7 +13,7 @@ solves each deal and stores a full entry in the datum-score pickle:
 
 It is the compute-from-scratch companion to ExtractDatumScore.py (which only
 pulls existing score tags out of a PBN) and ComputeDDTables.py (which adds DD
-tables to entries that already have a par score). Afterwards AddDatumScore.py can
+tables to entries that already have a par score). Afterwards AddDatumScoreToPBN.py can
 write the tags into any PBN whose deals are now in the pickle.
 
 This is the expensive, one-time step (hours for a large file). It is resumable:
@@ -44,7 +44,7 @@ WORKERS = int(os.environ.get("DD_WORKERS", "2"))
 # Flush a worker checkpoint every this many freshly solved deals.
 CHECKPOINT_EVERY = 6400
 
-# Packing order of the 20 bytes: 4 declarers x 5 denominations. AddDatumScore.py
+# Packing order of the 20 bytes: 4 declarers x 5 denominations. AddDatumScoreToPBN.py
 # unpacks in this same order, so keep the two in sync.
 PLAYERS = [Player.north, Player.east, Player.south, Player.west]
 DENOMS = [Denom.spades, Denom.hearts, Denom.diamonds, Denom.clubs, Denom.nt]

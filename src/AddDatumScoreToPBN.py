@@ -171,9 +171,9 @@ def annotate(pbn_path, pickle_path, output_path, on_status=None, on_progress=Non
 
 
 def main():
-    print("Add Datum Score, Version 1.0.19")
+    print("Add Datum Score to PBN, Version 1.0.19")
 
-    # Command-line usage: AddDatumScore.py <input.pbn> [DatumScores.pkl] [output.pbn]
+    # Command-line usage: AddDatumScoreToPBN.py <input.pbn> [DatumScores.pkl] [output.pbn]
     if len(sys.argv) > 1:
         pbn_path = sys.argv[1]
         pickle_path = sys.argv[2] if len(sys.argv) > 2 else 'DatumScores.pkl'

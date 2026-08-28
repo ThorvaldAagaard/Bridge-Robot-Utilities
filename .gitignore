@@ -18,5 +18,6 @@ src/*.lin
 src/DatumScores.pkl
 src/*.pkl.bak
 src/dd_ckpt_*.pkl
+src/datum_ckpt_*.pkl
 .claude/
 src/extractBBA.py

@@ -162,6 +162,17 @@ python src/ComputeDDTables.py DatumScores.pkl
 
 Not shipped as an executable (endplay's double-dummy solver is a developer-side, source-only step); run it from source.
 
+# ComputeDatumScores
+Computes datum scores for a PBN whose deals have **no score tags at all** (only `[Deal ...]`, e.g. a file of random deals) and adds them to `DatumScores.pkl`. For each deal it double-dummy solves the table, derives `OptimumScore` and `ParContract` from the par calculation (using the board's `[Vulnerable]` and `[Dealer]`), and stores a full `(OptimumScore, ParContract, vulnerability, dd_bytes)` entry.
+
+Use this when `ExtractDatumScore` can't help because there are no tags to extract. Afterwards `AddDatumScore` can annotate the PBN from the now-populated pickle.
+
+```cmd
+python src/ComputeDatumScores.py input.pbn DatumScores.pkl
+```
+
+Like `ComputeDDTables`, this is the expensive one-time step (hours for a large file), resumable via worker checkpoints, and it backs up/rewrites the pickle atomically. Not shipped as an executable; run it from source.
+
 # AddDatumScore
 Annotates a PBN-file from `DatumScores.pkl`, writing one output file. For every board it looks the deal up in the pickle and inserts `[OptimumScore]`, `[ParContract]`, and — when the pickle entry has been enriched by `ComputeDDTables` — the standard 20-row `[OptimumResultTable]`, grouped after the `[Deal]` tag.
 

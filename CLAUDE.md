@@ -44,7 +44,7 @@ python src/<utility_name>.py [arguments]
 ### Packaging notes
 - `RenumberPBNBoards.spec` builds an exe named **`ResetAndRenumberPBNBoards.exe`** (not RenumberPBNBoards).
 - `benchmark.py` is **not** shipped as an executable (TensorFlow makes it ~530 MB); run it from source.
-- `ComputeDDTables.py` is **not** shipped (developer-side one-time step that fills `DatumScores.pkl` via endplay/DDS); run it from source.
+- `ComputeDDTables.py` and `ComputeDatumScores.py` are **not** shipped (developer-side one-time steps that fill `DatumScores.pkl` via endplay/DDS); run them from source.
 - `.gitattributes` normalizes line endings (`text=auto`); avoid re-introducing whole-file CRLF churn.
 - Every utility prints its version on start (`"<Name>, Version X.Y.Z"`); keep these in sync when bumping.
 
@@ -88,6 +88,7 @@ python src/<utility_name>.py [arguments]
 | `TMPbn2Cleaner.py` | Clean non-standard lines from a PBN file |
 | `ExtractDatumScore.py` | Extract optimum scores/par contracts to pickle file (`DatumScores.pkl`) |
 | `ComputeDDTables.py` | Fill `DatumScores.pkl` with double-dummy result tables — **source-only, not shipped** (endplay/DDS dev step; run `python src/ComputeDDTables.py DatumScores.pkl`) |
+| `ComputeDatumScores.py` | Compute par + DD for a PBN's **bare** deals (no score tags) and add them to `DatumScores.pkl` — **source-only, not shipped** (endplay/DDS dev step) |
 | `AddDatumScore.py` | Annotate a PBN from `DatumScores.pkl` with `OptimumScore`/`ParContract`/`OptimumResultTable` (single output file) |
 | `PbnExtractBoards.py` | Extract unique boards, remove duplicates |
 | `benchmark.py` | Hardware benchmark — **source-only, not shipped** (run `python src/benchmark.py`) |
@@ -105,7 +106,8 @@ python src/<utility_name>.py [arguments]
 A pickle (gitignored, `src/DatumScores.pkl`) keyed by the exact `[Deal "..."]` line, shared by a small tool family:
 
 - **`ExtractDatumScore.py`** builds it from PBN tags. Each value is a 3-tuple `(OptimumScore, ParContract, vulnerability)` where the first two are the full tag lines.
-- **`ComputeDDTables.py`** enriches it: double-dummy solves each deal and rewrites the value as a **4-tuple** `(OptimumScore, ParContract, vulnerability, dd_bytes)`. `dd_bytes` is 20 bytes, one trick count per (declarer, denomination) in the order **N/E/S/W × S/H/D/C/NT** — the packing order `AddDatumScore.build_ort` and `ComputeDDTables` must agree on. Expensive/one-time and resumable (worker checkpoints `dd_ckpt_*.pkl`; backs up to `DatumScores.pkl.bak`, rewrites atomically). `DD_WORKERS` env var sets the worker count (default 2 — DDS already threads internally, so more oversubscribes).
+- **`ComputeDDTables.py`** enriches it: double-dummy solves each deal and rewrites the value as a **4-tuple** `(OptimumScore, ParContract, vulnerability, dd_bytes)`. `dd_bytes` is 20 bytes, one trick count per (declarer, denomination) in the order **N/E/S/W × S/H/D/C/NT** — the packing order `AddDatumScore.build_ort`, `ComputeDDTables` and `ComputeDatumScores` must agree on. Expensive/one-time and resumable (worker checkpoints `dd_ckpt_*.pkl`; backs up to `DatumScores.pkl.bak`, rewrites atomically). `DD_WORKERS` env var sets the worker count (default 2 — DDS already threads internally, so more oversubscribes).
+- **`ComputeDatumScores.py`** is for deals **not yet in the pickle** that have no score tags at all (e.g. random deals): it double-dummy solves each, derives `OptimumScore`/`ParContract` via `endplay.dds.par` (using the board's `[Vulnerable]`/`[Dealer]`), and adds new 4-tuple entries. Same resumable/atomic machinery (checkpoints `datum_ckpt_*.pkl`, `DD_WORKERS`). Contrast: `ExtractDatumScore` reads existing tags, `ComputeDDTables` adds DD to entries that already have par, `ComputeDatumScores` computes both par and DD from scratch.
 - **`AddDatumScore.py`** consumes it to annotate a PBN, writing all three tags (the table only when `dd_bytes` is present) as a byte-preserving text edit.
 - **`Split_PBN.py`** also reads it; its `lookup` takes `value[:3]` so it tolerates both the 3- and 4-tuple shapes.
 

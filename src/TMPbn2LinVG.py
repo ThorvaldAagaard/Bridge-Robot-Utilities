@@ -111,7 +111,7 @@ def generate_vg(start, end, boards, filename, co_ns, co_ew):
 
 def main():
 
-    print("Table Manager PBN to Lin, Version 1.0.18")
+    print("Table Manager PBN to Lin, Version 1.0.19")
 
     # create a root window
     root = tk.Tk()

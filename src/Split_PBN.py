@@ -91,7 +91,9 @@ def lookup(data, deal_line):
     value = data.get(deal_line, None)
     if value == None:
         return None, None, None
-    score, par_contract, vulnerable = value
+    # Values may be a 3-tuple (score, par, vul) or, once enriched with a
+    # double-dummy table, a 4-tuple; only the first three are needed here.
+    score, par_contract, vulnerable = value[0], value[1], value[2]
     optimum_score = score.split("\"")[1]
     return optimum_score, par_contract, vulnerable
 
@@ -231,7 +233,7 @@ def check_thread_status(thread, root):
 
 def main():
 
-    print("Split PBN in 6 files. Doubled and making, doubled not making more than 2000 from par, duplicates, missing DD and the rest, Version 1.0.18")
+    print("Split PBN in 6 files. Doubled and making, doubled not making more than 2000 from par, duplicates, missing DD and the rest, Version 1.0.19")
     # create a root window
     root = tk.Tk()
     root.withdraw()

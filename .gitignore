@@ -16,5 +16,7 @@ rpdd/rpdd.zdd
 src/github_issues.csv
 src/*.lin
 src/DatumScores.pkl
+src/*.pkl.bak
+src/dd_ckpt_*.pkl
 .claude/
 src/extractBBA.py

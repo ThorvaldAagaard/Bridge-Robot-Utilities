@@ -80,37 +80,46 @@ def generate_html_deal(dealer, vulnerable, cards, board_number):
 
 
 def team_totals(matches):
-    """Aggregate the per-match scores into per-team (robot) totals.
+    """Aggregate the per-match IMPs into a per-team (robot) standings list.
 
-    A team may appear in more than one selected file; its scores are summed
-    across all of them, sorted best first.
+    Each match is 'NS vs EW'; the net belongs to NS and the opposite to EW, so a
+    team's totals are summed across every match it played, sorted best first.
     """
     teams = {}
     for m in matches:
-        t = teams.setdefault(m['label'], {'label': m['label'], 'played': 0, 'boards': 0, 'total': 0})
-        t['played'] += 1
-        t['boards'] += m['boards']
-        t['total'] += m['total']
+        ns_name, ew_name = m.get('ns'), m.get('ew')
+        if not (ns_name and ew_name):
+            continue
+        ns = teams.setdefault(ns_name, {'label': ns_name, 'played': 0, 'plus': 0, 'minus': 0})
+        ew = teams.setdefault(ew_name, {'label': ew_name, 'played': 0, 'plus': 0, 'minus': 0})
+        ns['played'] += 1; ns['plus'] += m['plus']; ns['minus'] += m['minus']
+        ew['played'] += 1; ew['plus'] += m['minus']; ew['minus'] += m['plus']
     result = list(teams.values())
-    result.sort(key=lambda t: t['total'], reverse=True)
+    for t in result:
+        t['net'] = t['plus'] - t['minus']
+    result.sort(key=lambda t: t['net'], reverse=True)
     return result
 
 
 def generate_match_summary(matches):
-    """Render the per-match results plus a per-team totals table."""
+    """Render the per-match IMP results plus a per-team totals table."""
     html = "<div class='match-summary'>\n"
     html += "<h2>Match results</h2>\n"
     html += "<table class='border-collapse table-container'>\n"
     html += "<tr>\n"
     html += "<th class='col-name'>Match</th>\n"
     html += "<th class='align-right'>Boards</th>\n"
-    html += "<th class='align-right'>Total NS</th>\n"
+    html += "<th class='align-right col-imps'>Imps (+)</th>\n"
+    html += "<th class='align-right col-imps'>Imps (-)</th>\n"
+    html += "<th class='align-right col-imps'>Net</th>\n"
     html += "</tr>\n"
     for m in matches:
         html += (
             f"<tr class='row-height'><td>{m['label']}</td>"
             f"<td class='align-right'>{m['boards']}</td>"
-            f"<td class='align-right'>{m['total']}</td></tr>\n"
+            f"<td class='align-right'>{m['plus']}</td>"
+            f"<td class='align-right'>{m['minus']}</td>"
+            f"<td class='align-right'>{m['net']}</td></tr>\n"
         )
     html += "</table>\n"
 
@@ -121,15 +130,17 @@ def generate_match_summary(matches):
         html += "<tr>\n"
         html += "<th class='col-name'>Team</th>\n"
         html += "<th class='align-right'>Matches</th>\n"
-        html += "<th class='align-right'>Boards</th>\n"
-        html += "<th class='align-right'>Total NS</th>\n"
+        html += "<th class='align-right col-imps'>Imps (+)</th>\n"
+        html += "<th class='align-right col-imps'>Imps (-)</th>\n"
+        html += "<th class='align-right col-imps'>Net</th>\n"
         html += "</tr>\n"
         for t in teams:
             html += (
                 f"<tr class='row-height'><td>{t['label']}</td>"
                 f"<td class='align-right'>{t['played']}</td>"
-                f"<td class='align-right'>{t['boards']}</td>"
-                f"<td class='align-right'>{t['total']}</td></tr>\n"
+                f"<td class='align-right'>{t['plus']}</td>"
+                f"<td class='align-right'>{t['minus']}</td>"
+                f"<td class='align-right'>{t['net']}</td></tr>\n"
             )
         html += "</table>\n"
 
@@ -216,7 +227,7 @@ def extract_value(s: str) -> str:
     return s[s.index('"') + 1 : s.rindex('"')]
 
 def main():
-    print("List matches as html, Version 1.0.18")
+    print("List matches as html, Version 1.0.19")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -251,21 +262,42 @@ def main():
             for i in range(0, len(data_list), 1):
                 lin_board_open = encode_annotations(lin.LINEncoder().serialise_board(pbn_boards[i ]))
                 data_list[i] = data_list[i] + (lin_board_open,)
+
+            # Boards come in open/closed pairs; IMP each pair (score is index 8).
+            imp_plus = 0
+            imp_minus = 0
+            n_pairs = 0
+            for i in range(0, len(data_list) - 1, 2):
+                imp = compare.get_imps(data_list[i][8], data_list[i + 1][8])
+                if imp > 0:
+                    imp_plus += imp
+                elif imp < 0:
+                    imp_minus += -imp
+                n_pairs += 1
         except Exception as ex:
             print('Error:', ex)
             raise ex
         if data_list:
-            # Label the match by the robot/seat name (North), fall back to the file name
-            label = data_list[0][1] or os.path.splitext(os.path.basename(file_path))[0]
+            # Each file is a match between two robots (NS vs EW); label by both
+            # seat names, fall back to the file name if either is missing.
+            ns_name, ew_name = data_list[0][1], data_list[0][2]
+            if ns_name and ew_name:
+                label = f"{ns_name} vs {ew_name}"
+            else:
+                label = os.path.splitext(os.path.basename(file_path))[0]
             matches.append({
                 'label': label,
-                'boards': len(data_list),
-                'total': sum(d[8] for d in data_list),
+                'boards': n_pairs,
+                'plus': imp_plus,
+                'minus': imp_minus,
+                'net': imp_plus - imp_minus,
+                'ns': ns_name,
+                'ew': ew_name,
             })
         new_data_list.extend(data_list)
 
-    # Rank the matches by total NS score, best first
-    matches.sort(key=lambda m: m['total'], reverse=True)
+    # Rank the matches by net IMPs, best first
+    matches.sort(key=lambda m: m['net'], reverse=True)
 
 
 

@@ -64,6 +64,7 @@ python -m PyInstaller LIN2PBN.spec
 python -m PyInstaller Split_PBN.spec
 python -m PyInstaller csvlin2pbn.spec
 python -m PyInstaller ExtractDatumScore.spec
+python -m PyInstaller AddDatumScore.spec
 python -m PyInstaller PbnExtractBoards.spec
 python -m PyInstaller listmatchpbnashtml.spec
 python -m PyInstaller comparerobots.spec

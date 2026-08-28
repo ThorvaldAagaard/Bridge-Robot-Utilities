@@ -147,7 +147,41 @@ Command-line utility to convert a LIN-file to PBN format. Output filename is opt
 A simple application, that converts a LIN-file to a PBN-file
 
 # ExtractDatumScore
-Extracts optimum scores and par contracts from a PBN-file and saves them to a pickle file (DatumScores.pkl) for later analysis
+Extracts optimum scores and par contracts from a PBN-file and saves them to a pickle file (DatumScores.pkl) for later analysis.
+
+The pickle is keyed by the exact `[Deal "..."]` line. Each value starts as a 3-tuple `(OptimumScore, ParContract, vulnerability)` and, once `ComputeDDTables` has run, becomes a 4-tuple with a fourth element holding the packed 20-cell double-dummy result table. This is the shared cache used by `AddDatumScore` and `Split_PBN`.
+
+# ComputeDDTables
+Fills `DatumScores.pkl` with double-dummy result tables. It reads the pickle, double-dummy solves every deal that does not yet have a table (via endplay/DDS), and rewrites each entry as a 4-tuple `(OptimumScore, ParContract, vulnerability, dd_bytes)`, where `dd_bytes` is 20 bytes — one trick count per (declarer, denomination) in the order N/E/S/W × S/H/D/C/NT.
+
+This is the expensive, one-time step (it can take a few hours for a large pickle). It is **resumable**: worker processes checkpoint their progress (`dd_ckpt_*.pkl`), so an interrupted run continues where it left off, and the original pickle is backed up to `DatumScores.pkl.bak` and replaced atomically. Solving is done with a small number of worker processes (DDS already threads internally; override the default with the `DD_WORKERS` environment variable).
+
+```cmd
+python src/ComputeDDTables.py DatumScores.pkl
+```
+
+Not shipped as an executable (endplay's double-dummy solver is a developer-side, source-only step); run it from source.
+
+# AddDatumScore
+Annotates a PBN-file from `DatumScores.pkl`, writing one output file. For every board it looks the deal up in the pickle and inserts `[OptimumScore]`, `[ParContract]`, and — when the pickle entry has been enriched by `ComputeDDTables` — the standard 20-row `[OptimumResultTable]`, grouped after the `[Deal]` tag.
+
+It edits the file as text (not through endplay), so all other tags, comments, auctions and play lines are preserved byte-for-byte and non-standard board labels (e.g. `T1`) are kept. It streams one board at a time (handles multi-hundred-MB files), is idempotent (re-running replaces the tags it manages rather than duplicating them), and passes boards through unchanged when a deal is not in the pickle.
+
+```cmd
+python src/AddDatumScore.py input.pbn DatumScores.pkl output.pbn
+```
+
+Run with no arguments for the file-picker GUI. Output filename defaults to `<input>-DD.pbn`.
+
+## Prebuilt DatumScores.pkl
+
+A prebuilt, DD-enriched `DatumScores.pkl` is attached to the GitHub release as **`DatumScores.zip`** (the raw pickle is too large to ship in the repo). To use it:
+
+1. Download `DatumScores.zip` from the [latest release](https://github.com/ThorvaldAagaard/Bridge-Robot-Utilities/releases/latest).
+2. Unzip it to get `DatumScores.pkl`.
+3. Put `DatumScores.pkl` in the folder you run the tools from — `AddDatumScore` (when no pickle path is given) and `Split_PBN` look for `DatumScores.pkl` in the current working directory.
+
+You only need this if you want the shared datum-score/double-dummy cache; otherwise you can rebuild it yourself with `ExtractDatumScore` followed by `ComputeDDTables`.
 
 # PbnExtractBoards
 Extracts unique boards from a PBN-file, removing duplicate deals and renumbering boards sequentially

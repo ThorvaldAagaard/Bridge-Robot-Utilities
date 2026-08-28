@@ -44,6 +44,7 @@ python src/<utility_name>.py [arguments]
 ### Packaging notes
 - `RenumberPBNBoards.spec` builds an exe named **`ResetAndRenumberPBNBoards.exe`** (not RenumberPBNBoards).
 - `benchmark.py` is **not** shipped as an executable (TensorFlow makes it ~530 MB); run it from source.
+- `ComputeDDTables.py` is **not** shipped (developer-side one-time step that fills `DatumScores.pkl` via endplay/DDS); run it from source.
 - `.gitattributes` normalizes line endings (`text=auto`); avoid re-introducing whole-file CRLF churn.
 - Every utility prints its version on start (`"<Name>, Version X.Y.Z"`); keep these in sync when bumping.
 
@@ -85,7 +86,9 @@ python src/<utility_name>.py [arguments]
 | `TMPbn2LinVG.py` | Convert Bridge Moniteur PBN to LIN for NetBridgeVu |
 | `TMPbn2DDS.py` | Clean PBN from Bridge Moniteur for Double Dummy Solver |
 | `TMPbn2Cleaner.py` | Clean non-standard lines from a PBN file |
-| `ExtractDatumScore.py` | Extract optimum scores/par contracts to pickle file |
+| `ExtractDatumScore.py` | Extract optimum scores/par contracts to pickle file (`DatumScores.pkl`) |
+| `ComputeDDTables.py` | Fill `DatumScores.pkl` with double-dummy result tables — **source-only, not shipped** (endplay/DDS dev step; run `python src/ComputeDDTables.py DatumScores.pkl`) |
+| `AddDatumScore.py` | Annotate a PBN from `DatumScores.pkl` with `OptimumScore`/`ParContract`/`OptimumResultTable` (single output file) |
 | `PbnExtractBoards.py` | Extract unique boards, remove duplicates |
 | `benchmark.py` | Hardware benchmark — **source-only, not shipped** (run `python src/benchmark.py`) |
 
@@ -96,6 +99,17 @@ python src/<utility_name>.py [arguments]
 - `src/lastdir.py`: Remembers the last folder used in file dialogs (stored in `%APPDATA%/bridge-robot-utilities.json`). `get_last_dir(key=...)`/`set_last_dir(path, key=...)` — most GUI tools share the default key; the extract/split/renumber tools pass `key="extract"`/`"split"`/`"renumber"` for separate folders.
 - `src/connectionhandler.js`: TCP connection handling for Node.js tools
 - `src/processFinder.js`: Windows process management for GIB engine
+
+### Datum-score cache (`DatumScores.pkl`)
+
+A pickle (gitignored, `src/DatumScores.pkl`) keyed by the exact `[Deal "..."]` line, shared by a small tool family:
+
+- **`ExtractDatumScore.py`** builds it from PBN tags. Each value is a 3-tuple `(OptimumScore, ParContract, vulnerability)` where the first two are the full tag lines.
+- **`ComputeDDTables.py`** enriches it: double-dummy solves each deal and rewrites the value as a **4-tuple** `(OptimumScore, ParContract, vulnerability, dd_bytes)`. `dd_bytes` is 20 bytes, one trick count per (declarer, denomination) in the order **N/E/S/W × S/H/D/C/NT** — the packing order `AddDatumScore.build_ort` and `ComputeDDTables` must agree on. Expensive/one-time and resumable (worker checkpoints `dd_ckpt_*.pkl`; backs up to `DatumScores.pkl.bak`, rewrites atomically). `DD_WORKERS` env var sets the worker count (default 2 — DDS already threads internally, so more oversubscribes).
+- **`AddDatumScore.py`** consumes it to annotate a PBN, writing all three tags (the table only when `dd_bytes` is present) as a byte-preserving text edit.
+- **`Split_PBN.py`** also reads it; its `lookup` takes `value[:3]` so it tolerates both the 3- and 4-tuple shapes.
+
+Because the value shape can be a 3- or 4-tuple, any new consumer must index (`value[0]`, `value[3] if len(value) > 3`) rather than unpack a fixed arity.
 
 ### CSS Files
 

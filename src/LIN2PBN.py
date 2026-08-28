@@ -4,14 +4,14 @@ import endplay.parsers.pbn as pbn
 import endplay.parsers.lin as lin
 
 # Set up argument parsing
-parser = argparse.ArgumentParser(description="Convert LIN file to PBN format. Version 1.0.18")
+parser = argparse.ArgumentParser(description="Convert LIN file to PBN format. Version 1.0.19")
 parser.add_argument('input_file', help="The input LIN file.")
 parser.add_argument('output_file', nargs='?', help="The output PBN file (optional).")
 
 # Parse the arguments
 args = parser.parse_args()
 
-print("LIN -> PBN, Version 1.0.18")
+print("LIN -> PBN, Version 1.0.19")
 
 # If no output file is specified, generate the output file name by changing the extension
 if not args.output_file:

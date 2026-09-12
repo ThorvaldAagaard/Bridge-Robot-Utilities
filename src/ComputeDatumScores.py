@@ -223,7 +223,7 @@ def add_pbn(pbn_path, pickle_path):
 
 
 def main():
-    print("Compute Datum Scores, Version 1.0.19")
+    print("Compute Datum Scores, Version 1.0.20")
 
     # Command-line usage: ComputeDatumScores.py <input.pbn> [DatumScores.pkl]
     if len(sys.argv) > 1:

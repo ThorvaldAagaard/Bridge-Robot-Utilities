@@ -196,7 +196,7 @@ def scan(pbn_path, pickle_path=None, limit=20, show_all=False, dupes=True):
 
 
 def main():
-    print("Check Datum Scores, Version 1.0.19")
+    print("Check Datum Scores, Version 1.0.20")
     parser = argparse.ArgumentParser(
         description="Scan a PBN for boards missing par / optimum scores")
     parser.add_argument("filename", help="PBN file to scan")

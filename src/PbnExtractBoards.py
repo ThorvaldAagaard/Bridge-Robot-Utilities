@@ -29,7 +29,7 @@ def remove_feasability_lines(file_path):
 
 def main():
 
-    print("Table Manager PBN Extract, Version 1.0.19")
+    print("Table Manager PBN Extract, Version 1.0.20")
     # create a root window
     root = tk.Tk()
     root.withdraw()

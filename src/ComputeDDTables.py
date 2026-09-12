@@ -170,7 +170,7 @@ def enrich(pickle_path):
 
 
 def main():
-    print("Compute DD Tables, Version 1.0.19")
+    print("Compute DD Tables, Version 1.0.20")
 
     # Command-line usage: ComputeDDTables.py [DatumScores.pkl]
     if len(sys.argv) > 1:

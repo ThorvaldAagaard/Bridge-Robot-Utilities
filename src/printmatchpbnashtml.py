@@ -85,7 +85,7 @@ def extract_value(s: str) -> str:
     return s[s.index('"') + 1 : s.rindex('"')]
 
 def main():
-    print("Print match as html, Version 1.0.19")
+    print("Print match as html, Version 1.0.20")
     # create a root window
     root = tk.Tk()
     root.withdraw()

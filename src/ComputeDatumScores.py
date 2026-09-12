@@ -67,7 +67,9 @@ def _par_lines(table, vul, dealer):
     s = p.score  # from the N/S perspective
     opt = f'NS {s}' if s > 0 else (f'EW {-s}' if s < 0 else 'NS 0')
     contracts = list(p)
-    if contracts:
+    # A passed-out par comes back as a level-0 contract rather than an empty
+    # list, so check the level too -- otherwise it renders as "NS 0N=".
+    if contracts and not contracts[0].is_passout():
         c = contracts[0]
         side = 'NS' if c.declarer in (Player.north, Player.south) else 'EW'
         denom = 'N' if c.denom == Denom.nt else c.denom.abbr

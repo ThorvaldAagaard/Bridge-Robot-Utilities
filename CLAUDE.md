@@ -33,6 +33,7 @@ which strips libraries no shipped tool uses. matplotlib is a hard dependency of 
 ```cmd
 call pkg -t node16 ..\src\TMGib.js -o dist/TMGib.exe
 call pkg -t node16 ..\src\TMMediator.js -o dist/TMMediator.exe
+call pkg -t node16 ..\src\TMWbridge5.js -o dist/TMWbridge5.exe
 call pkg -t node16 ..\src\ExtractLinks.js -o dist/ExtractLinks.exe
 ```
 
@@ -44,7 +45,7 @@ python src/<utility_name>.py [arguments]
 ### Packaging notes
 - `RenumberPBNBoards.spec` builds an exe named **`ResetAndRenumberPBNBoards.exe`** (not RenumberPBNBoards).
 - `benchmark.py` is **not** shipped as an executable (TensorFlow makes it ~530 MB); run it from source.
-- `ComputeDDTables.py` and `ComputeDatumScores.py` are **not** shipped (developer-side one-time steps that fill `DatumScores.pkl` via endplay/DDS); run them from source.
+- `ComputeDDTables.py`, `ComputeDatumScores.py` and `CheckDatumScores.py` are **not** shipped (developer-side steps around `DatumScores.pkl`); run them from source.
 - `.gitattributes` normalizes line endings (`text=auto`); avoid re-introducing whole-file CRLF churn.
 - Every utility prints its version on start (`"<Name>, Version X.Y.Z"`); keep these in sync when bumping.
 
@@ -61,6 +62,7 @@ python src/<utility_name>.py [arguments]
 **Node.js (src/*.js)**: Table manager interface programs
 - `TMGib.js`: Connects GIB bridge engine to Table Managers (Bridge Moniteur, etc.)
 - `TMMediator.js`: Mediator for Blue Chip Bridge with Bridge Moniteur
+- `TMWbridge5.js`: Seats WBridge5's `Autoconnect` mode at a table manager, and can start the instances
 - `ExtractLinks.js`: Extract challenge matches from BBO as PBN
 - Uses TCP sockets for Table Manager protocol communication
 
@@ -90,6 +92,7 @@ python src/<utility_name>.py [arguments]
 | `ComputeDDTables.py` | Fill `DatumScores.pkl` with double-dummy result tables — **source-only, not shipped** (endplay/DDS dev step; run `python src/ComputeDDTables.py DatumScores.pkl`) |
 | `ComputeDatumScores.py` | Compute par + DD for a PBN's **bare** deals (no score tags) and add them to `DatumScores.pkl` — **source-only, not shipped** (endplay/DDS dev step) |
 | `AddDatumScoreToPBN.py` | Annotate a PBN from `DatumScores.pkl` with `OptimumScore`/`ParContract`/`OptimumResultTable` (single output file) |
+| `CheckDatumScores.py` | Scan a PBN for boards with missing/malformed par annotation — **source-only, not shipped** |
 | `PbnExtractBoards.py` | Extract unique boards, remove duplicates |
 | `benchmark.py` | Hardware benchmark — **source-only, not shipped** (run `python src/benchmark.py`) |
 
@@ -109,7 +112,10 @@ A pickle (gitignored, `src/DatumScores.pkl`) keyed by the exact `[Deal "..."]` l
 - **`ComputeDDTables.py`** enriches it: double-dummy solves each deal and rewrites the value as a **4-tuple** `(OptimumScore, ParContract, vulnerability, dd_bytes)`. `dd_bytes` is 20 bytes, one trick count per (declarer, denomination) in the order **N/E/S/W × S/H/D/C/NT** — the packing order `AddDatumScoreToPBN.build_ort`, `ComputeDDTables` and `ComputeDatumScores` must agree on. Expensive/one-time and resumable (worker checkpoints `dd_ckpt_*.pkl`; backs up to `DatumScores.pkl.bak`, rewrites atomically). `DD_WORKERS` env var sets the worker count (default 2 — DDS already threads internally, so more oversubscribes).
 - **`ComputeDatumScores.py`** is for deals **not yet in the pickle** that have no score tags at all (e.g. random deals): it double-dummy solves each, derives `OptimumScore`/`ParContract` via `endplay.dds.par` (using the board's `[Vulnerable]`/`[Dealer]`), and adds new 4-tuple entries. Same resumable/atomic machinery (checkpoints `datum_ckpt_*.pkl`, `DD_WORKERS`). Contrast: `ExtractDatumScore` reads existing tags, `ComputeDDTables` adds DD to entries that already have par, `ComputeDatumScores` computes both par and DD from scratch.
 - **`AddDatumScoreToPBN.py`** consumes it to annotate a PBN, writing all three tags (the table only when `dd_bytes` is present) as a byte-preserving text edit.
+- **`CheckDatumScores.py`** verifies the result: it streams a PBN and reports boards with no `OptimumScore`/`ParContract`/`OptimumResultTable`, tables that aren't the full 20 rows or hold a trick count outside 0..13, and passed-out pars written as a level-0 contract. Pass the pickle as a second argument and each unannotated board is classified *in the pickle* (just re-run `AddDatumScoreToPBN`) or *missing from it* (run `ComputeDatumScores` first). It also reports duplicate board numbers and duplicate deals, and exits non-zero when anything is wrong.
 - **`Split_PBN.py`** also reads it; its `lookup` takes `value[:3]` so it tolerates both the 3- and 4-tuple shapes.
+
+A passed-out par is stored as `[ParContract "Pass"]` with `[OptimumScore "NS 0"]`. `endplay.dds.par` returns a level-0 `Contract` (not an empty list) for these, so `ComputeDatumScores._par_lines` guards with `is_passout()`; without that guard they render as `"NS 0N="`.
 
 Because the value shape can be a 3- or 4-tuple, any new consumer must index (`value[0]`, `value[3] if len(value) > 3`) rather than unpack a fixed arity.
 
@@ -129,3 +135,25 @@ TMGib communicates with table managers using a text-based protocol over TCP (def
 - Protocol version 18
 - Commands include bidding, play, and timing information
 - GIB bridge engine is spawned as subprocess and controlled via stdin/stdout
+
+### WBridge5's `Autoconnect` seat (`TMWbridge5.js`)
+
+`Wbridge5.exe Autoconnect <port>` connects by itself but always announces
+`Connecting "WBridge5" as ANYPL using protocol version 18`. `ANYPL` is index 0 of a padded
+five-entry table in the executable (`ANYPL|NORTH| EAST|SOUTH| WEST`) and means "any player" -- it
+asks the table manager to assign the seat. **Nothing selects the seat on WBridge5's side**: a third
+command line argument is ignored and the INI keys have no effect (both tested).
+
+- Bridge Moniteur assigns the first vacant seat (`bm17.r`, `Get-Client`: `find Siege "Any"`), which
+  is why Autoconnect works there.
+- TMJob rejects it: `AsyncTableHost.ProcessConnect` takes exactly five characters after `" as "` and
+  matches north/east/south/west, else `Illegal hand 'anypl' specified`.
+
+The **seated reply is the seat assignment** -- answer `North ("WBridge5") seated` and WBridge5
+adopts North. So `TMWbridge5.js` only has to rewrite that one token on the first line; everything
+afterwards passes through untouched, because WBridge5 accepts the table manager's own wording
+(TMJob's parenthesised form included) and tolerates LF as well as the CRLF it sends itself.
+
+Two quirks when reading its traffic: it echoes its seat **uppercase and space-padded**, so
+`NORTH ready for  EAST's bid` has a double space. TMJob additionally refuses two pairs with the same
+team name, which blocks WBridge5 against WBridge5 until `--name` renames them.

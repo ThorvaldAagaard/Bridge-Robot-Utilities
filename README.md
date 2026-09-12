@@ -88,6 +88,76 @@ Now Blue Chip can handle all 4 robots in the same program, or you can start 4 in
 
 So just go to Network play and click on all 4 directions. You need to change port for North from 2000 to 2004 as 2000 is used by Bridge Moniteur.
 
+# TMWbridge5
+
+Lets WBridge5 be started and seated automatically, so a match needs no manual step.
+
+WBridge5 can connect to a table manager on its own if you start it as
+
+```cmd
+Wbridge5.exe Autoconnect 2000
+```
+
+but it always announces itself with the seat `ANYPL` - "any player". It does not pick a seat, it
+asks the table manager to give it one, and there is no way to tell it which: a third argument is
+ignored, and the seat keys in WBRIDGE5.INI have no effect on this.
+
+Bridge Moniteur assigns the first free seat, so Autoconnect works there. TMJob does not - it
+expects `North`, `East`, `South` or `West` and answers `Illegal hand 'anypl' specified`, so
+WBridge5 never gets seated.
+
+TMWbridge5 sits between the two and fills in the seat. It listens on one port per seat, so the
+port you point WBridge5 at decides where it sits:
+
+```cmd
+TMWbridge5 --exe "D:\Bridge\Robot\WBridge5\Wbridge5.exe" --dir D:\WB5
+```
+
+That listens on 2010-2013 for North, East, South and West, starts a WBridge5 for each seat in
+`D:\WB5\North`, `D:\WB5\East` and so on, and stops them again when you stop it with Ctrl+C.
+Leave out `--exe` to start the instances yourself, pointing each at the port for its seat
+(`Wbridge5.exe Autoconnect 2012` sits South).
+
+`--dir` is optional. WBridge5 only writes WBRIDGE5.INI back when you change a setting, so any number
+of instances can share one folder - eight at once has been run without trouble. Use `--dir` when the
+seats need *different* settings: WBRIDGE5.INI is where the bidding system is configured, so separate
+folders are what let N/S and E/W play different systems.
+
+The listening ports start at 2010 to stay clear of the table manager itself: TMJob uses 2000 for its
+first table and **2001 for its second**, so the more obvious 2001-2004 would collide with a two-table
+match. If something else already holds a port, TMWbridge5 says so and stops
+(`Cannot listen on port 2010: EADDRINUSE`) rather than starting half a table - move the block with
+`--firstport`.
+
+A two-table match needs one TMWbridge5 per table, each with its own `--port` and `--firstport`,
+because a table manager table is one port:
+
+```cmd
+TMWbridge5 --port 2000 --seats East,West  --firstport 2010 --exe "%WB5%"
+TMWbridge5 --port 2001 --seats North,South --firstport 2012 --exe "%WB5%"
+```
+
+For a WBridge5 against WBridge5 match you also need `--name`, because every instance announces the
+team name `WBridge5` and TMJob refuses two pairs with the same name:
+
+```cmd
+TMWbridge5 --name "WB5-NS,WB5-EW" --exe "D:\Bridge\Robot\WBridge5\Wbridge5.exe" --dir D:\WB5
+```
+
+Only the connect message is rewritten. Everything after it is passed through untouched in both
+directions, so the table manager and WBridge5 talk to each other exactly as they would without it.
+
+TMWbridge5 supports the following command line parameters:
+
+-  --port, -p        Table manager port - default 2000
+-  --ip, -i          Table manager IP - default 127.0.0.1
+-  --firstport, -f   First port to listen on - default 2010
+-  --seats, -s       Seats to serve, in port order - default North,East,South,West
+-  --name, -n        Team name to announce. One name, or NS/EW comma separated. Default is to leave WBridge5's own name
+-  --exe, -e         Path to Wbridge5.exe. When given, an instance is started per seat
+-  --dir, -d         Base folder for the started instances; each seat runs in \<dir\>\\\<Seat\>
+-  --verbose, -v     Log all traffic, both directions - default False
+
 # TMPbn2DDS
 
 This utility will take a pbn-file from Bridge Moniteur with instant replay and remove some non-standard lines, and rotate the deal from the replay, so the file can be opened in Double Dummy Solver, or Bridge Composer.

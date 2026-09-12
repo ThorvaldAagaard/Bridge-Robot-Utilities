@@ -45,6 +45,7 @@ if errorlevel 1 (
 REM --- Node.js utilities (use globally installed pkg) ---
 call pkg -t node16 ..\src\TMGib.js -o dist/TMGib.exe
 call pkg -t node16 ..\src\TMMediator.js -o dist/TMMediator.exe
+call pkg -t node16 ..\src\TMWbridge5.js -o dist/TMWbridge5.exe
 call pkg -t node16 ..\src\ExtractLinks.js -o dist/ExtractLinks.exe
 
 REM --- Python utilities ---

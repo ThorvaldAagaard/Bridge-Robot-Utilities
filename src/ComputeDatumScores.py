@@ -34,6 +34,7 @@ import tkinter as tk
 from tkinter import filedialog
 import lastdir
 import endplay.config as config
+import endplayfix  # local endplay fixes (dealer tag, auction NAGs, LIN mn||)
 config.use_unicode = False
 from endplay.types import Deal, Denom, Player, Vul, Penalty
 from endplay.dds import calc_all_tables, par
@@ -223,7 +224,7 @@ def add_pbn(pbn_path, pickle_path):
 
 
 def main():
-    print("Compute Datum Scores, Version 1.0.20")
+    print("Compute Datum Scores, Version 1.0.21")
 
     # Command-line usage: ComputeDatumScores.py <input.pbn> [DatumScores.pkl]
     if len(sys.argv) > 1:

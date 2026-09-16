@@ -6,7 +6,7 @@ from build_excludes import EXCLUDES
 
 
 a = Analysis(
-    ['..\\src\\RenumberPBNBoards.py'],
+    ['..\\src\\ResetAndRenumberPBNBoards.py'],
     pathex=[],
     binaries=[('..\\bin\\dds.dll', '.')],
     datas=[],

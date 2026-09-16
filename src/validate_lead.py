@@ -1,6 +1,7 @@
 import sys
 from endplay import Denom
 import endplay.parsers.pbn as pbn
+import endplayfix  # endplay drops [Dealer] on boards without a contract
 from endplay.types.board import Board
 import endplay.config as config
 from tkinter import filedialog, ttk
@@ -167,7 +168,7 @@ def validate_lead(suit: str, lead: str, contract_type: str):
 
 def main():
 
-    print("Read a PBN-file and validate the opening lead against common rules, Version 1.0.20")
+    print("Read a PBN-file and validate the opening lead against common rules, Version 1.0.21")
     # specify the allowed file types
     file_types = [
         ("PBN files", "*.pbn"),  # Example: Only allow .txt files

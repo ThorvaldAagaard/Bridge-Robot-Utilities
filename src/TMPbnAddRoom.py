@@ -1,5 +1,6 @@
 import sys
 import endplay.parsers.pbn as pbn
+import endplayfix  # endplay drops [Dealer] on boards without a contract
 from endplay.types.board import Board
 import endplay.config as config
 import os
@@ -60,7 +61,7 @@ def update_event_and_feasability(file_path):
 
 def main():
 
-    print("PBN add room, Version 1.0.20")
+    print("PBN add room, Version 1.0.21")
     # create a root window
     root = tk.Tk()
     root.withdraw()

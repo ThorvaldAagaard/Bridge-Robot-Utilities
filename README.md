@@ -175,13 +175,16 @@ Utility to clean a pbn-file for certain non-standard lines.
 Merges PBN-file from open and closed room into one new file for a match.
 
 # MergePBNFiles
-Scans a directory (including subdirectories) and merge all PBN-files into one new PBe
+Scans a directory (optionally including subdirectories) and merge all PBN-files into one new PBN-file.
+Started without arguments it asks for the folder, whether to include subfolders, and the output file name.
+It reports boards that appear more than once - in the same file or in different files - with the file and board number of both: exact duplicates, rotated boards (hands, dealer and vulnerability all turned), and rotated deals with a different dealer or vulnerability. Nothing is removed; use ResetAndRenumberPBNBoards for that.
+From the command line: `MergePBNFiles -d <folder> [-o All.PBN] [-r]`
 
 # CountPBNBoards
 Count the number of boards in a PBN-file
 
 # ResetAndRenumberPBNBoards
-Renumber all boards in a PBN-file. Be aware that any play information is removed in the processing
+Renumber all boards in a PBN-file. Duplicate deals, and deals that are just another deal rotated, are removed. Be aware that any play information is removed in the processing
 
 # Split_PBN
 Based on Double Dummy results in the PBN-file, this application split the file in three. Doubled contracts making, result more than 2000 away from the par result and the rest

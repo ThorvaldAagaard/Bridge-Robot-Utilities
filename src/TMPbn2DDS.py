@@ -1,5 +1,6 @@
 import sys
 import endplay.parsers.pbn as pbn
+import endplayfix  # endplay drops [Dealer] on boards without a contract
 from endplay.types.board import Board
 from endplay import Player
 import endplay.config as config
@@ -85,7 +86,7 @@ def update_event_and_feasability(file_path):
 
 def main():
 
-    print("PBN cleaner for DDS, Version 1.0.20")
+    print("PBN cleaner for DDS, Version 1.0.21")
     # create a root window
     root = tk.Tk()
     root.withdraw()

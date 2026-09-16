@@ -24,6 +24,11 @@ the clean build is ~37 MB.
 cd Install
 .buildenv\Scripts\python -m PyInstaller <utility_name>.spec
 ```
+The build venv is based on miniconda, which keeps `tcl86t.dll`/`tk86t.dll`/`ffi-8.dll` in
+`<base>\Library\bin`. `build.cmd` puts that folder on PATH; when running PyInstaller by hand, do the
+same (`set PATH=C:\ProgramData\miniconda3\Library\bin;%PATH%`) or the exe builds fine but dies at
+startup with `DLL load failed while importing _tkinter` (tell-tale: MergePBNFiles ~7.5 MB instead of ~11 MB).
+
 Spec files are in `Install/`. Each corresponds to a Python source file in `src/`. All specs
 share the exclude list in `Install/build_excludes.py` (via `from build_excludes import EXCLUDES`),
 which strips libraries no shipped tool uses. matplotlib is a hard dependency of `endplay`
@@ -43,7 +48,7 @@ python src/<utility_name>.py [arguments]
 ```
 
 ### Packaging notes
-- `RenumberPBNBoards.spec` builds an exe named **`ResetAndRenumberPBNBoards.exe`** (not RenumberPBNBoards).
+- The build env installs **stock** endplay from PyPI, which may differ from a locally patched endplay in the global Python: a script that works from source can still fail as an exe. Test PBN parsing with `Install\.buildenv\Scripts\python`.
 - `benchmark.py` is **not** shipped as an executable (TensorFlow makes it ~530 MB); run it from source.
 - `ComputeDDTables.py`, `ComputeDatumScores.py` and `CheckDatumScores.py` are **not** shipped (developer-side steps around `DatumScores.pkl`); run them from source.
 - `.gitattributes` normalizes line endings (`text=auto`); avoid re-introducing whole-file CRLF churn.
@@ -78,11 +83,11 @@ python src/<utility_name>.py [arguments]
 | `comparerobots.py` | HTML comparing one PBN per robot side-by-side; match-results + team-totals summary at top |
 | `comparematchpbnashtml.py` | Compare two robot replays as HTML |
 | `printmatchpbnashtml.py` | HTML index of all boards linking to per-board files (Bridge Composer output) |
-| `MergePBNFiles.py` | Merge multiple PBN files into one |
+| `MergePBNFiles.py` | Merge all PBN files in a folder into one (dialogs, or `-d/-o/-r` on the command line); reports duplicate and rotated boards, within and across files, with file and board number |
 | `CalculateMatch.py` | Merge open/closed room PBN into match file |
 | `CountPBNBoards.py` | Count boards in a PBN file |
 | `Split_PBN.py` | Split a PBN by double-dummy results into separate files |
-| `RenumberPBNBoards.py` | Renumber boards (builds `ResetAndRenumberPBNBoards.exe`) |
+| `ResetAndRenumberPBNBoards.py` | Reset dealer to North, drop duplicate and rotated deals and play, renumber boards |
 | `csvlin2pbn.py` | Convert a Danish Bridge Federation CSV/LIN to PBN |
 | `LoadAndSavePBN.py` | Round-trip a PBN through endplay (PBN → LIN) |
 | `TMPbn2LinVG.py` | Convert Bridge Moniteur PBN to LIN for NetBridgeVu |
@@ -92,7 +97,7 @@ python src/<utility_name>.py [arguments]
 | `ComputeDDTables.py` | Fill `DatumScores.pkl` with double-dummy result tables — **source-only, not shipped** (endplay/DDS dev step; run `python src/ComputeDDTables.py DatumScores.pkl`) |
 | `ComputeDatumScores.py` | Compute par + DD for a PBN's **bare** deals (no score tags) and add them to `DatumScores.pkl` — **source-only, not shipped** (endplay/DDS dev step) |
 | `AddDatumScoreToPBN.py` | Annotate a PBN from `DatumScores.pkl` with `OptimumScore`/`ParContract`/`OptimumResultTable` (single output file) |
-| `CheckDatumScores.py` | Scan a PBN for boards with missing/malformed par annotation — **source-only, not shipped** |
+| `CheckDatumScores.py` | Scan a PBN for boards with missing/malformed par annotation, duplicate and rotated deals — **source-only, not shipped** |
 | `PbnExtractBoards.py` | Extract unique boards, remove duplicates |
 | `benchmark.py` | Hardware benchmark — **source-only, not shipped** (run `python src/benchmark.py`) |
 
@@ -101,6 +106,8 @@ python src/<utility_name>.py [arguments]
 - `src/scoring.py`: Contract score calculation using bridge scoring rules
 - `src/compare.py`: IMP difference calculation between match results
 - `src/lastdir.py`: Remembers the last folder used in file dialogs (stored in `%APPDATA%/bridge-robot-utilities.json`). `get_last_dir(key=...)`/`set_last_dir(path, key=...)` — most GUI tools share the default key; the extract/split/renumber tools pass `key="extract"`/`"split"`/`"renumber"` for separate folders.
+- `src/dealkey.py`: `hands_from_north(deal)` normalizes a PBN deal (any first seat, value or whole `[Deal]` line) to N/E/S/W hands; `rotation_key(hands)` is identical for a deal and its 1/2/3-seat rotations. `same_board(...)` additionally requires dealer and vulnerability to have turned along (accepts PBN tag strings or endplay `Player`/`Vul` ints). Used by `CheckDatumScores` and `MergePBNFiles` (report) and `ResetAndRenumberPBNBoards` (drops true copies).
+- `src/endplayfix.py`: imported (for its side effect) by every tool that calls `pbn.load`; it wraps `PBNDecoder._tags_to_board` so the stock endplay in the build env behaves like the locally patched one. It re-applies the fixes the locally patched endplay has and the stock PyPI build lacks, so source runs and executables behave alike: (1) endplay (0.5.10 and 0.5.12) applies `[Dealer]` only when the board has a contract, so boards with no `[Contract]` or `[Contract "?"]` get the board-number dealer — and wrong vulnerabilities once a tool resets the dealer; (2) a NAG (`$1`) in an auction reaches `Bid()` and raises `ValueError: invalid literal for int() with base 10: '$'`; (3) the LIN encoder omits the leading `mn||`; (4) `trick_winner` raises `IndexError` on a part trick instead of returning the player on lead. `[Contract "?"]` is fixed in 0.5.12 itself (as `None`, where the patched endplay gave `Pass`), so it is not repeated. New PBN- or LIN-using tools must import it too. Drop a part once the endplay build (the team has a fork) has it.
 - `src/connectionhandler.js`: TCP connection handling for Node.js tools
 - `src/processFinder.js`: Windows process management for GIB engine
 

@@ -15,7 +15,7 @@
 
 # --- Direct build dependencies ---
 pyinstaller==6.20.0
-endplay==0.5.10
+endplay==0.5.12
 numpy==2.4.6
 colorama==0.4.6
 

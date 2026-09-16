@@ -1,7 +1,8 @@
-# Count number of borad in a PBN-file
+# Reset dealer/vulnerability, remove duplicate deals and renumber the boards in a PBN-file
 import sys
 from endplay import Player
 import endplay.parsers.pbn as pbn
+import endplayfix  # endplay drops [Dealer] on boards without a contract
 from endplay.types.board import Board
 import endplay.config as config
 import io
@@ -9,7 +10,7 @@ import os
 import tkinter as tk
 from tkinter import filedialog
 import lastdir
-from collections import Counter
+import dealkey
 
 def remove_feasability_lines(file_path):
     # Read the contents of the file
@@ -21,12 +22,12 @@ def remove_feasability_lines(file_path):
 
     # Create an in-memory file-like object
     fake_file = io.StringIO(''.join(new_lines))
-    
+
     return fake_file
 
 def main():
 
-    print("PBN Renumber boards, Version 1.0.20")
+    print("Reset and Renumber PBN Boards, Version 1.0.21")
 
     # create a root window
     root = tk.Tk()
@@ -59,12 +60,12 @@ def main():
         sys.exit(1)
 
     #Don't use unicode
-    config.use_unicode = False 
+    config.use_unicode = False
 
     print(f"No of boards {len(boards)}")
 
-    # Count the occurrences of each line
-    deal_count = Counter()
+    # Deals kept so far: rotation key -> (hands, dealer, vulnerability), so rotated copies are dropped too
+    seen_deals = {}
 
      # Construct the output file
     # Split the file path into directory and filename
@@ -81,6 +82,21 @@ def main():
         new_boards = []
         number = 1
         for index, board in enumerate(boards):
+            # Check for copies before the dealer is reset, as a rotated copy has the dealer turned too
+            hands = dealkey.hands_from_north(board.deal.to_pbn())
+            key = dealkey.rotation_key(hands)
+            first = seen_deals.get(key)
+            if first is not None:
+                if first[0] == hands:
+                    print(f"Duplicate deal: {board.deal.to_pbn()}")
+                    continue
+                if dealkey.same_board(*first, hands, board.dealer, board.vul):
+                    print(f"Rotated duplicate deal: {board.deal.to_pbn()}")
+                    continue
+                print(f"Rotated deal kept, dealer or vulnerability differs: {board.deal.to_pbn()}")
+            else:
+                seen_deals[key] = (hands, board.dealer, board.vul)
+
             #print(board.dealer, board.vul)
             if board.dealer > 0:
                 # Switch vulnerabolity
@@ -92,17 +108,12 @@ def main():
                             board.vul = 2
                 board.dealer = Player(0)
 
-            if deal_count[board.deal.to_pbn()] > 0:
-                print(f"Duplicate deal: {board.deal.to_pbn()}")
-                continue
-
             attributes = {attr: getattr(board, attr) for attr in selected_attributes}
             attributes['info'] = Board.Info()  # Add an empty 'info' dictionary
             new_board = Board(**attributes)  # Create a new Board object with selected attributes
             new_board.board_num = number  # Set the 'board_num' attribute explicitly
             number += 1
             new_boards.append(new_board)
-            deal_count[board.deal.to_pbn()] += 1
 
         pbn.dump(new_boards, output_file)
         # Close the file after writing
@@ -111,4 +122,5 @@ def main():
     else:
         print("File not saved")
 
-main()
+if __name__ == "__main__":
+    main()

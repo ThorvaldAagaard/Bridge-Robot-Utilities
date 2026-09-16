@@ -20,6 +20,7 @@ import tkinter as tk
 from tkinter import filedialog
 import lastdir
 import endplay.config as config
+import endplayfix  # local endplay fixes (dealer tag, auction NAGs, LIN mn||)
 config.use_unicode = False
 from endplay.types import Deal, Denom, Player
 from endplay.dds import calc_all_tables
@@ -170,7 +171,7 @@ def enrich(pickle_path):
 
 
 def main():
-    print("Compute DD Tables, Version 1.0.20")
+    print("Compute DD Tables, Version 1.0.21")
 
     # Command-line usage: ComputeDDTables.py [DatumScores.pkl]
     if len(sys.argv) > 1:

@@ -8,6 +8,7 @@ from tkinter import filedialog, messagebox
 import lastdir
 
 import endplay.parsers.pbn as pbn
+import endplayfix  # endplay drops [Dealer] on boards without a contract
 import endplay.parsers.lin as lin
 import webbrowser
 
@@ -87,7 +88,7 @@ def extract_value(s: str) -> str:
     return s[s.index('"') + 1 : s.rindex('"')]
 
 def main():
-    print("Compare match as html, Version 1.0.20")
+    print("Compare match as html, Version 1.0.21")
     # create a root window
     root = tk.Tk()
     root.withdraw()

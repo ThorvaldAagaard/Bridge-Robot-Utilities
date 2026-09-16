@@ -14,7 +14,10 @@ already in the pickle (re-run AddDatumScoreToPBN.py) or absent from it (run
 ComputeDatumScores.py first).
 
 It also counts boards and reports duplicate board numbers and duplicate deals,
-which is usually what is behind a board count that comes up short.
+which is usually what is behind a board count that comes up short, and lists
+rotated deals: the same four hands moved one, two or three seats around. Those
+where dealer and vulnerability turned along are the same board; the rest are
+listed separately.
 
 Streams the input, so a 500 MB file costs no more memory than a small one
 (bar the optional duplicate sets). Source-only developer tool; not shipped.
@@ -27,6 +30,7 @@ import os
 import re
 import pickle
 import argparse
+import dealkey
 
 # A data row of an OptimumResultTable, e.g. "N S 5".
 ORT_ROW = re.compile(r'^([NESW])\s+(NT|S|H|D|C)\s+(-?\d+)$')
@@ -42,6 +46,15 @@ PAR_LEVEL = re.compile(r'^(?:NS|EW)\s+(\d)')
 def tag_value(line):
     parts = line.split('"')
     return parts[1] if len(parts) > 1 else None
+
+
+def tag_in(block, name):
+    """Value of the [name "..."] tag in a board block, or None."""
+    prefix = '[%s ' % name
+    for line in block:
+        if line.lstrip().startswith(prefix):
+            return tag_value(line.strip())
+    return None
 
 
 def check_block(block):
@@ -113,7 +126,8 @@ def scan(pbn_path, pickle_path=None, limit=20, show_all=False, dupes=True):
     counts = {'boards': 0, 'no_deal': 0, 'bad': 0, 'shown': 0,
               'in_pickle': 0, 'not_in_pickle': 0}
     seen_nums, dup_nums = set(), []
-    seen_deals, dup_deals = set(), []
+    # rotation key -> (first board, its hands N/E/S/W, dealer, vulnerability)
+    seen_deals, dup_deals, rotated = {}, [], []
     progress = {'done': 0, 'next': 0}
 
     def report(block):
@@ -132,10 +146,20 @@ def scan(pbn_path, pickle_path=None, limit=20, show_all=False, dupes=True):
                     dup_nums.append(board)
                 else:
                     seen_nums.add(board)
-            if deal_line in seen_deals:
+            try:
+                hands = dealkey.hands_from_north(deal_line)
+                key = dealkey.rotation_key(hands)
+            except (ValueError, IndexError):
+                hands = key = deal_line  # malformed deal: exact match only
+            dealer, vul = tag_in(block, 'Dealer'), tag_in(block, 'Vulnerable')
+            first = seen_deals.get(key)
+            if first is None:
+                seen_deals[key] = (board, hands, dealer, vul)
+            elif first[1] == hands:
                 dup_deals.append(board)
             else:
-                seen_deals.add(deal_line)
+                rotated.append((board, first[0], dealkey.same_board(
+                    first[1], first[2], first[3], hands, dealer, vul)))
 
         if not problems:
             return
@@ -187,6 +211,17 @@ def scan(pbn_path, pickle_path=None, limit=20, show_all=False, dupes=True):
             len(dup_deals),
             ' (e.g. board %s)' % ', '.join(str(b) for b in dup_deals[:5])
             if dup_deals else ''))
+        same = [(b, o) for b, o, s in rotated if s]
+        other = [(b, o) for b, o, s in rotated if not s]
+        for title, found in (
+                ("rotated boards (hands, dealer and vulnerability all turned)", same),
+                ("rotated deals with a different dealer or vulnerability", other)):
+            print("%d %s" % (len(found), title))
+            for i, (board, original) in enumerate(found):
+                if not show_all and i == limit:
+                    print("  ... (further suppressed; use --all to list them)")
+                    break
+                print("  Board %s is board %s rotated" % (board, original))
     print("%d boards with a problem" % counts['bad'])
     if data is not None and (counts['in_pickle'] or counts['not_in_pickle']):
         print("  %d unannotated but present in the pickle" % counts['in_pickle'])
@@ -196,7 +231,7 @@ def scan(pbn_path, pickle_path=None, limit=20, show_all=False, dupes=True):
 
 
 def main():
-    print("Check Datum Scores, Version 1.0.20")
+    print("Check Datum Scores, Version 1.0.21")
     parser = argparse.ArgumentParser(
         description="Scan a PBN for boards missing par / optimum scores")
     parser.add_argument("filename", help="PBN file to scan")

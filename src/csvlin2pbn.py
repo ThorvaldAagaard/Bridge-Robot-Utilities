@@ -1,5 +1,6 @@
 import sys
 import endplay.parsers.pbn as pbn
+import endplayfix  # local endplay fixes (dealer tag, auction NAGs, LIN mn||)
 import endplay.parsers.lin as lin
 from endplay.types.board import Board
 from endplay.types.deal import Deal
@@ -53,7 +54,7 @@ def convert_to_pbn(card_string):
 
 def main():
 
-    print("csvLin -> PBN, Version 1.0.20")
+    print("csvLin -> PBN, Version 1.0.21")
     # create a root window
     root = tk.Tk()
     root.withdraw()

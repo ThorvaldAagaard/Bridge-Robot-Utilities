@@ -1,5 +1,6 @@
 import sys
 import endplay.parsers.pbn as pbn
+import endplayfix  # endplay drops [Dealer] on boards without a contract
 from endplay.types.board import Board
 import endplay.config as config
 import argparse
@@ -62,7 +63,7 @@ def write_playernames_to_file(output_file, sorted_boards):
 
 def main():
 
-    print("Table Manager PBN cleaner, Version 1.0.20")
+    print("Table Manager PBN cleaner, Version 1.0.21")
     # create a root window
     root = tk.Tk()
     root.withdraw()

@@ -1,5 +1,6 @@
 import sys
 import endplay.parsers.pbn as pbn
+import endplayfix  # endplay drops [Dealer] on boards without a contract
 import endplay.parsers.lin as lin
 import endplay.config as config
 import argparse
@@ -111,7 +112,7 @@ def generate_vg(start, end, boards, filename, co_ns, co_ew):
 
 def main():
 
-    print("Table Manager PBN to Lin, Version 1.0.20")
+    print("Table Manager PBN to Lin, Version 1.0.21")
 
     # create a root window
     root = tk.Tk()

@@ -1,16 +1,20 @@
 import sys
 import endplay.parsers.pbn as pbn
+import endplayfix  # endplay drops [Dealer] on boards without a contract
 from endplay.types.board import Board
 import endplay.config as config
 import argparse
 import io
 import os
+import re
 import math
 import bisect
 import tkinter as tk
 from tkinter import filedialog
 import lastdir
 
+# endplay writes "?" for the contract, result and declarer of an unplayed board
+UNPLAYED_TAGS = re.compile(r'^\[(Contract|Result|Declarer) "\?"\]\n', re.MULTILINE)
 
 
 def remove_feasability_lines(file_path):
@@ -29,7 +33,7 @@ def remove_feasability_lines(file_path):
 
 def main():
 
-    print("Table Manager PBN Extract, Version 1.0.20")
+    print("Table Manager PBN Extract, Version 1.0.21")
     # create a root window
     root = tk.Tk()
     root.withdraw()
@@ -100,7 +104,7 @@ def main():
                 new_boards.append(new_board)
                 board_num += 1
 
-        pbn.dump(new_boards, output_file)
+        output_file.write(UNPLAYED_TAGS.sub('', pbn.dumps(new_boards)))
         # Close the file after writing
         output_file.close()
         print(f"{output_file.name} generated")

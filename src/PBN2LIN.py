@@ -5,7 +5,7 @@ import endplayfix  # endplay drops [Dealer] on boards without a contract
 import endplay.parsers.lin as lin
 
 # Set up argument parsing
-parser = argparse.ArgumentParser(description="Convert PBN file to LIN format. Version 1.0.21")
+parser = argparse.ArgumentParser(description="Convert PBN file to LIN format. Version 1.0.22")
 parser.add_argument('input_file', help="The input PBN file.")
 parser.add_argument('output_file', nargs='?', help="The output LIN file (optional).")
 

@@ -137,7 +137,7 @@ def ask_arguments():
     return directory, output_file, recursive
 
 def main():
-    print("Merge PBN Files, Version 1.0.21")
+    print("Merge PBN Files, Version 1.0.22")
     parser = argparse.ArgumentParser(description="Merge .PBN files in a directory into a single file, reporting duplicate "
                                                  "and rotated boards. Without --directory, dialogs ask for the folder and output file.")
     parser.add_argument("-d", "--directory", help="Path to the directory containing .PBN files.")

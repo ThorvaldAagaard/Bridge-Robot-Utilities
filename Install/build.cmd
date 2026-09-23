@@ -62,6 +62,7 @@ python -m PyInstaller PBN2LinUI.spec
 python -m PyInstaller PBN2Lin.spec
 python -m PyInstaller Lin2PBNUI.spec
 python -m PyInstaller LIN2PBN.spec
+python -m PyInstaller LoadAndSavePBN.spec
 python -m PyInstaller Split_PBN.spec
 python -m PyInstaller csvlin2pbn.spec
 python -m PyInstaller ExtractDatumScore.spec

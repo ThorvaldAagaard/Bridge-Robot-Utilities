@@ -87,7 +87,7 @@ python src/<utility_name>.py [arguments]
 | `CalculateMatch.py` | Merge open/closed room PBN into match file |
 | `CountPBNBoards.py` | Count boards in a PBN file |
 | `Split_PBN.py` | Split a PBN by double-dummy results into separate files |
-| `ResetAndRenumberPBNBoards.py` | Reset dealer to North, drop duplicate and rotated deals and play, renumber boards |
+| `ResetAndRenumberPBNBoards.py` | Renumber boards (dealer and vulnerability follow the new board number), drop incomplete, duplicate and rotated deals and play |
 | `csvlin2pbn.py` | Convert a Danish Bridge Federation CSV/LIN to PBN |
 | `LoadAndSavePBN.py` | Round-trip a PBN through endplay (PBN → LIN) |
 | `TMPbn2LinVG.py` | Convert Bridge Moniteur PBN to LIN for NetBridgeVu |
@@ -106,7 +106,7 @@ python src/<utility_name>.py [arguments]
 - `src/scoring.py`: Contract score calculation using bridge scoring rules
 - `src/compare.py`: IMP difference calculation between match results
 - `src/lastdir.py`: Remembers the last folder used in file dialogs (stored in `%APPDATA%/bridge-robot-utilities.json`). `get_last_dir(key=...)`/`set_last_dir(path, key=...)` — most GUI tools share the default key; the extract/split/renumber tools pass `key="extract"`/`"split"`/`"renumber"` for separate folders.
-- `src/dealkey.py`: `hands_from_north(deal)` normalizes a PBN deal (any first seat, value or whole `[Deal]` line) to N/E/S/W hands; `rotation_key(hands)` is identical for a deal and its 1/2/3-seat rotations. `same_board(...)` additionally requires dealer and vulnerability to have turned along (accepts PBN tag strings or endplay `Player`/`Vul` ints). Used by `CheckDatumScores` and `MergePBNFiles` (report) and `ResetAndRenumberPBNBoards` (drops true copies).
+- `src/dealkey.py`: `hands_from_north(deal)` normalizes a PBN deal (any first seat, value or whole `[Deal]` line) to N/E/S/W hands; `deal_problem(hands)` says why four hands are not a complete deal (not 13 cards each, a card twice), or `None`; `rotation_key(hands)` is identical for a deal and its 1/2/3-seat rotations. `same_board(...)` additionally requires dealer and vulnerability to have turned along (accepts PBN tag strings or endplay `Player`/`Vul` ints). Used by `CheckDatumScores` and `MergePBNFiles` (report) and `ResetAndRenumberPBNBoards` (drops true copies and incomplete deals).
 - `src/endplayfix.py`: imported (for its side effect) by every tool that calls `pbn.load`; it wraps `PBNDecoder._tags_to_board` so the stock endplay in the build env behaves like the locally patched one. It re-applies the fixes the locally patched endplay has and the stock PyPI build lacks, so source runs and executables behave alike: (1) endplay (0.5.10 and 0.5.12) applies `[Dealer]` only when the board has a contract, so boards with no `[Contract]` or `[Contract "?"]` get the board-number dealer — and wrong vulnerabilities once a tool resets the dealer; (2) a NAG (`$1`) in an auction reaches `Bid()` and raises `ValueError: invalid literal for int() with base 10: '$'`; (3) the LIN encoder omits the leading `mn||`; (4) `trick_winner` raises `IndexError` on a part trick instead of returning the player on lead. `[Contract "?"]` is fixed in 0.5.12 itself (as `None`, where the patched endplay gave `Pass`), so it is not repeated. New PBN- or LIN-using tools must import it too. Drop a part once the endplay build (the team has a fork) has it.
 - `src/connectionhandler.js`: TCP connection handling for Node.js tools
 - `src/processFinder.js`: Windows process management for GIB engine

@@ -1,3 +1,4 @@
+import argparse
 import os
 import json
 import sys
@@ -103,13 +104,26 @@ def main():
         ("All files", "*.*")     # Allow all files (in case the user wants to choose other formats)
     ]
 
-    # Show an info message to inform the user that they need to select 2 files
-    messagebox.showinfo("File Selection", "Please select exactly 2 files.")
+    parser = argparse.ArgumentParser(
+        description="Compare two robot replays as HTML, highlighting boards where the result differs.")
+    parser.add_argument("files", nargs="*", help="exactly two PBN files to compare (omit to pick them via a dialog)")
+    parser.add_argument("-t", "--threshold", type=int, default=1,
+                         help="minimum |IMP change| on a board for it to be shown as different (default: 1)")
+    args = parser.parse_args()
+    threshold = args.threshold
 
-    # open the file dialog box
-    file_paths = filedialog.askopenfilenames(initialdir=lastdir.get_last_dir(), filetypes=file_types)
-    if file_paths:
-        lastdir.set_last_dir(file_paths[0])
+    # Command-line paths (e.g. two files from different match folders) bypass the dialog, which
+    # only lets you multi-select files within a single folder per open.
+    if args.files:
+        file_paths = args.files
+    else:
+        # Show an info message to inform the user that they need to select 2 files
+        messagebox.showinfo("File Selection", "Please select exactly 2 files.")
+
+        # open the file dialog box
+        file_paths = filedialog.askopenfilenames(initialdir=lastdir.get_last_dir(), filetypes=file_types)
+        if file_paths:
+            lastdir.set_last_dir(file_paths[0])
 
     # Print the selected file paths
     if len(file_paths) != 2:  # Check if the user selected exactly 2 files
@@ -124,14 +138,14 @@ def main():
     print(f"File 2: {file2}")
 
     try:
-        with open(file1, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding
-            pbn_boards1 = pbn.load(file)
-        with open(file1, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding
+        with open(file1, "r", encoding='utf-8-sig') as file:  # Open the input file with UTF-8 encoding, tolerating a BOM
+            pbn_boards1 = pbn.loads(file.read().replace('﻿', ''))  # matches concatenated across TM sessions each carry their own BOM
+        with open(file1, "r", encoding='utf-8-sig') as file:  # Open the input file with UTF-8 encoding, tolerating a BOM
             lines = file.readlines()
         data_list1 = load(lines)
-        with open(file2, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding
-            pbn_boards2 = pbn.load(file)
-        with open(file2, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding
+        with open(file2, "r", encoding='utf-8-sig') as file:  # Open the input file with UTF-8 encoding, tolerating a BOM
+            pbn_boards2 = pbn.loads(file.read().replace('﻿', ''))  # matches concatenated across TM sessions each carry their own BOM
+        with open(file2, "r", encoding='utf-8-sig') as file:  # Open the input file with UTF-8 encoding, tolerating a BOM
             lines = file.readlines()
         data_list2 = load(lines)
 
@@ -220,7 +234,7 @@ def main():
         row_html += f"<tr class='{row_class} {row_height_class}'><td class='align-center'><a href='Match{i % 2 + 1}.htm#Board{board}Open'>{board}</a></td><td>{contract_open}</td>{tricks1}{res1}<td>{contract_closed}</td>{tricks2}{res2}{imp_positive}{imp_negative}</tr>\n"
         if i % 2 == 1:
             imp_change = imp - sorted_data[i - 1][10]
-            if abs(imp_change) < 10:
+            if abs(imp_change) < threshold:
                 row_html = ""
                 continue
             if imp_change > 0:

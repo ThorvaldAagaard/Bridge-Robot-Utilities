@@ -110,10 +110,10 @@ def main():
         sys.exit(1)
 
     try:
-        with open(file_path, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding
-            pbn_boards = pbn.load(file)
+        with open(file_path, "r", encoding='utf-8-sig') as file:  # Open the input file with UTF-8 encoding, tolerating a BOM
+            pbn_boards = pbn.loads(file.read().replace('﻿', ''))  # matches concatenated across TM sessions each carry their own BOM
 
-        with open(file_path, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding
+        with open(file_path, "r", encoding='utf-8-sig') as file:  # Open the input file with UTF-8 encoding, tolerating a BOM
             lines = file.readlines()
         data_list = load(lines)
 

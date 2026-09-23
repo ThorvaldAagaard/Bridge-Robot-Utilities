@@ -182,7 +182,7 @@ def scan(pbn_path, pickle_path=None, limit=20, show_all=False, dupes=True):
             print("  ... (further boards suppressed; use --all to list them)")
 
     print("Scanning %s ..." % os.path.basename(pbn_path), flush=True)
-    with open(pbn_path, 'r', encoding='utf-8', errors='replace') as f:
+    with open(pbn_path, 'r', encoding='utf-8-sig', errors='replace') as f:
         block = []
         for line in f:
             progress['done'] += len(line)

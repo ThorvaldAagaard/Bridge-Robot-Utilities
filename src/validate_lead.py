@@ -185,8 +185,8 @@ def main():
 
 
     try:
-        with open(file_path, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding
-            boards = pbn.load(file)
+        with open(file_path, "r", encoding='utf-8-sig') as file:  # Open the input file with UTF-8 encoding, tolerating a BOM
+            boards = pbn.loads(file.read().replace('﻿', ''))  # matches concatenated across TM sessions each carry their own BOM
     except pbn.PBNDecodeError as e:
         print("OK: There was an issue decoding the PBN file.")
         print("Error message:", e)

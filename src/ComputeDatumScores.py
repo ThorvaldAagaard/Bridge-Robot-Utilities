@@ -156,7 +156,7 @@ def parse_pbn(path):
     """Yield unique (deal_str, vulnerable, dealer) tuples, one per distinct deal."""
     items, seen = [], set()
     deal = vul = dealer = None
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, 'r', encoding='utf-8-sig') as f:
         for line in f:
             s = line.strip()
             if s.startswith('[Deal '):

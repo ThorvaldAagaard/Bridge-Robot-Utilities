@@ -184,7 +184,7 @@ From the command line: `MergePBNFiles -d <folder> [-o All.PBN] [-r]`
 Count the number of boards in a PBN-file
 
 # ResetAndRenumberPBNBoards
-Renumber all boards in a PBN-file. Duplicate deals, and deals that are just another deal rotated, are removed. Be aware that any play information is removed in the processing
+Renumber all boards in a PBN-file; dealer and vulnerability are set from the new board number (1 = North/None, 2 = East/NS, ...). Incomplete deals (a hand without 13 cards, or a card dealt twice) are left out and reported. Duplicate deals, and deals that are just another deal rotated, are removed. Be aware that any play information is removed in the processing
 
 # Split_PBN
 Based on Double Dummy results in the PBN-file, this application split the file in three. Doubled contracts making, result more than 2000 away from the par result and the rest

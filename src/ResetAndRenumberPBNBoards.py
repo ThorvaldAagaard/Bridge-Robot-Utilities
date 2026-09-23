@@ -1,6 +1,5 @@
-# Reset dealer/vulnerability, remove duplicate deals and renumber the boards in a PBN-file
+# Drop incomplete deals, set dealer/vulnerability from the new board number, remove duplicate deals and renumber the boards in a PBN-file
 import sys
-from endplay import Player
 import endplay.parsers.pbn as pbn
 import endplayfix  # endplay drops [Dealer] on boards without a contract
 from endplay.types.board import Board
@@ -77,13 +76,22 @@ def main():
     output_file = filedialog.asksaveasfile(defaultextension=".pbn", initialdir=directory, filetypes=file_types, initialfile=new_filename)
 
     if output_file is not None:
-        selected_attributes = ['board_num', 'dealer', 'vul', 'deal']
+        # Dealer and vulnerability are left unset, so endplay derives them from the new board number
+        selected_attributes = ['deal']
 
         new_boards = []
+        incomplete = 0
         number = 1
         for index, board in enumerate(boards):
-            # Check for copies before the dealer is reset, as a rotated copy has the dealer turned too
+            # Leave out partial deals: every hand must hold 13 different cards
             hands = dealkey.hands_from_north(board.deal.to_pbn())
+            problem = dealkey.deal_problem(hands)
+            if problem:
+                print(f"Incomplete deal, board {board.board_num} left out: {problem}")
+                incomplete += 1
+                continue
+
+            # Check for copies against the original dealer and vulnerability, as a rotated copy has them turned too
             key = dealkey.rotation_key(hands)
             first = seen_deals.get(key)
             if first is not None:
@@ -97,17 +105,6 @@ def main():
             else:
                 seen_deals[key] = (hands, board.dealer, board.vul)
 
-            #print(board.dealer, board.vul)
-            if board.dealer > 0:
-                # Switch vulnerabolity
-                if board.dealer != 2:
-                    if board.vul == 2:
-                        board.vul = 3
-                    else:
-                        if board.vul == 3:
-                            board.vul = 2
-                board.dealer = Player(0)
-
             attributes = {attr: getattr(board, attr) for attr in selected_attributes}
             attributes['info'] = Board.Info()  # Add an empty 'info' dictionary
             new_board = Board(**attributes)  # Create a new Board object with selected attributes
@@ -115,6 +112,8 @@ def main():
             number += 1
             new_boards.append(new_board)
 
+        if incomplete:
+            print(f"{incomplete} incomplete deals left out")
         pbn.dump(new_boards, output_file)
         # Close the file after writing
         output_file.close()

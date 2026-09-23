@@ -144,7 +144,7 @@ def annotate(pbn_path, pickle_path, output_path, on_status=None, on_progress=Non
 
     done = 0
     next_report = 0
-    with open(pbn_path, 'r', encoding='utf-8', newline='') as fin, \
+    with open(pbn_path, 'r', encoding='utf-8-sig', newline='') as fin, \
             open(output_path, 'w', encoding='utf-8', newline='') as fout:
         block = []
         for line in fin:

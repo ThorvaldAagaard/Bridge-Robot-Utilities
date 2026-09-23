@@ -242,19 +242,24 @@ def main():
     ]
 
 
-    # open the file dialog box in the folder used last time
-    file_paths = filedialog.askopenfilenames(initialdir=lastdir.get_last_dir(), filetypes=file_types)
-    if file_paths:
-        lastdir.set_last_dir(file_paths[0])
+    # Command-line paths (one per robot match, from any mix of directories) bypass the dialog,
+    # which only lets you multi-select files within a single folder per open.
+    if len(sys.argv) > 1:
+        file_paths = sys.argv[1:]
+    else:
+        # open the file dialog box in the folder used last time
+        file_paths = filedialog.askopenfilenames(initialdir=lastdir.get_last_dir(), filetypes=file_types)
+        if file_paths:
+            lastdir.set_last_dir(file_paths[0])
 
     new_data_list = []
     matches = []
     for file_path in file_paths:
         print(file_path)
         try:
-            with open(file_path, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding
-                pbn_boards = pbn.load(file)
-            with open(file_path, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding
+            with open(file_path, "r", encoding='utf-8-sig') as file:  # Open the input file with UTF-8 encoding, tolerating a BOM
+                pbn_boards = pbn.loads(file.read().replace('﻿', ''))  # matches concatenated across TM sessions each carry their own BOM
+            with open(file_path, "r", encoding='utf-8-sig') as file:  # Open the input file with UTF-8 encoding, tolerating a BOM
                 lines = file.readlines()
             data_list = load(lines)
 

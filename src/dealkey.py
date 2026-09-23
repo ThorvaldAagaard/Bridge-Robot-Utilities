@@ -4,10 +4,12 @@ A board that is just rotated has the same four hands, moved one, two or three
 seats around the table. rotation_key() gives such deals the same key,
 hands_from_north() tells an exact duplicate from a rotated one, and
 same_board() checks that dealer and vulnerability were turned along too - only
-then is it really the same board.
+then is it really the same board. deal_problem() tells whether the four hands
+are a complete deal.
 """
 
 SEATS = "NESW"
+RANKS = "AKQJT98765432"
 
 VULS = {'none': 'None', 'love': 'None', '-': 'None', 'ns': 'NS', 'ew': 'EW',
         'all': 'All', 'both': 'All'}
@@ -28,6 +30,31 @@ def hands_from_north(deal):
     hands = hands.split()
     start = SEATS.index(first.strip().upper())
     return tuple(hands[(seat - start) % 4] for seat in range(4))
+
+
+def deal_problem(hands):
+    """Why the hands (N, E, S, W, as from hands_from_north) are not a complete deal, or None.
+
+    A complete deal is 52 different cards, 13 in each hand, in four suits per hand.
+    """
+    seen = {}
+    for seat, hand in zip(SEATS, hands):
+        suits = hand.split('.')
+        if len(suits) != 4:
+            return f"{seat} does not have four suits: {hand}"
+        cards = 0
+        for suit, holding in zip("SHDC", suits):
+            for rank in holding.replace('-', ''):
+                rank = rank.upper()
+                if rank not in RANKS:
+                    return f"{seat} has an unknown card '{rank}': {hand}"
+                if (suit, rank) in seen:
+                    return f"{suit}{rank} is in both {seen[(suit, rank)]} and {seat}"
+                seen[(suit, rank)] = seat
+                cards += 1
+        if cards != 13:
+            return f"{seat} has {cards} cards, not 13: {hand}"
+    return None
 
 
 def rotation_key(hands):

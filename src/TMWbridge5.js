@@ -34,7 +34,7 @@ const fs = require('fs');
 const { spawn } = require('child_process');
 const minimist = require('minimist');
 
-const VERSION = '1.0.20';
+const VERSION = '1.0.23';
 const SEATS = ['North', 'East', 'South', 'West'];
 
 const timeString = () => {

@@ -448,7 +448,7 @@ def ask_arguments():
 
 
 def main():
-    print("Process Robot Reports, Version 1.0.22")
+    print("Process Robot Reports, Version 1.0.23")
     parser = argparse.ArgumentParser(description="Save, extract and merge the match reports in a robot's report folder. "
                                                  "Without a folder, dialogs ask for it.")
     parser.add_argument("folder", nargs="?", help=r"The report folder, e.g. D:\RobotMatches\Eamon")

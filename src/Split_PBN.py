@@ -245,7 +245,7 @@ class ConsoleProgress:
 
 def main():
 
-    print("Split PBN in 6 files. Doubled and making, doubled not making more than 2000 from par, duplicates, missing DD and the rest, Version 1.0.22")
+    print("Split PBN in 6 files. Doubled and making, doubled not making more than 2000 from par, duplicates, missing DD and the rest, Version 1.0.23")
 
     # From the command line: Split_PBN <file.pbn> [DatumScores.pkl]
     if len(sys.argv) > 1:

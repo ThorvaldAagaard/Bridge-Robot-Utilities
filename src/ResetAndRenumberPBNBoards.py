@@ -74,7 +74,7 @@ def renumber_boards(boards):
 
 def main():
 
-    print("Reset and Renumber PBN Boards, Version 1.0.22")
+    print("Reset and Renumber PBN Boards, Version 1.0.23")
 
     # create a root window
     root = tk.Tk()

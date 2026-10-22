@@ -88,7 +88,7 @@ def extract_data(file_path, output_path):
 
 def main():
 
-    print("Extract Datum Score, Version 1.0.22")
+    print("Extract Datum Score, Version 1.0.23")
     # create a root window
     root = tk.Tk()
     root.withdraw()

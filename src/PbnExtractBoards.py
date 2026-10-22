@@ -60,7 +60,7 @@ def extract_boards(boards):
 
 def main():
 
-    print("Table Manager PBN Extract, Version 1.0.22")
+    print("Table Manager PBN Extract, Version 1.0.23")
     # create a root window
     root = tk.Tk()
     root.withdraw()

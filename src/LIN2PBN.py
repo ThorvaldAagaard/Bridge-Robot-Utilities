@@ -5,14 +5,14 @@ import endplayfix  # local endplay fixes (dealer tag, auction NAGs, LIN mn||)
 import endplay.parsers.lin as lin
 
 # Set up argument parsing
-parser = argparse.ArgumentParser(description="Convert LIN file to PBN format. Version 1.0.22")
+parser = argparse.ArgumentParser(description="Convert LIN file to PBN format. Version 1.0.23")
 parser.add_argument('input_file', help="The input LIN file.")
 parser.add_argument('output_file', nargs='?', help="The output PBN file (optional).")
 
 # Parse the arguments
 args = parser.parse_args()
 
-print("LIN -> PBN, Version 1.0.22")
+print("LIN -> PBN, Version 1.0.23")
 
 # If no output file is specified, generate the output file name by changing the extension
 if not args.output_file:

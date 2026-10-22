@@ -31,6 +31,33 @@ def remove_feasability_lines(file_path):
     return fake_file
 
 
+def extract_boards(boards):
+    """The PBN text of the distinct deals of a match: deal, dealer and vulnerability only, numbered from 1.
+
+    The two rooms of a board hold the same deal, so a deal repeating the previous board's is dropped.
+    """
+    config.use_unicode = False
+    boards = sorted(boards, key=lambda board: (board.board_num))
+    selected_attributes = ['board_num', 'dealer', 'vul', 'deal']
+
+    new_boards = []
+
+    board_num = 1
+    deal = ""
+    for board in boards:
+
+        attributes = {attr: getattr(board, attr) for attr in selected_attributes}
+        attributes['info'] = Board.Info()  # Add an empty 'info' dictionary
+        new_board = Board(**attributes)  # Create a new Board object with selected attributes
+        if str(new_board.deal) != str(deal):
+            deal = new_board.deal
+            new_board.board_num = board_num
+            new_boards.append(new_board)
+            board_num += 1
+
+    return UNPLAYED_TAGS.sub('', pbn.dumps(new_boards))
+
+
 def main():
 
     print("Table Manager PBN Extract, Version 1.0.22")
@@ -70,11 +97,6 @@ def main():
 
     print("Number of boards:", len(boards))
     print("Last board:", boards[len(boards)-1].board_num)
-    # Sort the array of Board objects based on board.number and board.info.room
-    boards = sorted(
-        boards,
-        key=lambda board: (board.board_num)
-    )
 
      # Construct the output file
     # Split the file path into directory and filename
@@ -87,24 +109,7 @@ def main():
     output_file = filedialog.asksaveasfile(defaultextension=".pbn", initialdir=directory, filetypes=file_types, initialfile=new_filename)
 
     if output_file is not None:
-        selected_attributes = ['board_num', 'dealer', 'vul', 'deal']
-
-        new_boards = []
-
-        board_num = 1
-        deal = ""
-        for board in boards:
-            
-            attributes = {attr: getattr(board, attr) for attr in selected_attributes}
-            attributes['info'] = Board.Info()  # Add an empty 'info' dictionary
-            new_board = Board(**attributes)  # Create a new Board object with selected attributes
-            if str(new_board.deal) != str(deal):
-                deal = new_board.deal
-                new_board.board_num = board_num
-                new_boards.append(new_board)
-                board_num += 1
-
-        output_file.write(UNPLAYED_TAGS.sub('', pbn.dumps(new_boards)))
+        output_file.write(extract_boards(boards))
         # Close the file after writing
         output_file.close()
         print(f"{output_file.name} generated")

@@ -98,7 +98,8 @@ python src/<utility_name>.py [arguments]
 | `ComputeDatumScores.py` | Compute par + DD for a PBN's **bare** deals (no score tags) and add them to `DatumScores.pkl` — **source-only, not shipped** (endplay/DDS dev step) |
 | `AddDatumScoreToPBN.py` | Annotate a PBN from `DatumScores.pkl` with `OptimumScore`/`ParContract`/`OptimumResultTable` (single output file) |
 | `CheckDatumScores.py` | Scan a PBN for boards with missing/malformed par annotation, duplicate and rotated deals — **source-only, not shipped** |
-| `PbnExtractBoards.py` | Extract unique boards, remove duplicates |
+| `PbnExtractBoards.py` | Extract unique boards, remove duplicates (`extract_boards(boards)` is the core, shared with ProcessRobotReports) |
+| `ProcessRobotReports.py` | File a robot's report folder: save each TMClient zip's `match.pbn` (or a plain match PBN) to `Boards\<name>.matches` named after the robot in the player tags, extract it, move the report to `Processed`, rebuild `All.PBN`/`Ordered_All.PBN` overall and per robot (dialogs, or `<folder> [--dry-run] [--rename] [--merge]`). Reuses PbnExtractBoards, MergePBNFiles and `ResetAndRenumberPBNBoards.renumber_boards` |
 | `benchmark.py` | Hardware benchmark — **source-only, not shipped** (run `python src/benchmark.py`) |
 
 ### Shared Modules

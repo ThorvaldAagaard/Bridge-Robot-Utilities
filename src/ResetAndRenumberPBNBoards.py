@@ -24,6 +24,54 @@ def remove_feasability_lines(file_path):
 
     return fake_file
 
+def renumber_boards(boards):
+    """The complete, distinct deals of boards, numbered from 1, with dealer and vulnerability from the new number.
+
+    Returns the new boards and how many incomplete deals were left out.
+    """
+    config.use_unicode = False
+
+    # Deals kept so far: rotation key -> (hands, dealer, vulnerability), so rotated copies are dropped too
+    seen_deals = {}
+
+    # Dealer and vulnerability are left unset, so endplay derives them from the new board number
+    selected_attributes = ['deal']
+
+    new_boards = []
+    incomplete = 0
+    number = 1
+    for index, board in enumerate(boards):
+        # Leave out partial deals: every hand must hold 13 different cards
+        hands = dealkey.hands_from_north(board.deal.to_pbn())
+        problem = dealkey.deal_problem(hands)
+        if problem:
+            print(f"Incomplete deal, board {board.board_num} left out: {problem}")
+            incomplete += 1
+            continue
+
+        # Check for copies against the original dealer and vulnerability, as a rotated copy has them turned too
+        key = dealkey.rotation_key(hands)
+        first = seen_deals.get(key)
+        if first is not None:
+            if first[0] == hands:
+                print(f"Duplicate deal: {board.deal.to_pbn()}")
+                continue
+            if dealkey.same_board(*first, hands, board.dealer, board.vul):
+                print(f"Rotated duplicate deal: {board.deal.to_pbn()}")
+                continue
+            print(f"Rotated deal kept, dealer or vulnerability differs: {board.deal.to_pbn()}")
+        else:
+            seen_deals[key] = (hands, board.dealer, board.vul)
+
+        attributes = {attr: getattr(board, attr) for attr in selected_attributes}
+        attributes['info'] = Board.Info()  # Add an empty 'info' dictionary
+        new_board = Board(**attributes)  # Create a new Board object with selected attributes
+        new_board.board_num = number  # Set the 'board_num' attribute explicitly
+        number += 1
+        new_boards.append(new_board)
+
+    return new_boards, incomplete
+
 def main():
 
     print("Reset and Renumber PBN Boards, Version 1.0.22")
@@ -58,13 +106,7 @@ def main():
         print("Line number:", e.lineno)
         sys.exit(1)
 
-    #Don't use unicode
-    config.use_unicode = False
-
     print(f"No of boards {len(boards)}")
-
-    # Deals kept so far: rotation key -> (hands, dealer, vulnerability), so rotated copies are dropped too
-    seen_deals = {}
 
      # Construct the output file
     # Split the file path into directory and filename
@@ -76,42 +118,7 @@ def main():
     output_file = filedialog.asksaveasfile(defaultextension=".pbn", initialdir=directory, filetypes=file_types, initialfile=new_filename)
 
     if output_file is not None:
-        # Dealer and vulnerability are left unset, so endplay derives them from the new board number
-        selected_attributes = ['deal']
-
-        new_boards = []
-        incomplete = 0
-        number = 1
-        for index, board in enumerate(boards):
-            # Leave out partial deals: every hand must hold 13 different cards
-            hands = dealkey.hands_from_north(board.deal.to_pbn())
-            problem = dealkey.deal_problem(hands)
-            if problem:
-                print(f"Incomplete deal, board {board.board_num} left out: {problem}")
-                incomplete += 1
-                continue
-
-            # Check for copies against the original dealer and vulnerability, as a rotated copy has them turned too
-            key = dealkey.rotation_key(hands)
-            first = seen_deals.get(key)
-            if first is not None:
-                if first[0] == hands:
-                    print(f"Duplicate deal: {board.deal.to_pbn()}")
-                    continue
-                if dealkey.same_board(*first, hands, board.dealer, board.vul):
-                    print(f"Rotated duplicate deal: {board.deal.to_pbn()}")
-                    continue
-                print(f"Rotated deal kept, dealer or vulnerability differs: {board.deal.to_pbn()}")
-            else:
-                seen_deals[key] = (hands, board.dealer, board.vul)
-
-            attributes = {attr: getattr(board, attr) for attr in selected_attributes}
-            attributes['info'] = Board.Info()  # Add an empty 'info' dictionary
-            new_board = Board(**attributes)  # Create a new Board object with selected attributes
-            new_board.board_num = number  # Set the 'board_num' attribute explicitly
-            number += 1
-            new_boards.append(new_board)
-
+        new_boards, incomplete = renumber_boards(boards)
         if incomplete:
             print(f"{incomplete} incomplete deals left out")
         pbn.dump(new_boards, output_file)

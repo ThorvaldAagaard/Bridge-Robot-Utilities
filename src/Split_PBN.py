@@ -76,7 +76,6 @@ def update_event_and_feasability(file_path):
 def getScore(str):
     if str == None:
         return 0
-    print(str)
     if "NS" in str:
         return int(str.split(" ")[1])
     
@@ -99,9 +98,8 @@ def lookup(data, deal_line):
     return optimum_score, par_contract, vulnerable
 
 
-def process_file(file_path, info_label,progress_window, progress_bar):
+def process_file(file_path, info_label,progress_window, progress_bar, pickle_path='DatumScores.pkl'):
 
-    pickle_path = 'DatumScores.pkl'
     data = load_optimumscores(pickle_path)
 
     # Once done, update the label to show completion message
@@ -141,17 +139,20 @@ def process_file(file_path, info_label,progress_window, progress_bar):
     for i in range(len(boards)):
         if (i+1) % 10000 == 0:
             print("Processed",i+1)
-        if deal_count[boards[i].deal.to_pbn()] > 1:
+        # endplay's to_pbn is slow, so build the deal string once per board
+        deal_pbn = boards[i].deal.to_pbn()
+        # A deal may appear twice (Practice-Bidding-Scenarios writes each deal again rotated,
+        # with another dealer); from the third copy on it is a duplicate
+        if deal_count[deal_pbn] > 1:
             #print(Fore.GREEN,end="")
-            print(f"Duplicate deal {boards[i].board_num}: {boards[i].deal.to_pbn()} {deal_count[boards[i].deal.to_pbn()]}")
+            print(f"Duplicate deal {boards[i].board_num}: {deal_pbn} {deal_count[deal_pbn]}")
             duplicates.append(boards[i])
             continue
-        print("Adding:",boards[i].deal.to_pbn())
-        deal_count[boards[i].deal.to_pbn()] += 1
+        deal_count[deal_pbn] += 1
 
         skip = False
         if boards[i].info.OptimumScore is None:
-            deal_line = f'[Deal "{boards[i].deal.to_pbn()}"]'  # Replace with an actual deal line
+            deal_line = f'[Deal "{deal_pbn}"]'  # Replace with an actual deal line
             optimumScore,_,_ = lookup(data, deal_line)
             if optimumScore is None:
                 print(f"{Fore.RED}{i+1} No optimum score for board {boards[i].board_num}{Fore.RESET}", deal_line)
@@ -232,9 +233,27 @@ def check_thread_status(thread, root):
         # When the thread is done, exit the application
         root.quit()
 
+class ConsoleProgress:
+    """Stands in for the label and progress bar when running from the command line"""
+    def config(self, text=None, **kwargs):
+        if text:
+            print(text)
+
+    def __setitem__(self, key, value):
+        pass
+
+
 def main():
 
     print("Split PBN in 6 files. Doubled and making, doubled not making more than 2000 from par, duplicates, missing DD and the rest, Version 1.0.22")
+
+    # From the command line: Split_PBN <file.pbn> [DatumScores.pkl]
+    if len(sys.argv) > 1:
+        pickle_path = sys.argv[2] if len(sys.argv) > 2 else 'DatumScores.pkl'
+        progress = ConsoleProgress()
+        process_file(sys.argv[1], progress, None, progress, pickle_path)
+        return
+
     # create a root window
     root = tk.Tk()
     root.withdraw()

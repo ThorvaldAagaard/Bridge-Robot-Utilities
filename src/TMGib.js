@@ -50,9 +50,17 @@ let match;
 const cardValues = '23456789TJQKA';
 const suitOrder = 'SHDC';
 
+// Per-message traffic -- every call, card and trick passed between Table Manager and GIB --
+// is only printed with --verbose: it is ~200 lines a board, and a round robin runs GIB without
+// -v. Board-level lines (new board, contract, errors, GIB restarts) are printed regardless.
+function logTraffic(message) {
+    if (parameters.verbose)
+        console.log(`[${timeString()}] ${message}`);
+}
+
 function printTrick() {
     if (trickWinner) {
-        console.log(`[${timeString()}] Winner of trick ${trick}: ${trickWinner}`);
+        logTraffic(`Winner of trick ${trick}: ${trickWinner}`);
         trickWinner = "";
     }
 }
@@ -517,10 +525,7 @@ async function startGibProcess(command, args, gibdir) {
             }
         }
 
-        if (parameters.verbose)
-            console.log(`[${timeString()}] Sending to gib: ${command}${ignoreResp ? ' Ignoring response' : ''} ${noResp ? '(no response expected)' : ''}`);
-        else
-            console.log(`[${timeString()}] Sending to gib: ${command}`);
+        logTraffic(`Sending to gib: ${command}${ignoreResp ? ' Ignoring response' : ''} ${noResp ? '(no response expected)' : ''}`);
 
         if (receivedDataFromGib && parameters.verbose) {
             console.log("Unprocessed  Data from GIB: ", receivedDataFromGib)
@@ -570,7 +575,7 @@ async function startGibProcess(command, args, gibdir) {
                     }
                 }
 
-                console.log(`[${timeString()}] Gib responded: ${response.replace(/\r\n|\n/g, '\n' + ' '.repeat(30))}`);
+                logTraffic(`Gib responded: ${response.replace(/\r\n|\n/g, '\n' + ' '.repeat(30))}`);
                 recordCommand(command, response);
                 resolve(response);
             }
@@ -580,10 +585,10 @@ async function startGibProcess(command, args, gibdir) {
                 if (ignoreResp) {
                     resolve(null);
                     recordCommand(command, response + "(Ignored)");
-                    console.log(`[${timeString()}] Gib responded: ${response.replace(/\r\n|\n/g, ' ignored\n' + ' '.repeat(30))}`);
+                    logTraffic(`Gib responded: ${response.replace(/\r\n|\n/g, ' ignored\n' + ' '.repeat(30))}`);
                 } else {
                     recordCommand(command, response);
-                    console.log(`[${timeString()}] Gib responded: ${response.replace(/\r\n|\n/g, '\n' + ' '.repeat(30))}`);
+                    logTraffic(`Gib responded: ${response.replace(/\r\n|\n/g, '\n' + ' '.repeat(30))}`);
                     resolve(response);
                 }
             };
@@ -630,7 +635,7 @@ async function processLines() {
             receivedDataFromTM = receivedDataFromTM.slice(indexOfNewline + 2).trim();
         }
 
-        console.log(`[${timeString()}] Received from Table Manager: ${line}`);
+        logTraffic(`Received from Table Manager: ${line}`);
         if (playstarted && line.toLowerCase() === "start of board") {
             await saveCommandHistory(false);
             console.log(`[${timeString()}] TM is starting a new board`);
@@ -672,7 +677,7 @@ async function processLines() {
             if (line.startsWith("Teams") && teamsSent) {
                 // We allready told GIB it is teams, so just responding TM
                 line = `${parameters.seat} ready to start`;
-                console.log(`[${timeString()}] Sending to Table Manager: ${line}`);
+                logTraffic(`Sending to Table Manager: ${line}`);
                 client.write(line + messageTerminator);
                 // Give TM time to process before sending next message
                 await waitDelay(parameters.delay);
@@ -704,7 +709,7 @@ async function processLines() {
                                 if (parameters.verbose)
                                     console.log("Unprocessed Data From TM: ", receivedDataFromTM);
                             } else {
-                                console.log(`[${timeString()}] Sending to Table Manager: ${line}`);
+                                logTraffic(`Sending to Table Manager: ${line}`);
                                 recordBidding(line);
                                 recordPlay(line);
                                 printTrick();
@@ -732,7 +737,7 @@ async function processLines() {
                             await saveCommandHistory(false)
                             console.log(receivedDataFromTM)
                         } else {
-                            console.log(`[${timeString()}] Sending to Table Manager(2): ${line}`);
+                            logTraffic(`Sending to Table Manager(2): ${line}`);
                             recordBidding(line);
                             recordPlay(line);
                             printTrick();

@@ -189,6 +189,8 @@ Renumber all boards in a PBN-file; dealer and vulnerability are set from the new
 # Split_PBN
 Based on Double Dummy results in the PBN-file, this application split the file in three. Doubled contracts making, result more than 2000 away from the par result and the rest
 
+Started without arguments it asks for the file. From the command line: `Split_PBN <file.pbn> [DatumScores.pkl]` (the pickle defaults to `DatumScores.pkl` in the current folder).
+
 # PBN2LinUI
 A simple application, that converts a PBN-file to a LIN-file
 
@@ -278,6 +280,27 @@ Download from the [latest release](https://github.com/ThorvaldAagaard/Bridge-Rob
 
 # PbnExtractBoards
 Extracts unique boards from a PBN-file, removing duplicate deals and renumbering boards sequentially
+
+# ProcessRobotReports
+Files the match reports that arrive in a robot's report folder (for example `D:\RobotMatches\Eamon`) and keeps its board decks up to date - the work of opening each report, PbnExtractBoards, MergePBNFiles and ResetAndRenumberPBNBoards in one step.
+
+It reads two kinds of report from the folder: Brill TMClient report zips (`BrillTM_*.zip`, with the match in `match.pbn`) and plain match PBNs (for example a RoboBridge table manager export). For each one it
+
+1. saves the match in `Boards\<name>.matches` as `Brill_versus_<robot>_<label>_<start>_match.pbn`,
+2. extracts its boards to `Boards\All-<name>.PBN\Extract_<match file>`,
+3. moves the report to `Processed`,
+
+and then merges every extract into `All.PBN` and renumbers it into `Ordered_All.PBN` (duplicate, rotated and incomplete deals left out; details in `merge.log`). The same pair is built per robot in `Boards\All-<name>.PBN\<robot>\`, so each robot has its own deck to replay. The extracts are merged in the order the matches were played, so a new match only adds boards at the end. The previous `All.PBN`/`Ordered_All.PBN` are kept as `.bak`.
+
+`<name>` is the folder's name. The robot in a file name is the one in the player tags, not the one the match was named after - match names are often wrong (a match named `WB5_2_sep26_match21` was played against Lia) - and the `[Event]` tags are rewritten to agree.
+
+A match already filed is not filed again (a zip is recognised by the start time in its name), and a match without an extract gets one, so running it again finishes whatever was left half done. Reports it cannot use are listed and left in place: zips that are not Brill TMClient reports, and older reports that hold only the per-seat `match/Board###_Room_Seat.pbn` files and no `match.pbn` (open those in Brill's Match Analysis and save the match by hand). A folder without the `Boards`/`Processed` layout gets it on the first run.
+
+Started without arguments it asks for the folder, and whether to rename the matches already filed, and shows a summary at the end.
+From the command line: `ProcessRobotReports <folder> [--dry-run] [--rename] [--merge] [--name <name>]`
+- `--dry-run` lists what would be done.
+- `--rename` also renames the matches already filed, with their extracts and the zips in `Processed`, after the robot they were played against. Running it twice changes nothing.
+- `--merge` rebuilds the decks even when nothing new was filed (after deleting a match by hand).
 
 # benchmark (source only - not in releases)
 A developer script (`src/benchmark.py`) for comparing machines used in robot matches. Tests NumPy operations (matrix multiply, SVD, FFT), TensorFlow matrix operations (if installed), disk I/O (100MB read/write), and JSON serialization. Produces a weighted score (NumPy 40%, TensorFlow 30%, I/O 20%, JSON 10%) useful for evaluating hardware before running neural-network-based robots like BEN.

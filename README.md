@@ -187,7 +187,14 @@ Count the number of boards in a PBN-file
 Renumber all boards in a PBN-file; dealer and vulnerability are set from the new board number (1 = North/None, 2 = East/NS, ...). Incomplete deals (a hand without 13 cards, or a card dealt twice) are left out and reported. Duplicate deals, and deals that are just another deal rotated, are removed. Be aware that any play information is removed in the processing
 
 # Split_PBN
-Based on Double Dummy results in the PBN-file, this application split the file in three. Doubled contracts making, result more than 2000 away from the par result and the rest
+Splits a played PBN-file by comparing each result with the par score (`OptimumScore` from the file, or looked up in `DatumScores.pkl`). It writes up to six files next to the input, named `<file.pbn>-<part>.pbn`, each only when it has boards:
+
+- `db_making` - doubled contracts that made
+- `db_not_making` - doubled contracts that went down (these boards also go to `disaster` or `OK_boards`)
+- `disaster` - the NS score is more than 2000 away from par
+- `OK_boards` - the rest
+- `duplicates` - a deal's third and later copies (two are allowed, as Practice-Bidding-Scenarios writes each deal again rotated)
+- `missing-DD` - boards with no par score in the file or in `DatumScores.pkl`
 
 Started without arguments it asks for the file. From the command line: `Split_PBN <file.pbn> [DatumScores.pkl]` (the pickle defaults to `DatumScores.pkl` in the current folder).
 

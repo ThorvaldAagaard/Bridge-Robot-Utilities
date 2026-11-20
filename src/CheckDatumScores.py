@@ -28,9 +28,9 @@ Usage: CheckDatumScores.py <input.pbn> [DatumScores.pkl] [--limit N] [--all]
 import sys
 import os
 import re
-import pickle
 import argparse
 import dealkey
+import datumscore
 
 # A data row of an OptimumResultTable, e.g. "N S 5".
 ORT_ROW = re.compile(r'^([NESW])\s+(NT|S|H|D|C)\s+(-?\d+)$')
@@ -118,8 +118,7 @@ def scan(pbn_path, pickle_path=None, limit=20, show_all=False, dupes=True):
     data = None
     if pickle_path:
         print("Loading %s ..." % os.path.basename(pickle_path), flush=True)
-        with open(pickle_path, 'rb') as f:
-            data = pickle.load(f)
+        data = datumscore.load(pickle_path)
         print("  %d entries" % len(data), flush=True)
 
     total = max(os.path.getsize(pbn_path), 1)
@@ -167,7 +166,9 @@ def scan(pbn_path, pickle_path=None, limit=20, show_all=False, dupes=True):
         note = ''
         if data is not None and ('no OptimumScore' in problems
                                  or 'no ParContract' in problems):
-            if deal_line in data:
+            # In the pickle means "its tricks are there": an old-format entry with a
+            # stored par but no table cannot annotate a board (datumscore.py).
+            if datumscore.tricks(data, deal_line) is not None:
                 counts['in_pickle'] += 1
                 note = '  [in pickle - re-run AddDatumScoreToPBN]'
             else:
@@ -231,7 +232,7 @@ def scan(pbn_path, pickle_path=None, limit=20, show_all=False, dupes=True):
 
 
 def main():
-    print("Check Datum Scores, Version 1.0.23")
+    print("Check Datum Scores, Version 1.0.24")
     parser = argparse.ArgumentParser(
         description="Scan a PBN for boards missing par / optimum scores")
     parser.add_argument("filename", help="PBN file to scan")

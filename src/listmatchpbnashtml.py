@@ -53,8 +53,33 @@ def generate_frequency_table(results):
     return html
 
 
+def deal_hands_nesw(deal):
+    """The four hands of a PBN [Deal] in N, E, S, W order.
+
+    A PBN deal names the seat of its FIRST hand ("E:J63.K642... ..."), and the rest follow
+    clockwise. Reading it as if it always started with North rotated every deal whose first
+    hand is another seat (Brill's SeatMatch writes the dealer first).
+    """
+    first, _, hands = deal.partition(':')
+    hands = hands.split()
+    start = 'NESW'.index(first.strip().upper()[:1] or 'N')
+    # hands[i] belongs to seat (start + i) % 4, so seat s holds hands[(s - start) % 4]
+    return [hands[(s - start) % 4] for s in range(4)]
+
+def board_number_style(board_number):
+    """A font size for the board number that keeps it inside the 40px compass centre.
+
+    Long board numbers (90100588) overflowed the fixed 26px box onto the vulnerability strips.
+    Arial digits are ~0.556em wide; 36px of text leaves a pixel of padding each side.
+    """
+    n = len(str(board_number))
+    if n <= 3:
+        return ""
+    size = max(6, min(10, int(36 / (0.556 * n))))
+    return f" style='font-size: {size}px'"
+
 def generate_html_deal(dealer, vulnerable, cards, board_number, extra_html=""):
-    cards = cards.split(':')[1].split()
+    cards = deal_hands_nesw(cards)   # cards[0..3] = N, E, S, W
     html = f"""
         <div class='board-section'>
             <div class='diagram-container'>
@@ -72,9 +97,7 @@ def generate_html_deal(dealer, vulnerable, cards, board_number, extra_html=""):
                         <div id='vul-west' class='{"red" if vulnerable in ('E-W', 'Both') else 'white'}'>
                             {"<span class='dealer'>W</span>" if dealer == 'W' else ''}
                         </div>
-                        <div id='boardno'>
-                            {board_number}
-                        </div>
+                        <div id='boardno'{board_number_style(board_number)}>{board_number}</div>
                     </div>
                     <div id='north'>
                         {generate_html_card('&spades;', cards[0].split('.')[0])}
@@ -295,7 +318,7 @@ def extract_value(s: str) -> str:
     return s[s.index('"') + 1 : s.rindex('"')]
 
 def main():
-    print("List matches as html, Version 1.0.23")
+    print("List matches as html, Version 1.0.24")
 
     # Batch mode for scripts (robot-roundrobin.ps1 puts the page in its zip): --out <file.html>
     # writes there with no dialog and no browser, and a board one room never finished -- a VOID
@@ -419,14 +442,15 @@ def main():
         board_results.setdefault(d[0], []).extend([(d[5], d[6], d[7], d[8]), (d[10], d[11], d[12], d[13])])
 
     # Show every match from both sides, so each team appears as NS in the open room once per
-    # match it played: the mirror swaps the teams and the rooms and negates the IMPs.
+    # match it played: the mirror swaps the teams and the rooms and negates the IMPs. The mirror
+    # rows exist only for the team filter -- "All teams" hides them, or every match shows twice.
     rows = []
     for d in new_data_list:
         (board, ns, ew, dealer, vul, declarer1, contract1, result1, score1, hands_pbn,
          declarer2, contract2, result2, score2, imp, lin_open, lin_closed) = d
-        rows.append(d)
+        rows.append((*d, False))
         rows.append((board, ew, ns, dealer, vul, declarer2, contract2, result2, score2, hands_pbn,
-                     declarer1, contract1, result1, score1, -imp, lin_closed, lin_open))
+                     declarer1, contract1, result1, score1, -imp, lin_closed, lin_open, True))
     sorted_data = sorted(rows, key=lambda x: (x[0], rank.get(x[1], 999), rank.get(x[2], 999)))
 
     # Generate the HTML tables
@@ -442,7 +466,7 @@ def main():
     html += "</select></label></div>\n"
     for i, board_data in enumerate(sorted_data):
 
-        board, ns, ew, dealer, vul, declarer1, contract1, result1, score1, hands_pbn, declarer2, contract2, result2, score2, imp, lin_open, lin_closed = board_data
+        board, ns, ew, dealer, vul, declarer1, contract1, result1, score1, hands_pbn, declarer2, contract2, result2, score2, imp, lin_open, lin_closed, mirror = board_data
         if board != old_board:
             if i > 0:
                 table1_html += "</table>\n</div>\n</div>\n"
@@ -481,7 +505,8 @@ def main():
         contract_closed = f"<a href='{link_closed}' target='_blank'>{declarer2} {contract2}</a>"
         # Add class to the row based on imp value
         row_height_class = "row-height"
-        row_html += f"<tr class='{row_height_class}' data-ns='{escape(ns, quote=True)}'>\n<td>{ns}</td>\n<td>{ew}</td>\n<td>{contract_open}</td>{tricks1}{res1}<td>{ew}</td>\n<td>{ns}</td>\n<td>{contract_closed}</td>{tricks2}{res2}{imp_positive}{imp_negative}</tr>\n"
+        mirror_attr = " data-mirror='1' style='display:none'" if mirror else ""
+        row_html += f"<tr class='{row_height_class}' data-ns='{escape(ns, quote=True)}'{mirror_attr}>\n<td>{ns}</td>\n<td>{ew}</td>\n<td>{contract_open}</td>{tricks1}{res1}<td>{ew}</td>\n<td>{ns}</td>\n<td>{contract_closed}</td>{tricks2}{res2}{imp_positive}{imp_negative}</tr>\n"
         table1_html += row_html
         row_html = ""
 
@@ -539,12 +564,30 @@ def main():
             "  document.querySelectorAll('.results-container table').forEach(function (table) {\n"
             "    var n = 0;\n"
             "    table.querySelectorAll('tr[data-ns]').forEach(function (tr) {\n"
-            "      var show = !team || tr.dataset.ns === team;\n"
+            "      var show = team ? tr.dataset.ns === team : !tr.dataset.mirror;\n"
             "      tr.style.display = show ? '' : 'none';\n"
             "      if (show) tr.style.backgroundColor = (n++ % 2) ? '#f0f0f0' : '#ffffff';\n"
             "    });\n"
+            "    // One team selected: total its IMPs on this board under the table.\n"
+            "    var foot = table.querySelector('tr.team-total');\n"
+            "    if (foot) foot.remove();\n"
+            "    if (!team) return;\n"
+            "    var plus = 0, minus = 0;\n"
+            "    table.querySelectorAll('tr[data-ns]').forEach(function (tr) {\n"
+            "      if (tr.style.display === 'none') return;\n"
+            "      var c = tr.cells, p = parseInt(c[c.length - 2].textContent, 10), m = parseInt(c[c.length - 1].textContent, 10);\n"
+            "      if (!isNaN(p)) plus += p;\n"
+            "      if (!isNaN(m)) minus += m;\n"
+            "    });\n"
+            "    var net = plus - minus;\n"
+            "    foot = document.createElement('tr');\n"
+            "    foot.className = 'team-total';\n"
+            "    foot.innerHTML = \"<td colspan='10' class='align-right'>\" + team + ' net on this board: <b>' + (net > 0 ? '+' : '') + net + '</b></td>'\n"
+            "      + \"<td class='align-right'><b>\" + plus + \"</b></td><td class='align-right'><b>\" + minus + '</b></td>';\n"
+            "    table.appendChild(foot);\n"
             "  });\n"
             "}\n"
+            "document.addEventListener('DOMContentLoaded', function () { filterTeam(''); });\n"
             "</script>\n"
         "</head>\n"
         "<body>\n"

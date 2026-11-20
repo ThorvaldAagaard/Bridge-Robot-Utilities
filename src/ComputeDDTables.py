@@ -1,19 +1,19 @@
-"""Compute double-dummy tables for every deal in DatumScores.pkl and store them.
+"""Bring DatumScores.pkl to its current format: one double-dummy table per deal.
 
-The datum-score pickle (built by ExtractDatumScore.py) maps each `[Deal "..."]`
-line to (OptimumScore, ParContract, vul). This tool double-dummy solves the deals
-and rewrites each value as a 4-tuple (OptimumScore, ParContract, vul, dd_bytes),
-where dd_bytes is the 20-entry result table packed one byte per (declarer,
-denomination) in the order below.
+The pickle maps each `[Deal "..."]` line to 20 bytes of tricks (see datumscore.py).
+Older pickles hold (OptimumScore, ParContract, vul[, dd_bytes]) tuples instead, and
+their stored par is wrong for any copy of a deal at another vulnerability or with
+another dealer. This tool double-dummy solves every entry that has no table and
+rewrites EVERY value as plain tricks, dropping the stored par: AddDatumScoreToPBN,
+UpdateScore and Split_PBN compute par per board from the tricks.
 
-It is the expensive, one-time step: after it runs, AddDatumScoreToPBN.py writes the
-OptimumResultTable straight from the cache, instantly. The solve is resumable -
-worker checkpoints let an interrupted run continue where it left off.
+Run it once on an old pickle (`python src/ComputeDDTables.py DatumScores.pkl`); on a
+current one it is a no-op. The solve is resumable - worker checkpoints let an
+interrupted run continue where it left off.
 """
 import sys
 import os
 import time
-import shutil
 import pickle
 import multiprocessing as mp
 import tkinter as tk
@@ -24,6 +24,7 @@ import endplayfix  # local endplay fixes (dealer tag, auction NAGs, LIN mn||)
 config.use_unicode = False
 from endplay.types import Deal, Denom, Player
 from endplay.dds import calc_all_tables
+import datumscore
 
 # Deals solved per DDS batch call (DDS caps CalcAllTables at 32).
 CHUNK = 32
@@ -124,43 +125,33 @@ def compute_tables(unique, ckpt_dir):
 
 
 def enrich(pickle_path):
-    with open(pickle_path, 'rb') as f:
-        data = pickle.load(f)
+    data = datumscore.load(pickle_path)
 
-    todo_keys = [k for k, v in data.items()
-                 if not (len(v) > 3 and v[3] is not None)]
+    todo_keys = [k for k, v in data.items() if datumscore.tricks_of(v) is None]
     print(f"{len(data)} pickle entries, {len(todo_keys)} need a DD table "
           f"on {WORKERS} worker(s)")
-    if not todo_keys:
-        print("Nothing to do - every entry already has a table.")
-        return
-
-    unique = [tag_value(k) for k in todo_keys]
-
-    ckpt_dir = os.path.dirname(os.path.abspath(pickle_path))
-    t0 = time.time()
-    tables, ckpts = compute_tables(unique, ckpt_dir)
-    print(f"solved {len(tables)} deals in {time.time()-t0:.0f}s")
 
     filled = 0
-    for k in todo_keys:
-        dd = tables.get(tag_value(k))
-        if dd is None:
-            continue
-        v = data[k]
-        data[k] = (v[0], v[1], v[2], dd)
-        filled += 1
+    ckpts = []
+    if todo_keys:
+        unique = [tag_value(k) for k in todo_keys]
+        ckpt_dir = os.path.dirname(os.path.abspath(pickle_path))
+        t0 = time.time()
+        tables, ckpts = compute_tables(unique, ckpt_dir)
+        print(f"solved {len(tables)} deals in {time.time()-t0:.0f}s")
+        for k in todo_keys:
+            dd = tables.get(tag_value(k))
+            if dd is not None:
+                data[k] = dd
+                filled += 1
 
-    # Keep a one-time backup of the original pickle, then write atomically.
-    backup = pickle_path + '.bak'
-    if not os.path.exists(backup):
-        shutil.copy2(pickle_path, backup)
-        print(f"backed up original to {backup}")
-    tmp = pickle_path + '.tmp'
-    with open(tmp, 'wb') as f:
-        pickle.dump(data, f, protocol=pickle.HIGHEST_PROTOCOL)
-    os.replace(tmp, pickle_path)
-    print(f"enriched {filled} entries; {len(todo_keys) - filled} unsolved")
+    converted = datumscore.normalise(data)
+    if not filled and not converted:
+        print("Nothing to do - every entry is already plain tricks.")
+        return
+    datumscore.save(data, pickle_path)
+    print(f"solved {filled} entries, rewrote {converted} old-format entries as plain tricks; "
+          f"{len(todo_keys) - filled} unsolved")
 
     if filled == len(todo_keys):
         for c in ckpts:
@@ -171,7 +162,7 @@ def enrich(pickle_path):
 
 
 def main():
-    print("Compute DD Tables, Version 1.0.23")
+    print("Compute DD Tables, Version 1.0.24")
 
     # Command-line usage: ComputeDDTables.py [DatumScores.pkl]
     if len(sys.argv) > 1:

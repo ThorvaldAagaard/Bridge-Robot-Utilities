@@ -110,9 +110,17 @@ body {
     position: absolute;
     border: 1px solid black;
     border-radius: 3px;
-    left: 41px;
-    top: 45px;
-    width: 26px;
+    /* Centred on the compass (55,55) and as wide as its number: a fixed 26px box let an
+       8-digit board number spill over the east vulnerability strip. */
+    left: 55px;
+    top: 55px;
+    transform: translate(-50%, -50%);
+    min-width: 26px;
+    max-width: 40px;
+    padding: 0 1px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    z-index: 1;
     text-align: center;
     background-color: #efcdf5e0;
 }

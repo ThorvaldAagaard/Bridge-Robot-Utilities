@@ -1,11 +1,11 @@
 import sys
 import os
 import re
-import pickle
 import threading
 import tkinter as tk
 from tkinter import filedialog, ttk
 import lastdir
+import datumscore
 
 # How often (bytes of input consumed) to emit a progress update.
 PROGRESS_EVERY = 16 * 1024 * 1024
@@ -15,15 +15,14 @@ ORT_ROW = re.compile(r'^[NESW]\s+(?:NT|S|H|D|C)\s+-?\d+$')
 
 
 def load_optimumscores(pickle_path):
-    with open(pickle_path, 'rb') as pkl_file:
-        return pickle.load(pkl_file)
+    return datumscore.load(pickle_path)
 
 
 # Row order of the standard PBN OptimumResultTable: 4 declarers x 5 denominations.
-# Must match the packing order used when the dd bytes were computed.
+# The packing order of the pickle's 20 bytes (datumscore.PLAYER_ORDER x DENOM_ORDER).
 ORT_HEADER = '[OptimumResultTable "Declarer Denomination Result"]'
-ROW_LABELS = [(p, d) for p in ('N', 'E', 'S', 'W')
-              for d in ('S', 'H', 'D', 'C', 'NT')]
+ROW_LABELS = [(p, d) for p in datumscore.PLAYER_ORDER
+              for d in datumscore.DENOM_ORDER]
 
 
 def tag_value(line):
@@ -34,30 +33,30 @@ def tag_value(line):
     return parts[1] if len(parts) > 1 else None
 
 
-def lookup(data, deal_line):
-    """Find the datum-score entry for a `[Deal "..."]` line.
+def lookup(data, deal_line, vulnerable, dealer):
+    """Par for one board: its deal's tricks from the pickle, scored at ITS vulnerability.
 
-    The pickle (built by ExtractDatumScore.py) is keyed by the exact deal line.
-    Try that verbatim first, then fall back to the endplay-canonical form so a
-    differently formatted deal still matches (same lookup Split_PBN.py relies on).
+    The pickle holds only the deal's double-dummy tricks (see datumscore.py); par is
+    computed here from the board's own [Vulnerable] and [Dealer], so two boards with
+    the same hands at different vulnerabilities each get their own par.
 
-    Returns (optimum_score, par_contract, dd_bytes). dd_bytes is the 20-byte
-    double-dummy table when the entry has been enriched with one, else None.
+    Returns (optimum_score, par_contract, dd_bytes) -- tag values, not whole lines --
+    or (None, None, None) when the deal has no tricks in the pickle.
     """
-    value = data.get(deal_line)
-    if value is None:
-        deal_str = tag_value(deal_line)
-        if deal_str:
-            try:
-                from endplay.types import Deal
-                value = data.get(f'[Deal "{Deal(deal_str).to_pbn()}"]')
-            except Exception:
-                value = None
-    if value is None:
+    dd_bytes = datumscore.tricks(data, deal_line)
+    if dd_bytes is None:
         return None, None, None
-    optimum_score, par_contract = value[0], value[1]
-    dd_bytes = value[3] if len(value) > 3 else None
-    return tag_value(optimum_score), tag_value(par_contract), dd_bytes
+    optimum_score, par_contract = datumscore.par_tags(dd_bytes, vulnerable, dealer)
+    return optimum_score, par_contract, dd_bytes
+
+
+def block_tag(block, name):
+    """The value of the first [name "..."] tag in a board block, or None."""
+    prefix = f'[{name} '
+    for line in block:
+        if line.lstrip().startswith(prefix):
+            return tag_value(line.strip())
+    return None
 
 
 def build_ort(dd_bytes, term):
@@ -77,8 +76,18 @@ def strip_existing(block):
         stripped = block[i].lstrip()
         if stripped.startswith('[OptimumResultTable'):
             i += 1
-            while i < len(block) and ORT_ROW.match(block[i].strip()):
-                i += 1
+            while i < len(block):
+                row = block[i].strip()
+                if ORT_ROW.match(row):
+                    i += 1
+                elif row.startswith('{') and row.endswith('}'):
+                    # BBA writes a one-line comment between the tag and its rows
+                    # ("{ Shape 3226 3343 4432 3442 }"); keep it, but go on removing
+                    # the rows after it, or they would survive beside the new table.
+                    out.append(block[i])
+                    i += 1
+                else:
+                    break
             continue
         if stripped.startswith('[OptimumScore') or stripped.startswith('[ParContract'):
             i += 1
@@ -124,7 +133,8 @@ def annotate(pbn_path, pickle_path, output_path, on_status=None, on_progress=Non
             out.writelines(block)
             return
         deal_line = block[deal_idx]
-        opt, par, dd_bytes = lookup(data, deal_line.strip())
+        opt, par, dd_bytes = lookup(data, deal_line.strip(),
+                                    block_tag(block, 'Vulnerable'), block_tag(block, 'Dealer'))
         if opt is None:
             missing += 1
             out.writelines(block)
@@ -133,11 +143,9 @@ def annotate(pbn_path, pickle_path, output_path, on_status=None, on_progress=Non
         term = deal_line[len(deal_line.rstrip('\r\n')):] or '\n'
         block = strip_existing(block)
         di = next(i for i, l in enumerate(block) if l.lstrip().startswith('[Deal '))
-        inserts = [f'[OptimumScore "{opt}"]{term}']
-        if par is not None:
-            inserts.append(f'[ParContract "{par}"]{term}')
-        if dd_bytes:
-            inserts.extend(build_ort(dd_bytes, term))
+        inserts = [f'[OptimumScore "{opt}"]{term}',
+                   f'[ParContract "{par}"]{term}']
+        inserts.extend(build_ort(dd_bytes, term))
         block[di + 1:di + 1] = inserts
         out.writelines(block)
         updated += 1
@@ -171,7 +179,7 @@ def annotate(pbn_path, pickle_path, output_path, on_status=None, on_progress=Non
 
 
 def main():
-    print("Add Datum Score to PBN, Version 1.0.23")
+    print("Add Datum Score to PBN, Version 1.0.24")
 
     # Command-line usage: AddDatumScoreToPBN.py <input.pbn> [DatumScores.pkl] [output.pbn]
     if len(sys.argv) > 1:

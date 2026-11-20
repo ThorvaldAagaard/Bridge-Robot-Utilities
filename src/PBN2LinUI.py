@@ -71,7 +71,7 @@ def update_event_and_feasability(file_path):
 
 def main():
 
-    print("PBN -> Lin, Version 1.0.23")
+    print("PBN -> Lin, Version 1.0.24")
     # create a root window
     root = tk.Tk()
     root.withdraw()

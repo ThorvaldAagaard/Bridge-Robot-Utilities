@@ -28,8 +28,15 @@ def generate_html_card(suit, cards):
     html += "</div>"
     return html
 
+def deal_hands_nesw(deal):
+    """The four hands of a PBN [Deal] in N, E, S, W order (the deal names its first seat)."""
+    first, _, hands = deal.partition(':')
+    hands = hands.split()
+    start = 'NESW'.index(first.strip().upper()[:1] or 'N')
+    return [hands[(s - start) % 4] for s in range(4)]
+
 def generate_html_deal(dealer, vulnerable, cards, board_number):
-    cards = cards.split(':')[1].split()
+    cards = deal_hands_nesw(cards)   # cards[0..3] = N, E, S, W
     html = f"""
         <div class='board-section'>
             <div class='diagram-container'>
@@ -228,7 +235,7 @@ def extract_value(s: str) -> str:
     return s[s.index('"') + 1 : s.rindex('"')]
 
 def main():
-    print("List matches as html, Version 1.0.23")
+    print("List matches as html, Version 1.0.24")
     # create a root window
     root = tk.Tk()
     root.withdraw()

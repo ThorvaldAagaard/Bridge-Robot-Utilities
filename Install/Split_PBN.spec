@@ -3,12 +3,16 @@
 import os, sys
 sys.path.insert(0, SPECPATH)
 from build_excludes import EXCLUDES
+from PyInstaller.utils.hooks import collect_dynamic_libs
+
+# endplay loads DDS from endplay/_dds/dds.dll beside its wrapper; PyInstaller does not
+# see that ctypes load, so ship the DLL there. Par is computed per board (datumscore.py).
 
 
 a = Analysis(
     ['..\\src\\Split_PBN.py'],
     pathex=[],
-    binaries=[('..\\bin\\dds.dll', '.')],
+    binaries=[('..\\bin\\dds.dll', '.')] + collect_dynamic_libs('endplay'),
     datas=[],
     hiddenimports=[],
     hookspath=[],

@@ -13,7 +13,7 @@ import lastdir
 from collections import Counter
 from colorama import Fore, Back, Style, init
 import threading
-import pickle
+import datumscore
 
 # Define a function to convert room values to numeric values for sorting
 
@@ -84,18 +84,18 @@ def getScore(str):
     return 0
 
 def load_optimumscores(pickle_path):
-    with open(pickle_path, 'rb') as pkl_file:
-        return pickle.load(pkl_file)
+    return datumscore.load(pickle_path)
 
-def lookup(data, deal_line):
-    value = data.get(deal_line, None)
-    if value == None:
-        return None, None, None
-    # Values may be a 3-tuple (score, par, vul) or, once enriched with a
-    # double-dummy table, a 4-tuple; only the first three are needed here.
-    score, par_contract, vulnerable = value[0], value[1], value[2]
-    optimum_score = score.split("\"")[1]
-    return optimum_score, par_contract, vulnerable
+def lookup(data, deal_line, vulnerable, dealer):
+    """(OptimumScore, ParContract) values for one board, or (None, None).
+
+    The pickle holds only the deal's double-dummy tricks; par is scored here at the
+    board's own vulnerability and dealer (see datumscore.py), so a deal that recurs
+    at another vulnerability or with another dealer gets its own par."""
+    dd_bytes = datumscore.tricks(data, deal_line)
+    if dd_bytes is None:
+        return None, None
+    return datumscore.par_tags(dd_bytes, vulnerable, dealer)
 
 
 def process_file(file_path, info_label,progress_window, progress_bar, pickle_path='DatumScores.pkl'):
@@ -153,7 +153,7 @@ def process_file(file_path, info_label,progress_window, progress_bar, pickle_pat
         skip = False
         if boards[i].info.OptimumScore is None:
             deal_line = f'[Deal "{deal_pbn}"]'  # Replace with an actual deal line
-            optimumScore,_,_ = lookup(data, deal_line)
+            optimumScore, _ = lookup(data, deal_line, boards[i].vul, boards[i].dealer)
             if optimumScore is None:
                 print(f"{Fore.RED}{i+1} No optimum score for board {boards[i].board_num}{Fore.RESET}", deal_line)
                 missing.append(boards[i])
@@ -245,7 +245,7 @@ class ConsoleProgress:
 
 def main():
 
-    print("Split PBN in 6 files. Doubled and making, doubled not making more than 2000 from par, duplicates, missing DD and the rest, Version 1.0.23")
+    print("Split PBN in 6 files. Doubled and making, doubled not making more than 2000 from par, duplicates, missing DD and the rest, Version 1.0.24")
 
     # From the command line: Split_PBN <file.pbn> [DatumScores.pkl]
     if len(sys.argv) > 1:

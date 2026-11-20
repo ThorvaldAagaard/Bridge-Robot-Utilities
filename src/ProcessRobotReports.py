@@ -62,6 +62,12 @@ def is_audit(name):
     return '_audit' in name.lower()
 
 
+def count_boards(text):
+    """The boards of a match: distinct [Board] numbers. A teams PBN holds each board once per room,
+    so counting the [Board] tags reported a 64-board match as 128."""
+    return len(set(re.findall(r'(?m)^\[Board "([^"]*)"', text)))
+
+
 def load_boards(text):
     """The boards of a PBN text, read the way the extract tool reads them.
 
@@ -224,7 +230,7 @@ class Filer:
                 continue
             else:
                 self.save_match(target, text)
-                self.saved.append((name, opponent(text), len(re.findall(r'(?m)^\[Board ', text))))
+                self.saved.append((name, opponent(text), count_boards(text)))
                 known.add(start)
             # The zip goes by the same name, so the report and its match file can be paired by eye
             stem = name[:-len('_match.pbn')] if name.endswith('_match.pbn') else match_name
@@ -259,7 +265,7 @@ class Filer:
                 print(f'Already saved: {f}')
             else:
                 self.save_match(target, text)
-                self.saved.append((name, opponent(text), len(re.findall(r'(?m)^\[Board ', text))))
+                self.saved.append((name, opponent(text), count_boards(text)))
             self.move_to_processed(path)
 
     def rename_existing(self):
@@ -448,7 +454,7 @@ def ask_arguments():
 
 
 def main():
-    print("Process Robot Reports, Version 1.0.23")
+    print("Process Robot Reports, Version 1.0.24")
     parser = argparse.ArgumentParser(description="Save, extract and merge the match reports in a robot's report folder. "
                                                  "Without a folder, dialogs ask for it.")
     parser.add_argument("folder", nargs="?", help=r"The report folder, e.g. D:\RobotMatches\Eamon")
